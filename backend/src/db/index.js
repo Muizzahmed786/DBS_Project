@@ -1,25 +1,22 @@
-import oracledb from "oracledb";
+import mysql from "mysql2/promise";
 
 const connectDB = async () => {
   let connection;
 
   try {
-    console.log("USER:", process.env.DB_USER);
-    console.log("PASS:", process.env.DB_PASSWORD);
-    console.log("CONNECT:", process.env.DB_CONNECT_STRING);
-    connection = await oracledb.getConnection({
+    connection = await mysql.createConnection({
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
-      connectString: process.env.DB_CONNECT_STRING || "localhost:1521/XE",
+      database:process.env.DB_NAME
     });
 
-    console.log("Connected to Oracle DB");
+    console.log("Connected to MYSQL DB");
 
-    const result = await connection.execute(
-      `SELECT table_name FROM user_tables`
-    );
+    const [rows] = await connection.execute(
+    'SELECT * from student'
+  );
 
-    console.log(result.rows);
+    console.log(rows);
 
   } catch (error) {
     console.log("DB CONNECTION FAILED!! ERROR:", error);
