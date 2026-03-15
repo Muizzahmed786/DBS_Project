@@ -1,7 +1,8 @@
 import mysql from "mysql2/promise";
 
+let connection;
+
 const connectDB = async () => {
-  let connection;
 
   try {
     connection = await mysql.createConnection({
@@ -21,15 +22,7 @@ const connectDB = async () => {
   } catch (error) {
     console.log("DB CONNECTION FAILED!! ERROR:", error);
     process.exit(1);
-  } finally {
-    if (connection) {
-      try {
-        await connection.close();
-      } catch (err) {
-        console.error("Error closing connection:", err);
-      }
-    }
   }
 };
 
-export default connectDB;
+export {connection, connectDB};
