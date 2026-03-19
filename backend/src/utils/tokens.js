@@ -1,4 +1,7 @@
-export const generateAccessToken = (user) => {
+import { ApiError } from "./ApiError.js";
+import jwt from "jsonwebtoken";
+import { db } from "../database/index.js";
+const generateAccessToken = (user) => {
   return jwt.sign(
     {
       id: user.user_id,
@@ -12,7 +15,7 @@ export const generateAccessToken = (user) => {
   );
 };
 
-export const generateRefreshToken = (user) => {
+const generateRefreshToken = (user) => {
   return jwt.sign(
     {
       id: user.user_id
@@ -33,9 +36,9 @@ const generateAccessAndRefreshTokens = async function (user) {
     }
     const accessToken = generateAccessToken(user)
     const refreshToken = generateRefreshToken(user)
-
-    await db.query(
-      "UPDATE users SET refresh_token = ? WHERE id = ?",
+   
+    await db.execute(
+      "UPDATE users SET refresh_token = ? WHERE user_id = ?",
       [refreshToken, user.user_id]
     )
 
@@ -49,3 +52,5 @@ const generateAccessAndRefreshTokens = async function (user) {
     )
   }
 }
+
+export {generateAccessAndRefreshTokens};

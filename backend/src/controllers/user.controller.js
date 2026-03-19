@@ -3,7 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import {db }from '../database/index.js';
 import { hashPassword,isPasswordCorrect } from '../utils/auth.js';
-
+import { generateAccessAndRefreshTokens } from '../utils/tokens.js'; 
 
 const registerUser = asyncHandler(async (req, res) => {
   const { full_name, mobile_number, email, aadhaar_number, password, role } = req.body;
@@ -52,7 +52,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password,aadhaar_number } = req.body
+  const { email,password,aadhaar_number } = req.body
   if (!( email || aadhaar_number)) {
     throw new ApiError(400, "Email or Aadhaar number is required")
   }
@@ -65,27 +65,27 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user.length==0) {
     throw new ApiError(404, "User does not exist")
   }
-console.log(user);
-  // const isPasswordValid = await isPasswordCorrect(password,)
 
-  // if (!isPasswordValid) {
-  //   throw new ApiError(404, "Invalid user credentials")
-  // }
+  const isPasswordValid = await isPasswordCorrect(password,user[0].password_hash)
 
-  // const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id)
+  if (!isPasswordValid) {
+    throw new ApiError(404, "Invalid user credentials")
+  }
 
-  // const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
-  // const options = {
-  //   httpOnly: true,
-  //   secure: true,
-  // }
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user[0])
 
-  // return res.status(200)
-  //   .cookie("accessToken", accessToken, options) 
-  //   .cookie("refreshToken", refreshToken, options)
-  //   .json(
-  //     new ApiResponse(200, { user: loggedInUser, accessToken: accessToken, refreshToken: refreshToken }, "User Logged In Successfully")
-  //   )
+  const [loggedInUser] =  await db.execute(`select user_id,full_name,mobile_number,role from users where user_id= ?` ,[user[0].user_id])
+  const options = {
+    httpOnly: true,
+    secure: true,
+  }
+
+  return res.status(200)
+    .cookie("accessToken", accessToken, options) 
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(200, { user: loggedInUser, accessToken: accessToken, refreshToken: refreshToken }, "User Logged In Successfully")
+    )
   
 })
 
