@@ -5,6 +5,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import {db }from '../database/index.js';
 import { hashPassword,isPasswordCorrect } from '../utils/auth.js';
 import { generateAccessAndRefreshTokens } from '../utils/tokens.js'; 
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
 const registerUser = asyncHandler(async (req, res) => {
   const { full_name, mobile_number, email, aadhaar_number, password, role } = req.body;
@@ -143,4 +144,103 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 })
 
-export {registerUser,loginUser,logoutUser,refreshAccessToken}
+const uploadDocuments = asyncHandler(async (req, res) => {
+  let aadhaarLocalPath, rcLocalPath, insuranceLocalPath, dlLocalPath;
+  let vehicleNo, aadhaarNo, insuranceNo, licenceNo, rcNo;
+
+  if (!req.files) {
+    throw new ApiError(400, "At least one document needs to be uploaded");
+  }
+
+  if (req.files.aadhaar) {
+    aadhaarLocalPath = req.files.aadhaar[0].path;
+    aadhaarNo = req.body.aadhaarNo;
+  }
+
+  if (req.files.vehicleRc) {
+    rcLocalPath = req.files.vehicleRc[0].path;
+    vehicleNo = req.body.vehicleNo;
+    rcNo = req.body.rcNo;
+  }
+
+  if (req.files.insurance) {
+    insuranceLocalPath = req.files.insurance[0].path;
+    insuranceNo = req.body.insuranceNo;
+    vehicleNo = req.body.vehicleNo;
+  }
+
+  if (req.files.licence) {
+    dlLocalPath = req.files.licence[0].path;
+    licenceNo = req.body.licenceNo;
+  }
+
+  const aadhaarUrl = await uploadOnCloudinary(aadhaarLocalPath);
+  const licenceUrl =await uploadOnCloudinary(dlLocalPath);
+  const insuranceUrl = await uploadOnCloudinary(insuranceLocalPath);
+  const rcUrl =  await uploadOnCloudinary(rcLocalPath);
+
+  if (aadhaarUrl && aadhaarNo) {
+    await db.execute(
+      `INSERT INTO documents (user_id, document_type, document_number, file_url)
+       VALUES (?, ?, ?, ?)`,
+      [req.user[0].user_id, 'AADHAAR', aadhaarNo, aadhaarUrl]
+    );
+  }
+
+  if (licenceUrl && licenceNo) {
+    await db.execute(
+      `INSERT INTO documents (user_id, document_type, document_number, file_url)
+       VALUES (?, ?, ?, ?)`,
+      [req.user[0].user_id, 'DL', licenceNo, licenceUrl]
+    );
+  }
+
+  let vehicleId = null;
+
+  if (insuranceUrl || rcUrl) {
+    const [vehicle] = await db.execute(
+      `SELECT vehicle_id FROM vehicles WHERE registration_number = ?`,
+      [vehicleNo]
+    );
+
+    if (vehicle.length === 0) {
+      throw new ApiError(400, "Vehicle not found");
+    }
+    vehicleId = vehicle[0].vehicle_id;
+  }
+
+  if (insuranceUrl && insuranceNo) {
+    await db.execute(
+      `INSERT INTO documents (user_id, vehicle_id, document_type, document_number, file_url)
+       VALUES (?, ?, ?, ?, ?)`,
+      [req.user[0].user_id, vehicleId, 'INSURANCE', insuranceNo, insuranceUrl]
+    );
+  }
+
+  if (rcUrl && rcNo) {
+    await db.execute(
+      `INSERT INTO documents (user_id, vehicle_id, document_type, document_number, file_url)
+       VALUES (?, ?, ?, ?, ?)`,
+      [req.user[0].user_id, vehicleId, 'RC', rcNo, rcUrl]
+    );
+  }
+
+  let userVehicleDocuments;
+  if (vehicleId) {
+    [userVehicleDocuments] = await db.execute(
+      `SELECT * FROM documents WHERE user_id = ? OR vehicle_id = ?`,
+      [req.user[0].user_id, vehicleId]
+    );
+  } else {
+    [userVehicleDocuments] = await db.execute(
+      `SELECT * FROM documents WHERE user_id = ?`,
+      [req.user[0].user_id]
+    );
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, { userVehicleDocuments }, "Documents updated successfully")
+  );
+});
+
+export {registerUser,loginUser,logoutUser,refreshAccessToken,uploadDocuments}
