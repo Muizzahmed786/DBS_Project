@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { connection } from "./db/index.js";
+import { db } from "./database/index.js";
 
 const app=express()
 app.use(cors({
@@ -13,17 +13,9 @@ app.use(express.urlencoded({extended:true,limit:"16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 
-app.post('/api/users', async (req, res) => {
-    const {id, name, roll_no} = req.body;
-    const newUser = await connection.execute(
-        `insert into student values (?, ?, ?)`,
-        [id, name, roll_no]
-    );
+import userRouter from './routes/user.routes.js'
 
-    console.log(res.json());
-
-    res.json(newUser);
-})
+app.use("/api/v1/users",userRouter)
 
 //Routes
 export default app;
