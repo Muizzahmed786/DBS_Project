@@ -13,9 +13,13 @@ app.use(express.urlencoded({extended:true,limit:"16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 
-import userRouter from './routes/user.routes.js'
 
+//Common Routes
+import userRouter from './routes/user.routes.js'
 app.use("/api/v1/users",userRouter)
 
-//Routes
+//Citizen only routes
+import citizenRouter from './routes/citizen.routes.js';
+app.use("api/v1/citizens",citizenRouter)
+
 export default app;
