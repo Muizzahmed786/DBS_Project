@@ -17,8 +17,13 @@ import userRouter from './routes/user.routes.js'
 import citizenRouter from './routes/citizen.routes.js'
 import adminRouter from './routes/admin.routes.js'
 
+//Common Routes
 app.use("/api/v1/users",userRouter)
-app.use("/api/v1/citizen",citizenRouter)
+
+//Citizen only routes
+app.use("/api/v1/citizens",citizenRouter)
+
+//Admin only routes
 app.use("/api/v1/admin",adminRouter)
-//Routes
+
 export default app;
