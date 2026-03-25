@@ -13,13 +13,17 @@ app.use(express.urlencoded({extended:true,limit:"16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 
+import userRouter from './routes/user.routes.js'
+import citizenRouter from './routes/citizen.routes.js'
+import adminRouter from './routes/admin.routes.js'
 
 //Common Routes
-import userRouter from './routes/user.routes.js'
 app.use("/api/v1/users",userRouter)
 
 //Citizen only routes
-import citizenRouter from './routes/citizen.routes.js';
 app.use("/api/v1/citizens",citizenRouter)
+
+//Admin only routes
+app.use("/api/v1/admin",adminRouter)
 
 export default app;
