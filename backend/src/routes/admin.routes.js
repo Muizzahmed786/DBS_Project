@@ -1,6 +1,6 @@
 import {Router} from "express";
 import { verifyJWT } from "../middlewares/auth-middleware.js";
-import {getAllRegisteredVehicles,getAllVehicleOwnershipDetails,getAllCitizens,getAllOfficers,getAllAdmins,getRtoVehicleOwnershipDetails,getRtoRegisteredVehicles,getChallansByStatus,getAllChallans,getAllPayments,getPaymentsByStatus} from "../controllers/admin.controller.js";
+import {getAllRegisteredVehicles,getAllVehicleOwnershipDetails,getAllCitizens,getAllOfficers,getAllAdmins,getRtoVehicleOwnershipDetails,getRtoRegisteredVehicles,getChallansByStatus,getAllChallans,getAllPayments,getPaymentsByStatus, getTotalChallansCount,getTotalRevenue,getChallanCountByStatus} from "../controllers/admin.controller.js";
 
 const router=Router()
 
@@ -21,4 +21,9 @@ router.route("/get-challans-status/:status").get(verifyJWT,getChallansByStatus)
 
 router.route("/get-all-payments").get(verifyJWT,getAllPayments)
 router.route("/get-payments-status/:status").get(verifyJWT,getPaymentsByStatus)
+
+router.route("/get-total-challans-count").get(verifyJWT,getTotalChallansCount)
+
+router.route("/get-total-revenue").get(verifyJWT,getTotalRevenue)
+router.route("/get-total-challan-count/:status").get(verifyJWT,getChallanCountByStatus)
 export default router
