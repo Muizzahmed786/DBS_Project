@@ -228,4 +228,43 @@ const getPaymentsByStatus =asyncHandler(async (req,res)=>{
     new ApiResponse(200,statusPayments,`All payments with ${status} status fetched successfully`)
   );
 });
-export {getAllCitizens,getAllOfficers,getAllAdmins,getRtoVehicleOwnershipDetails,getRtoRegisteredVehicles,getAllRegisteredVehicles,getAllVehicleOwnershipDetails,getChallansByStatus,getAllChallans,getAllPayments,getPaymentsByStatus}
+
+const getTotalChallansCount=asyncHandler(async (req,res)=>{
+  if(req.user[0]?.role!=='admin'){
+    throw new ApiError(404,"Unauthorized access");
+  }
+  const [rows]=await db.execute(`select count(distinct challan_id) as challan_count from challan;`)
+  const totalChallans = rows[0]?.challan_count || 0;
+
+  return res.status(200).json(new ApiResponse(200,totalChallans,"Total Challans fetched successfully"))
+})
+
+const getTotalRevenue=asyncHandler(async (req,res)=>{
+  if(req.user[0]?.role!=='admin'){
+    throw new ApiError(404,"Unauthorized access");
+  }
+  const [rows]=await db.execute(`select sum(amount) as total_amount from payment;`)
+
+  const totalAmount=rows[0]?.total_amount || 0;
+
+  return res.status(200).json(new ApiResponse(200,totalAmount,"Total Challans fetched successfully"))
+  
+})
+
+const getChallanCountByStatus=asyncHandler(async (req,res)=>{
+  if(req.user[0]?.role!=='admin'){
+    throw new ApiError(404,"Unauthorized access");
+  }
+  const {status}=req.params;
+  console.log(status)
+  if(!['pending','paid'].includes(status)){
+    throw new ApiError(400,"Invalid challan status");
+  }
+  const [rows]=await db.execute(`select count(distinct challan_id) as total_challan_count from challan where status=?;`,[status])
+
+  console.log(rows);
+  const totalAmount=rows[0]?.total_challan_count || 0;
+
+  return res.status(200).json(new ApiResponse(200,totalAmount,"Total Challans fetched successfully"))
+})
+export {getAllCitizens,getAllOfficers,getAllAdmins,getRtoVehicleOwnershipDetails,getRtoRegisteredVehicles,getAllRegisteredVehicles,getAllVehicleOwnershipDetails,getChallansByStatus,getAllChallans,getAllPayments,getPaymentsByStatus,getTotalChallansCount,getTotalRevenue,getChallanCountByStatus}
