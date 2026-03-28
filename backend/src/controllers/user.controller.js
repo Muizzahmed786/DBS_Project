@@ -53,14 +53,14 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email,password,aadhaar_number } = req.body
-  if (!( email || aadhaar_number)) {
-    throw new ApiError(400, "Email or Aadhaar number is required")
+  const { email, password } = req.body
+  if (!email) {
+    throw new ApiError(400, "Email is required")
   }
 
   const [user] = await db.execute(
-    `SELECT * FROM users WHERE email = ? OR aadhaar_number = ?`,
-    [email, aadhaar_number]
+    `SELECT * FROM users WHERE email = ?`,
+    [email]
   );
 
   if (user.length==0) {
@@ -78,7 +78,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const [loggedInUser] =  await db.execute(`select user_id,full_name,mobile_number,role from users where user_id= ?` ,[user[0].user_id])
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: false,
   }
 
   return res.status(200)
@@ -99,7 +99,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   await db.execute(`update users set refresh_token=NULL where user_id=?`,[loggedOutUser[0].user_id]);
   const options = {
     httpOnly: true,
-    secure: true
+    secure: false
   }
 
   return res
@@ -129,7 +129,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
     const options = {
       httpOnly: true,
-      secure: true
+      secure: false
     }
     const { accessToken, newrefreshToken } = await generateAccessAndRefreshTokens(user[0])
     return res.status(200)
