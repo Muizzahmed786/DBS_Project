@@ -45,14 +45,14 @@ const Profile = () => {
             {/* Profile Card */}
             <div className="bg-slate-800/50 border border-slate-700/60 rounded-2xl overflow-hidden">
                 {/* Banner */}
-                <div className="h-28 bg-gradient-to-r from-sky-600/30 via-blue-600/20 to-indigo-600/30 relative">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,_rgba(14,165,233,0.15),transparent)]" />
+                <div className="h-28 bg-linear-to-r from-sky-600/30 via-blue-600/20 to-indigo-600/30 relative">
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(14,165,233,0.15),transparent)]" />
                 </div>
 
                 {/* Avatar + Info */}
                 <div className="px-6 pb-6">
                     <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-12 mb-6">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-sky-500/25 border-4 border-slate-800 shrink-0">
+                        <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-sky-500/25 border-4 border-slate-800 shrink-0">
                             {initials || <User size={28} />}
                         </div>
                         <div className="pb-1">

@@ -73,7 +73,7 @@ const Documents = () => {
                         return (
                             <div
                                 key={d.document_id}
-                                className={`group relative bg-gradient-to-br border rounded-2xl p-5 hover:scale-[1.015] transition-all duration-200 ${colorClass}`}
+                                className={`group relative bg-linear-to-br border rounded-2xl p-5 hover:scale-[1.015] transition-all duration-200 ${colorClass}`}
                             >
                                 {/* Icon */}
                                 <div className="w-10 h-10 rounded-xl bg-black/20 flex items-center justify-center mb-4">
