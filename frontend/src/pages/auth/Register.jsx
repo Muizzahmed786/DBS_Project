@@ -18,12 +18,14 @@ const Register = () => {
         event.preventDefault();
         try {
             const response = await registerUser(user);
-            console.log(response);
-            if (!response.status >= 200 && response.status < 300) {
+
+            // ✅ FIXED CONDITION
+            if (!(response.status >= 200 && response.status < 300)) {
                 throw new Error("Registration failed, please try again");
             }
+
             alert("Registration Successful");
-            navigate("/");
+            navigate("/login");
         } catch (err) {
             console.error(err);
             alert(err.response?.data?.message || "Something went wrong");
@@ -35,108 +37,75 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
+            
             <form
                 onSubmit={handleSubmit}
-                className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md space-y-5"
+                className="w-full max-w-md bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl p-8 space-y-5"
             >
-                <h1 className="text-2xl font-bold text-center text-gray-800">
-                    Register
+                <h1 className="text-3xl font-bold text-white text-center mb-6">
+                    Create Account
                 </h1>
 
                 {/* Full Name */}
-                <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-600">
-                        Full Name
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Enter your name"
-                        className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        onChange={(e) =>
-                            handleChange("full_name", e.target.value)
-                        }
-                        required
-                    />
-                </div>
+                <input
+                    type="text"
+                    placeholder="Full Name"
+                    className="input-style"
+                    onChange={(e) => handleChange("full_name", e.target.value)}
+                    required
+                />
 
                 {/* Mobile */}
-                <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-600">
-                        Mobile Number
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Enter your mobile number"
-                        className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        onChange={(e) =>
-                            handleChange("mobile_number", e.target.value)
-                        }
-                        required
-                    />
-                </div>
+                <input
+                    type="text"
+                    placeholder="Mobile Number"
+                    className="input-style"
+                    onChange={(e) => handleChange("mobile_number", e.target.value)}
+                    required
+                />
 
                 {/* Email */}
-                <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-600">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        placeholder="Enter your email"
-                        className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        onChange={(e) =>
-                            handleChange("email", e.target.value)
-                        }
-                        required
-                    />
-                </div>
+                <input
+                    type="email"
+                    placeholder="Email"
+                    className="input-style"
+                    onChange={(e) => handleChange("email", e.target.value)}
+                    required
+                />
 
                 {/* Aadhaar */}
-                <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-600">
-                        Aadhaar Number
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="Enter your Aadhaar number"
-                        className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        onChange={(e) =>
-                            handleChange("aadhaar_number", e.target.value)
-                        }
-                        required
-                    />
-                </div>
+                <input
+                    type="text"
+                    placeholder="Aadhaar Number"
+                    className="input-style"
+                    onChange={(e) => handleChange("aadhaar_number", e.target.value)}
+                    required
+                />
 
                 {/* Password */}
-                <div className="flex flex-col">
-                    <label className="text-sm font-medium text-gray-600">
-                        Password
-                    </label>
-                    <input
-                        type="password"
-                        placeholder="Enter password"
-                        className="mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        onChange={(e) =>
-                            handleChange("password", e.target.value)
-                        }
-                        required
-                    />
-                </div>
+                <input
+                    type="password"
+                    placeholder="Password"
+                    className="input-style"
+                    onChange={(e) => handleChange("password", e.target.value)}
+                    required
+                />
 
-                {/* Submit */}
+                {/* Button */}
                 <button
                     type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200"
+                    className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl py-3 text-sm shadow-lg transition duration-200"
                 >
                     Register
                 </button>
 
-                <p className="text-sm text-center text-gray-500">
+                {/* Redirect */}
+                <p className="text-slate-400 text-sm text-center">
                     Already have an account?{" "}
                     <span
-                        className="text-blue-600 cursor-pointer hover:underline"
                         onClick={() => navigate("/login")}
+                        className="text-indigo-400 hover:text-indigo-300 cursor-pointer font-medium"
                     >
                         Login
                     </span>

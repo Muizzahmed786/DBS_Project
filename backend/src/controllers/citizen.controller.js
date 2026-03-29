@@ -134,7 +134,7 @@ const uploadDocuments = asyncHandler(async (req, res) => {
   const userId = req.user[0].user_id;
   const { vehicleId } = req.params;
 
-  if (!req.files) {
+  if (!req.files || Object.keys(req.files).length === 0) {
     throw new ApiError(400, "At least one document needs to be uploaded");
   }
 

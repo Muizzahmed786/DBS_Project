@@ -20,9 +20,14 @@ export const getMyDocuments = () => {
     return API.get('/citizens/get-my-documents');
 }
 
-export const uploadDocuments = (data) => {
-    return API.post('/citizens/upload-documents', data);
-}
+export const uploadDocuments = (formData) => {
+    return API.post('/citizens/upload-documents', formData, {
+        withCredentials: true,
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
+};
 
 export const uploadVehicleDocuments = (data, vehicleId) => {
     return API.post(`/citizens/upload-documents/${vehicleId}`, data);
