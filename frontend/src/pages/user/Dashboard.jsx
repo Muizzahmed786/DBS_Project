@@ -1,10 +1,21 @@
+import Sidebar from '../../components/Sidebar'
+import { Outlet } from 'react-router-dom';
+
 
 const Dashboard = () => {
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <h1>User Dashboard</h1>
+        <div style={{ display: "flex" }}>
+
+            {/* Sidebar */}
+            <Sidebar />
+
+            {/* Main Content */}
+            <div className="flex-1 overflow-y-auto">
+                <Outlet />
+            </div>
+
         </div>
-    )
-}
+    );
+};
 
 export default Dashboard;

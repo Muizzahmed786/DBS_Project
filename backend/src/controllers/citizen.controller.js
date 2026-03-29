@@ -8,10 +8,10 @@ import jwt from "jsonwebtoken";
 
 const getRegisteredVehicles=asyncHandler(async (req,res)=>{
   if(req.user[0].role!=='citizen'){
-    throw new ApiError(400,"Unauthorized request")
+    throw new ApiError(400,"Unauthorized request");
   }
 
-  const [registerdVehicles]=await db.execute(`
+  const [registeredVehicles]=await db.execute(`
     SELECT 
     vo.ownership_start_date,
     vo.ownership_end_date,
@@ -28,7 +28,7 @@ const getRegisteredVehicles=asyncHandler(async (req,res)=>{
     JOIN vehicles v ON v.vehicle_id = vo.vehicle_id
     where u.user_id=?; 
   `,[req.user[0].user_id])
-  return res.status(200).json(new ApiResponse(200,registerdVehicles,"All the registered vehicles fetched"))
+  return res.status(200).json(new ApiResponse(200,registeredVehicles,"All the registered vehicles fetched"))
 })
 
 
@@ -72,7 +72,9 @@ const getChallansByStatus=asyncHandler(async (req,res)=>{
     throw new ApiError(400,"Unauthorized request")
   }
   const {status}=req.params;
-  if(!["pending","paid"].includes(status));
+  if(!["pending","paid"].includes(status)){
+    throw new ApiError(400,"Invalid challan status")
+  }
   const [allChallans]=await db.execute(`
       SELECT 
     c.challan_id,

@@ -10,10 +10,10 @@ const Login = () => {
     const handleLogin = async () => {
         try{
             const response = await loginUser({email, password});
-            if(!response.status >= 200 && response.status < 300){
+            if(!(response.status >= 200 && response.status < 300)){
                 throw new Error("Login failed, please try again");
             }
-            alert("Successfully Logged in");
+            localStorage.setItem("isLoggedIn", "true");
             navigate('/dashboard');
         } catch(err){
             console.error(err.message);
