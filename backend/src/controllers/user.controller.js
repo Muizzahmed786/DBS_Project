@@ -79,7 +79,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const [loggedInUser] = await db.execute(`select user_id,full_name,mobile_number,role from users where user_id= ?`, [user[0].user_id])
   const options = {
     httpOnly: true,
-    secure: false,
+    secure: true,
   }
 
   return res.status(200)
@@ -100,7 +100,7 @@ const logoutUser = asyncHandler(async (req, res) => {
   await db.execute(`update users set refresh_token=NULL where user_id=?`, [loggedOutUser[0].user_id]);
   const options = {
     httpOnly: true,
-    secure: false
+    secure: true
   }
 
   return res
@@ -130,7 +130,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     }
     const options = {
       httpOnly: true,
-      secure: false
+      secure: true
     }
     const { accessToken, newrefreshToken } = await generateAccessAndRefreshTokens(user[0])
     return res.status(200)
@@ -155,4 +155,8 @@ const getAllViolationTypes=asyncHandler(async (req,res)=>{
   }
   return res.status(200).json(new ApiResponse(200,violationTypes,"Violation Types fetched successfully"));
 })
-export { registerUser, loginUser, logoutUser, refreshAccessToken,getAllViolationTypes}
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res.status(200).json(200, req.user, "Current user fetched successfully")
+})
+export { registerUser, loginUser, logoutUser, refreshAccessToken,getAllViolationTypes,getCurrentUser}

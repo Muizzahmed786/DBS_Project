@@ -1,31 +1,40 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import {ReceiptText, Car, UserCircle, FolderOpen, TrafficCone, LogOut, Menu, X,} from "lucide-react";
+import {
+    ReceiptText,
+    Car,
+    UserCircle,
+    FolderOpen,
+    TrafficCone,
+    LogOut,
+    Menu,
+    X,
+} from "lucide-react";
 import { useState } from "react";
-
+import { useAuth } from "../context/useAuth";
 import { logoutUser } from "../api/auth.js";
 
 const navItems = [
-    { to: "/dashboard/challans",  label: "Challans",   icon: ReceiptText },
-    { to: "/dashboard/vehicles",  label: "Vehicles",   icon: Car },
-    { to: "/dashboard/profile",   label: "Profile",    icon: UserCircle },
-    { to: "/dashboard/documents", label: "Documents",  icon: FolderOpen },
+    { to: "/dashboard/challans", label: "Challans", icon: ReceiptText },
+    { to: "/dashboard/vehicles", label: "Vehicles", icon: Car },
+    { to: "/dashboard/profile", label: "Profile", icon: UserCircle },
+    { to: "/dashboard/documents", label: "Documents", icon: FolderOpen },
 ];
-
 
 const Sidebar = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const navigate = useNavigate();
+    const { setUser } = useAuth(); // ✅ correct usage
 
-    const handleSignOut = async  () => {
-        try{
-            await logoutUser();
-        } catch(err){
+    const handleSignOut = async () => {
+        try {
+            await logoutUser(); // backend clears cookie
+        } catch (err) {
             console.error(err);
-        } finally{
-            localStorage.removeItem("isLoggedIn");
-            navigate('/', {replace: true});
+        } finally {
+            setUser(null); // clear user from context
+            navigate("/", { replace: true });
         }
-    }
+    };
 
     const SidebarContent = () => (
         <div className="flex flex-col h-full">
@@ -35,8 +44,12 @@ const Sidebar = () => {
                     <TrafficCone size={18} className="text-white" />
                 </div>
                 <div>
-                    <p className="text-white font-bold text-lg leading-none tracking-wide">Parivahan</p>
-                    <p className="text-slate-400 text-[11px] tracking-widest uppercase mt-0.5">Citizen Portal</p>
+                    <p className="text-white font-bold text-lg leading-none tracking-wide">
+                        Parivahan
+                    </p>
+                    <p className="text-slate-400 text-[11px] tracking-widest uppercase mt-0.5">
+                        Citizen Portal
+                    </p>
                 </div>
             </div>
 
@@ -49,15 +62,22 @@ const Sidebar = () => {
                         onClick={() => setMobileOpen(false)}
                         className={({ isActive }) =>
                             `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group
-                            ${isActive
-                                ? "bg-sky-500/15 text-sky-400 shadow-sm"
-                                : "text-slate-400 hover:text-white hover:bg-slate-700/50"
+                            ${
+                                isActive
+                                    ? "bg-sky-500/15 text-sky-400 shadow-sm"
+                                    : "text-slate-400 hover:text-white hover:bg-slate-700/50"
                             }`
                         }
                     >
                         {({ isActive }) => (
                             <>
-                                <span className={`transition-colors duration-200 ${isActive ? "text-sky-400" : "text-slate-500 group-hover:text-slate-300"}`}>
+                                <span
+                                    className={`transition-colors duration-200 ${
+                                        isActive
+                                            ? "text-sky-400"
+                                            : "text-slate-500 group-hover:text-slate-300"
+                                    }`}
+                                >
                                     <Icon size={18} />
                                 </span>
                                 {label}
@@ -76,7 +96,10 @@ const Sidebar = () => {
                     onClick={handleSignOut}
                     className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 group"
                 >
-                    <LogOut size={17} className="group-hover:text-red-400 transition-colors" />
+                    <LogOut
+                        size={17}
+                        className="group-hover:text-red-400 transition-colors"
+                    />
                     Sign Out
                 </button>
             </div>
