@@ -5,7 +5,7 @@ import { db } from "./database/index.js";
 import userRouter from './routes/user.routes.js'
 import citizenRouter from './routes/citizen.routes.js'
 import adminRouter from './routes/admin.routes.js'
-
+import officerRouter from './routes/officer.routes.js'
 const app=express()
 app.use(cors({
   origin: process.env.CORS_ORIGIN,
@@ -28,4 +28,5 @@ app.use("/api/v1/citizens",citizenRouter)
 //Admin only routes
 app.use("/api/v1/admin",adminRouter)
 
+app.use("/api/v1/officers",officerRouter)
 export default app;

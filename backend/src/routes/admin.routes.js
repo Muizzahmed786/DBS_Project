@@ -1,9 +1,9 @@
 import {Router} from "express";
 import { verifyJWT } from "../middlewares/auth-middleware.js";
 import {getAllRegisteredVehicles,getAllVehicleOwnershipDetails,getAllCitizens,getAllOfficers,getAllAdmins,getRtoVehicleOwnershipDetails,getRtoRegisteredVehicles,getChallansByStatus,getAllChallans,getAllPayments,getPaymentsByStatus, getTotalChallansCount,getTotalRevenue,getChallanCountByStatus} from "../controllers/admin.controller.js";
-
+import {getAllViolationTypes} from "../controllers/user.controller.js"
 const router=Router()
-
+router.route("/get-all-violation-types").get(verifyJWT,getAllViolationTypes);
 router.route("/get-all-citizens").get(verifyJWT,getAllCitizens)
 router.route("/get-all-admins").get(verifyJWT,getAllAdmins)
 router.route("/get-all-officers").get(verifyJWT,getAllOfficers)
