@@ -298,6 +298,7 @@ const getMyPaymentHistory=asyncHandler(async (req,res)=>{
   const [paymentDetails]=await db.execute(`select payment_id,amount,transaction_reference,payment_date,status,payment_mode from payment where user_id=?`,[req.user[0].user_id]);
   return res.status(200).json(new ApiResponse(200,paymentDetails,"Payment history fetched successfully"))
 })
+
 const makePayment = asyncHandler(async (req, res) => {
   if (req.user[0].role !== 'citizen') {
     throw new ApiError(403, "Unauthorized request");
@@ -373,6 +374,7 @@ const makePayment = asyncHandler(async (req, res) => {
     new ApiResponse(200, paymentData[0], "Payment made successfully")
   );
 });
+
 const insertVehicle = asyncHandler(async (req, res) => {
      console.log(req.user[0])
     if (req.user[0].role !== 'citizen') {
@@ -404,4 +406,6 @@ const insertVehicle = asyncHandler(async (req, res) => {
       new ApiResponse(200, insertedVehicle[0], "Vehicle inserted successfully")
     )
 });
-export {getRegisteredVehicles,getAllChallans,getChallansByStatus, getMyProfile,getMyDocuments,uploadDocuments,getMyChallanCount,getMyChallanByStatusCount,getMyVehiclesCount,getMyPaymentCount,getMyPaymentByStatusCount,makePayment,getMyPaymentHistory,insertVehicle}
+
+
+export {getRegisteredVehicles,getAllChallans,getChallansByStatus, getMyProfile,getMyDocuments,uploadDocuments,getMyChallanCount,insertVehicle,getMyChallanByStatusCount,getMyVehiclesCount,getMyPaymentCount,getMyPaymentByStatusCount,makePayment,getMyPaymentHistory}

@@ -69,6 +69,18 @@ const Documents = () => {
     const [dragging, setDragging] = useState(null);
     const [files, setFiles]       = useState({ aadhaar: null, licence: null });
 
+    const getIframeUrl = (url) => {
+        if (!url) return "";
+        
+        // If it's a Word doc, wrap it in the Office Online Viewer
+        if (url.match(/\.(doc|docx)$/)) {
+            return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+        }
+        
+        // For PDFs, the URL can be used directly
+        return url;
+    };
+
     // fetch
     useEffect(() => {
         const fetchDocs = async () => {
