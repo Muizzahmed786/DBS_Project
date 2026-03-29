@@ -144,4 +144,15 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 })
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken}
+const getAllViolationTypes=asyncHandler(async (req,res)=>{
+  if(!(req.user[0].role=='admin' || req.user[0].role=='officer')){
+    throw new ApiError(400,"Unauthorized request");
+  }
+  const [violationTypes]=await db.execute(`select * from violation_types`);
+
+  if(violationTypes.length===0){
+    throw new ApiError(400,"Something went wrong while fetching violation types");
+  }
+  return res.status(200).json(new ApiResponse(200,violationTypes,"Violation Types fetched successfully"));
+})
+export { registerUser, loginUser, logoutUser, refreshAccessToken,getAllViolationTypes}
