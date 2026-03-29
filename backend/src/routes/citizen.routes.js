@@ -14,7 +14,8 @@ import {
   getMyPaymentCount,
   getMyPaymentByStatusCount,
   makePayment,
-  getMyPaymentHistory
+  getMyPaymentHistory,
+  insertVehicle
 } from "../controllers/citizen.controller.js"
 
 const router=Router()
@@ -32,6 +33,7 @@ router.route("/get-my-vehicle-count").get(verifyJWT,getMyVehiclesCount);
 router.route("/get-my-payment-count").get(verifyJWT,getMyPaymentCount);
 router.route("/get-my-payment-count/:status").get(verifyJWT,getMyPaymentByStatusCount);
 router.route("/get-my-payment-history").get(verifyJWT,getMyPaymentHistory);
+router.route("/insert-vehicle").post(verifyJWT,insertVehicle);
 router.route("/make-payment/:challan_id").post(verifyJWT,makePayment);
 export default router
 
