@@ -4,7 +4,7 @@ import {
   getRtoVehicles,
   getAllVehicleOwnershipDetails,
   getRtoVehicleOwnershipDetails,
-} from "./adminAPI.js";
+} from "../../api/admin.js";
  
 // ─── Constants ────────────────────────────────────────────────────────────────
  

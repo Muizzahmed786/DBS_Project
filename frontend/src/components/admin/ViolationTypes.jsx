@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllViolationTypes } from "./adminAPI.js";
+import { getAllViolationTypes } from "../../api/admin.js";
  
 const tagColors = [
   { bg: "#fff3cd", text: "#7d5a00", border: "#f5c518" },

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, getCurrentUser } from '../../api/auth.js';
-import { useAuth } from "../../context/useAuth.js";
+import { loginUser, getCurrentUser } from '../api/auth.js';
+import { useAuth } from "../context/useAuth.js";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -12,26 +12,29 @@ const Login = () => {
 
     const handleLogin = async () => {
         try {
-            // 1. Login → backend sets cookie
-            const response = await loginUser({ email, password });
+        const response = await loginUser({ email, password });
+        console.log("Login response:", response);
 
-            if (!(response.status >= 200 && response.status < 300)) {
-                throw new Error("Login failed, please try again");
-            }
+        const userRes = await getCurrentUser();
+        console.log("getCurrentUser response:", userRes);
 
-            // 2. Fetch user using cookie
-            const userRes = await getCurrentUser();
+        const user = userRes.data.data[0];
+        console.log("User object:", user);
+        console.log("User role:", user?.role);
 
-            // 3. Store in context (NOT localStorage)
-            setUser(userRes.data);
+        setUser(user);
 
-            // 4. Navigate
-            navigate('/dashboard');
+        const role = user?.role;
+        if (role === 'admin') navigate('/admin/dashboard');
+        else if (role === 'citizen') navigate('/citizen/dashboard');
+        else navigate('/');
 
-        } catch (err) {
-            console.error(err.message);
-            window.alert(err.message);
-        }
+    } catch (err) {
+        console.error("Full error:", err);
+        console.error("Error message:", err.message);
+        console.error("Error response:", err.response?.data);
+        window.alert(err.response?.data?.message || err.message);
+    }
     };
 
     return (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMyProfile } from "../../api/citizen";
-import { User, Mail, Phone, ShieldCheck } from "lucide-react";
+import { User, Mail, Phone, ShieldCheck,Book } from "lucide-react";
 
 const Profile = () => {
     const [profile, setProfile] = useState(null);
@@ -32,6 +32,7 @@ const Profile = () => {
     const fields = [
         { icon: Mail,  label: "Email Address", value: profile.email },
         { icon: Phone, label: "Mobile Number",  value: profile.mobile_number },
+        {icon:Book,label:"Adhaar Number",value:profile.aadhaar_number}
     ];
 
     return (

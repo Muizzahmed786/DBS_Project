@@ -250,7 +250,7 @@ const getMyChallanByStatusCount=asyncHandler(async (req,res)=>{
     join users u on u.user_id=dl.user_id 
     where u.user_id=? and c.status=?;`,[req.user[0].user_id,status]);
 
-  const totalChallanStatus=rows[0]?.user_id || 0;
+  const totalChallanStatus=rows[0]?.my_total_challan || 0;
   return res.status(200).json(new ApiResponse(200,totalChallanStatus,`Total challan count with ${status} status fetched successfully`))
 })
 
@@ -286,7 +286,7 @@ const getMyPaymentByStatusCount=asyncHandler(async (req,res)=>{
   }
   const [rows]=await db.execute(`select count(distinct payment_id) as total_payments from payment where user_id=? and status=?;`,[req.user[0].user_id,status]);
   
-  const myTotalPayments=rows[0]?.my_vehicle_count || 0;
+  const myTotalPayments=rows[0]?.total_payments || 0;
 
   return res.status(200).json(new ApiResponse(200,myTotalPayments,`My payment count with ${status} fetched successfully`))
 })

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { getAllPayments, getPaymentsByStatus } from "./adminAPI.js";
+import { getAllPayments, getPaymentsByStatus } from "../../api/admin.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

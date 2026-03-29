@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { getAllChallans, getChallansByStatus } from "./adminAPI.js";
+import { getAllChallans, getChallansByStatus } from "../../api/admin.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

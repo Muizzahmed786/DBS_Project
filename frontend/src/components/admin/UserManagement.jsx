@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { getAllCitizens, getAllOfficers, getAllAdmins } from "./adminAPI.js";
+import { getAllCitizens, getAllOfficers, getAllAdmins } from "../../api/admin.js";
  
 const TABS = [
   { key: "citizen", label: "Citizens", icon: "👤", badge: "bg-blue-100 text-blue-700", active: "border-blue-600 text-blue-600", indicator: "bg-blue-600" },
