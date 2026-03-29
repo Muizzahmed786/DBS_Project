@@ -373,4 +373,35 @@ const makePayment = asyncHandler(async (req, res) => {
     new ApiResponse(200, paymentData[0], "Payment made successfully")
   );
 });
-export {getRegisteredVehicles,getAllChallans,getChallansByStatus, getMyProfile,getMyDocuments,uploadDocuments,getMyChallanCount,getMyChallanByStatusCount,getMyVehiclesCount,getMyPaymentCount,getMyPaymentByStatusCount,makePayment,getMyPaymentHistory}
+const insertVehicle = asyncHandler(async (req, res) => {
+     console.log(req.user[0])
+    if (req.user[0].role !== 'citizen') {
+      throw new ApiError(403, "Unauthorized request");
+    }
+
+    const {registration_number, chassis_number, engine_number, vehicle_class, fuel_type, manufacturer, model, registration_date, registration_valid_till, insurance_valid_till, rto_id} = req.body;
+
+    if (!['Electric', 'CNG', 'Diesel', 'Petrol'].includes(fuel_type)) {
+      throw new ApiError(400, "Invalid Fuel Type");
+    }
+
+    if (!['Car', 'Truck', 'Bus', 'Scooter', 'Motorcycle', 'SUV'].includes(vehicle_class)) {
+      throw new ApiError(400, "Invalid Fuel Type");
+    }
+
+    const [rows] = await db.execute(`
+      INSERT INTO vehicles 
+      (registration_number, chassis_number, engine_number, vehicle_class, fuel_type, manufacturer, model, registration_date, registration_valid_till, insurance_valid_till, rto_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [registration_number, chassis_number, engine_number, vehicle_class, fuel_type, manufacturer, model, registration_date, registration_valid_till, insurance_valid_till, rto_id]
+    );
+
+    const [insertedVehicle]=await db.execute(`select * from vehicles where vehicle_id=?`,[rows.insertId]);
+    if(insertedVehicle.length===0){
+      throw new ApiError(400,"Vehicle not inserted");
+    }
+    return res.status(200).json(
+      new ApiResponse(200, insertedVehicle[0], "Vehicle inserted successfully")
+    )
+});
+export {getRegisteredVehicles,getAllChallans,getChallansByStatus, getMyProfile,getMyDocuments,uploadDocuments,getMyChallanCount,getMyChallanByStatusCount,getMyVehiclesCount,getMyPaymentCount,getMyPaymentByStatusCount,makePayment,getMyPaymentHistory,insertVehicle}
