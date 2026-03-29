@@ -32,3 +32,7 @@ export const uploadDocuments = (formData) => {
 export const uploadVehicleDocuments = (data, vehicleId) => {
     return API.post(`/citizens/upload-documents/${vehicleId}`, data);
 }
+
+export const addVehicle = (data) => {
+    return API.post('/citizens/insert-vehicle', data);
+}
