@@ -27,6 +27,7 @@ const Login = () => {
         const role = user?.role;
         if (role === 'admin') navigate('/admin/dashboard');
         else if (role === 'citizen') navigate('/citizen/dashboard');
+        else if (role === 'officer') navigate('/officer/dashboard');
         else navigate('/');
 
     } catch (err) {

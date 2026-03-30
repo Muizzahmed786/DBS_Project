@@ -33,7 +33,7 @@ export const uploadVehicleDocuments = (data, vehicleId) => {
     return API.post(`/citizens/upload-documents/${vehicleId}`, data);
 }
 
-export const addVehicle = (data) => {
+export const insertVehicle = (data) => {
     return API.post('/citizens/insert-vehicle', data);
 }
 export const getMyChallanCount = () => {
@@ -50,4 +50,7 @@ export const getMyVehicleCount = () => {
 
 export const getMyPaymentCount = () => {
     return API.get('/citizens/get-my-payment-count');
+}
+export const getMyPaymentHistory=()=>{
+    return API.get("/citizens/get-my-payment-history");
 }

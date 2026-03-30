@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getRegisteredVehicles } from "../../api/citizen";
-import { Car, Bike, Truck, Hash } from "lucide-react";
+import { getRegisteredVehicles, insertVehicle } from "../../api/citizen.js";
+import { Car, Bike, Truck, Hash, Plus, X, ChevronDown } from "lucide-react";
 
 const getVehicleIcon = (model = "") => {
     const m = model.toLowerCase();
@@ -9,9 +9,68 @@ const getVehicleIcon = (model = "") => {
     return Car;
 };
 
+const EMPTY_FORM = {
+    registration_number: "",
+    chassis_number: "",
+    engine_number: "",
+    vehicle_class: "",
+    fuel_type: "",
+    manufacturer: "",
+    model: "",
+    registration_date: "",
+    registration_valid_till: "",
+    insurance_valid_till: "",
+    rto_id: ""
+};
+
+const TEXT_FIELDS = [
+    { label: "Registration Number", key: "registration_number", placeholder: "MH 12 AB 1234" },
+    { label: "Chassis Number",      key: "chassis_number",      placeholder: "MA3EWDE1S00XXXXX" },
+    { label: "Engine Number",       key: "engine_number",       placeholder: "G10BN1234567" },
+    { label: "Vehicle Class",       key: "vehicle_class",       placeholder: "LMV / MCWG / HGV" },
+    { label: "Fuel Type",           key: "fuel_type",           placeholder: "Petrol / Diesel / Electric / CNG" },
+    { label: "Manufacturer",        key: "manufacturer",        placeholder: "Maruti Suzuki" },
+    { label: "Model",               key: "model",               placeholder: "Swift Dzire" },
+    { label: "RTO ID",              key: "rto_id",              placeholder: "RTO office ID" },
+];
+
+const DATE_FIELDS = [
+    { label: "Registration Date",        key: "registration_date" },
+    { label: "Registration Valid Till",  key: "registration_valid_till" },
+    { label: "Insurance Valid Till",     key: "insurance_valid_till" },
+];
+
 const Vehicles = () => {
-    const [vehicles, setVehicles] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [vehicles, setVehicles]   = useState([]);
+    const [loading, setLoading]     = useState(false);
+    const [showForm, setShowForm]   = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [form, setForm]           = useState(EMPTY_FORM);
+
+    const handleChange = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setSubmitting(true);
+        try {
+            if(!form.registration_number || !form.vehicle_class || !form.fuel_type){
+                alert("Please fill the required fields (Registration Number, Vehicle Class, Fuel Type");
+                setSubmitting(false);
+                return;
+            }
+            await insertVehicle({...form, rto_id: Number(form.rto_id)});
+            const res = await getRegisteredVehicles();
+            setVehicles(res.data.data);
+            setForm(EMPTY_FORM);
+            setShowForm(false);
+            alert("Vehicle added successfully");
+        } catch (err) {
+            console.error(err);
+            alert("Failed to add vehicle");
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     useEffect(() => {
         const fetchVehicles = async () => {
@@ -30,13 +89,97 @@ const Vehicles = () => {
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 md:px-8">
+
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-white tracking-tight">My Vehicles</h1>
-                <p className="text-slate-400 text-sm mt-1">
-                    {vehicles.length} registered vehicle{vehicles.length !== 1 ? "s" : ""}
-                </p>
+            <div className="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-white tracking-tight">My Vehicles</h1>
+                    <p className="text-slate-400 text-sm mt-1">
+                        {vehicles.length} registered vehicle{vehicles.length !== 1 ? "s" : ""}
+                    </p>
+                </div>
+
+                {/* Toggle form button */}
+                <button
+                    onClick={() => setShowForm(prev => !prev)}
+                    className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200"
+                >
+                    {showForm ? <X size={16} /> : <Plus size={16} />}
+                    {showForm ? "Cancel" : "Add Vehicle"}
+                </button>
             </div>
+
+            {/* Add Vehicle Form */}
+            {showForm && (
+                <form
+                    onSubmit={handleSubmit}
+                    className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 mb-8"
+                >
+                    <div className="flex items-center justify-between mb-5">
+                        <h2 className="text-white font-semibold text-base">Vehicle Details</h2>
+                        <ChevronDown size={16} className="text-slate-500" />
+                    </div>
+
+                    {/* Text fields grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        {TEXT_FIELDS.map(({ label, key, placeholder }) => (
+                            <div key={key} className="flex flex-col gap-1.5">
+                                <label className="text-slate-400 text-xs font-medium">{label}</label>
+                                <input
+                                    type="text"
+                                    value={form[key]}
+                                    placeholder={placeholder}
+                                    onChange={(e) => handleChange(key, e.target.value)}
+                                    className="bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30 transition-colors"
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Date fields grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        {DATE_FIELDS.map(({ label, key }) => (
+                            <div key={key} className="flex flex-col gap-1.5">
+                                <label className="text-slate-400 text-xs font-medium">{label}</label>
+                                <input
+                                    type="date"
+                                    value={form[key]}
+                                    onChange={(e) => handleChange(key, e.target.value)}
+                                    className="bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30 transition-colors"
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Submit */}
+                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-700/50">
+                        <button
+                            type="button"
+                            onClick={() => { setShowForm(false); setForm(EMPTY_FORM); }}
+                            className="text-slate-400 hover:text-white text-sm px-4 py-2 rounded-lg transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm px-6 py-2 rounded-lg transition-all duration-200 active:scale-95"
+                        >
+                            {submitting ? (
+                                <>
+                                    <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                                    Saving…
+                                </>
+                            ) : (
+                                <>
+                                    <Plus size={15} />
+                                    Add Vehicle
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            )}
 
             {/* Loading */}
             {loading && (
@@ -76,7 +219,7 @@ const Vehicles = () => {
                                 {/* Vehicle Number Plate */}
                                 <div className="flex items-center gap-2 mb-2">
                                     <span className="font-mono text-lg font-bold text-white tracking-widest">
-                                        {v.vehicle_number}
+                                        {v.registration_number}
                                     </span>
                                 </div>
 

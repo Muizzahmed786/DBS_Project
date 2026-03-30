@@ -126,7 +126,7 @@ const issueDrivingLicence = asyncHandler(async (req, res) => {
     userQuery = "SELECT user_id FROM users WHERE email = ?";
     value = email;
   } else {
-    userQuery = "SELECT user_id FROM users WHERE mobile = ?";
+    userQuery = "SELECT user_id FROM users WHERE mobile_number = ?";
     value = mobile;
   }
 
@@ -156,7 +156,10 @@ const issueDrivingLicence = asyncHandler(async (req, res) => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-
+  const [existing] = await db.execute(
+    "SELECT dl_id FROM driving_licence WHERE user_id = ? AND status = 'valid'", [user_id]
+  );
+  if (existing.length > 0) throw new ApiError(400, "Active licence already exists for this user");
   const formatted_issue = formatDate(issue_date);
   const formatted_expiry = formatDate(expiry_date);
   const [result] = await db.execute(
@@ -182,7 +185,7 @@ const issueDrivingLicence = asyncHandler(async (req, res) => {
     expiry_date: formatted_expiry,
     issuing_rto_id: rtoId,
     vehicle_categories,
-    status: "active",
+    status: "valid",
   };
 
   return res
@@ -207,4 +210,54 @@ const getIssuedDlCountByRto = asyncHandler(async (req, res) => {
   const count = rows[0]?.count || 0;
   res.status(200).json(new ApiResponse(200, count, "Count fetched successfully"))
 })
-export { getMyIssuedChallans, getMyIssuedChallanCount, getIssuedDlCountByRto, issueChallan, issueDrivingLicence }
+const getTotalFineCollected = asyncHandler(async (req, res) => {
+  if (req.user[0].role !== "officer") {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
+  const [rows] = await db.execute(
+    `SELECT SUM(total_amount) AS total 
+     FROM challan 
+     WHERE issued_by = ? AND status = 'paid'`,
+    [req.user[0].user_id]
+  );
+
+  const total = rows[0]?.total || 0;
+
+  res.status(200).json(new ApiResponse(200, total, "Total fine collected"));
+});
+const getChallanStatusStats = asyncHandler(async (req, res) => {
+  if (req.user[0].role !== "officer") {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
+  const [rows] = await db.execute(
+    `SELECT status, COUNT(*) as count
+     FROM challan
+     WHERE issued_by = ?
+     GROUP BY status`,
+    [req.user[0].user_id]
+  );
+
+  res.status(200).json(new ApiResponse(200, rows, "Challan status stats"));
+});
+const getTopViolations = asyncHandler(async (req, res) => {
+  if (req.user[0].role !== "officer") {
+    throw new ApiError(403, "Unauthorized request");
+  }
+
+  const [rows] = await db.execute(
+    `SELECT vt.description, COUNT(*) as count
+     FROM challan c
+     JOIN violation_types vt 
+     ON c.violation_type_id = vt.violation_type_id
+     WHERE c.issued_by = ?
+     GROUP BY vt.description
+     ORDER BY count DESC
+     LIMIT 5`,
+    [req.user[0].user_id]
+  );
+
+  res.status(200).json(new ApiResponse(200, rows, "Top violations"));
+});
+export { getMyIssuedChallans, getMyIssuedChallanCount, getIssuedDlCountByRto, issueChallan, issueDrivingLicence,getTotalFineCollected,getChallanStatusStats,getTopViolations}
