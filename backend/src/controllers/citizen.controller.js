@@ -41,12 +41,13 @@ const getAllChallans=asyncHandler(async (req,res)=>{
   const [allChallans]=await db.execute(`
       SELECT 
     c.challan_id,
+    c.challan_number,
     c.dl_id,
     c.violation_type_id,
-    c.violation_date,
+    c.violation_date as date,
     c.status,
     c.total_amount,
-
+    c.location,
     v.*,
 
     dl.licence_number,
@@ -80,11 +81,13 @@ const getChallansByStatus=asyncHandler(async (req,res)=>{
   const [allChallans]=await db.execute(`
       SELECT 
     c.challan_id,
+    c.challan_number,
     c.dl_id,
     c.violation_type_id,
-    c.violation_date,
+    c.violation_date as date,
     c.status,
     c.total_amount,
+    c.location,
 
     v.*,
 
