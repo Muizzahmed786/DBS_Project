@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllViolationTypes } from "./adminAPI.js";
+import { getAllViolationTypes } from "../../api/admin.js";
  
 const tagColors = [
   { bg: "#fff3cd", text: "#7d5a00", border: "#f5c518" },
@@ -33,7 +33,7 @@ export default function ViolationTypes() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
-  const [hovered, setHovered] = useState(null);
+  // const [hovered, setHovered] = useState(null);
  
   useEffect(() => {
     getAllViolationTypes()
@@ -194,15 +194,14 @@ export default function ViolationTypes() {
           }}>
             {filtered.map((v, i) => {
               const tag = tagColors[i % tagColors.length];
-              const name = v.name || v.violationType || v.type || "Unknown";
-              const fine = v.fineAmount ?? v.fine ?? v.penalty ?? null;
-              const desc = v.description || v.details || null;
-              const severity = v.severity || v.level || null;
-              const code = v.code || v.violationCode || null;
- 
+              const name = v.description || "Unknown";
+              const fine = v.penalty_amount || 1000;
+              const desc = v.description || null;
+              const code = v.offence_section|| null;
+              console.log(code);
               return (
                 <div
-                  key={v._id || v.id || i}
+                  key={v.violation_type_id || i}
                   className="violation-card"
                   style={{
                     animationDelay: `${i * 0.045}s`,
@@ -229,7 +228,7 @@ export default function ViolationTypes() {
                       letterSpacing: "0.3px",
                       whiteSpace: "nowrap",
                     }}>
-                      {severity || "Violation"}
+                      {"Violation"}
                     </span>
                     {code && (
                       <span style={{

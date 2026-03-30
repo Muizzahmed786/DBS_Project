@@ -3,9 +3,7 @@ import {
   getTotalChallansCount,
   getTotalRevenue,
   getChallanCountByStatus,
-} from "./adminAPI.js";
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+} from "../../api/admin.js";
 
 const fmtAmount = (n) =>
   n != null ? `₹${Number(n).toLocaleString("en-IN")}` : "—";

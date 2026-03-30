@@ -36,3 +36,18 @@ export const uploadVehicleDocuments = (data, vehicleId) => {
 export const addVehicle = (data) => {
     return API.post('/citizens/insert-vehicle', data);
 }
+export const getMyChallanCount = () => {
+    return API.get('/citizens/get-my-total-challan-count');
+}
+
+export const getMyChallanByStatusCount = (status) => {
+    return API.get(`/citizens/get-my-total-challan-count/${status}`);
+}
+
+export const getMyVehicleCount = () => {
+    return API.get('/citizens/get-my-vehicle-count');
+}
+
+export const getMyPaymentCount = () => {
+    return API.get('/citizens/get-my-payment-count');
+}
