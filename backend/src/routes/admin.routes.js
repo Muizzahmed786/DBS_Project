@@ -10,9 +10,9 @@ router.route("/get-all-officers").get(verifyJWT,getAllOfficers)
 
 
 router.route("/get-all-vehicles").get(verifyJWT,getAllRegisteredVehicles)
-router.route("/get-rto-vehicles").get(verifyJWT,getRtoRegisteredVehicles)
+router.route("/get-rto-vehicles").post(verifyJWT,getRtoRegisteredVehicles)
 router.route("/get-all-vehicle-ownership-details").get(verifyJWT,getAllVehicleOwnershipDetails)
-router.route("/get-rto-vehicle-ownership-details").get(verifyJWT,getRtoVehicleOwnershipDetails)
+router.route("/get-rto-vehicle-ownership-details").post(verifyJWT,getRtoVehicleOwnershipDetails)
 
 
 router.route("/get-all-challans").get(verifyJWT,getAllChallans)

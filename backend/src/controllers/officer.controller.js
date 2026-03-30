@@ -114,12 +114,14 @@ const issueDrivingLicence = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Unauthorized request");
   }
 
-  const { rtoId, email, mobile, vehicle_categories, validity_years } = req.body;
+  const { rtoCode, email, mobile, vehicle_categories, validity_years } = req.body;
 
-  if (!rtoId || (!email && !mobile) || !vehicle_categories) {
+  if (!rtoCode || (!email && !mobile) || !vehicle_categories) {
     throw new ApiError(400, "Missing required fields");
   }
-
+  const [rtoTable]=await db.execute('select rto_id from rto where rto_code=?',[rtoCode]);
+  const rtoId=rtoTable[0].rto_id;
+  console.log(rtoTable);
   let userQuery = "";
   let value = "";
 
@@ -139,11 +141,8 @@ const issueDrivingLicence = asyncHandler(async (req, res) => {
 
   const user_id = userResult[0].user_id;
 
-  const licence_number = generateLicenceNumber(rtoId);
-
-
+  const licence_number = generateLicenceNumber(rtoCode);
   const issue_date = new Date();
-
   const expiry_date = new Date(issue_date);
 
   // ✅ FIX: force number

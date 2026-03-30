@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { issueDrivingLicence } from "../../api/officer.js"; // adjust path as needed
+import { issueDrivingLicence } from "../../api/officer.js";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -91,7 +91,7 @@ export default function IssueLicence() {
   const [form, setForm] = useState({
     email: "",
     mobile: "",
-    rtoId: "",
+    rtoCode: "",
     vehicle_categories: [],
     validity_years: 20,
   });
@@ -129,7 +129,7 @@ export default function IssueLicence() {
         e.mobile = "Enter a valid 10-digit mobile number";
     }
     if (step === 1) {
-      if (!form.rtoId.trim()) e.rtoId = "RTO ID is required";
+      if (!form.rtoCode.trim()) e.rtoCode = "RTO CODE is required";
       if (form.vehicle_categories.length === 0)
         e.vehicle_categories = "Select at least one vehicle category";
     }
@@ -151,7 +151,7 @@ export default function IssueLicence() {
     setApiError(null);
     try {
       const payload = {
-        rtoId: form.rtoId.trim().toUpperCase(),
+        rtoCode: form.rtoCode.trim().toUpperCase(),
         vehicle_categories: form.vehicle_categories.join(","),
         validity_years: form.validity_years,
         ...(lookupMethod === "email"
@@ -169,7 +169,7 @@ export default function IssueLicence() {
   };
 
   const handleReset = () => {
-    setForm({ email: "", mobile: "", rtoId: "", vehicle_categories: [], validity_years: 20 });
+    setForm({ email: "", mobile: "", rtoCode: "", vehicle_categories: [], validity_years: 20 });
     setErrors({});
     setResult(null);
     setApiError(null);
@@ -314,12 +314,12 @@ export default function IssueLicence() {
                     <p className="text-xs text-slate-500 mt-0.5">Set RTO, vehicle categories and validity</p>
                   </div>
 
-                  <Field label="Issuing RTO ID" required error={errors.rtoId} hint="e.g. KA05, MH12">
+                  <Field label="Issuing RTO CODE" required error={errors.rtoCode} hint="e.g. KA-05, MH-12">
                     <TextInput
-                      name="rtoId"
-                      value={form.rtoId}
+                      name="rtoCode"
+                      value={form.rtoCode}
                       onChange={handleChange}
-                      placeholder="KA05"
+                      placeholder="KA-05"
                     />
                   </Field>
 
@@ -384,7 +384,7 @@ export default function IssueLicence() {
                       label={lookupMethod === "email" ? "Email" : "Mobile"}
                       value={lookupMethod === "email" ? form.email : `+91 ${form.mobile}`}
                     />
-                    <ReviewRow label="RTO ID" value={form.rtoId.toUpperCase()} />
+                    <ReviewRow label="RTO CODE" value={form.rtoCode.toUpperCase()} />
                     <ReviewRow
                       label="Vehicle Categories"
                       value={form.vehicle_categories.join(", ") || "—"}
