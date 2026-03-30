@@ -33,6 +33,10 @@ export const uploadVehicleDocuments = (data, vehicleId) => {
     return API.post(`/citizens/upload-documents/${vehicleId}`, data);
 }
 
-export const addVehicle = (data) => {
+export const insertVehicle = (data) => {
     return API.post('/citizens/insert-vehicle', data);
+}
+
+export const makePayment = (challan_id, data) => {
+    return API.post(`/citizens/make-payment/${challan_id}`, data);
 }

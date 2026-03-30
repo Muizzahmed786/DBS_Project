@@ -42,6 +42,13 @@ const Challans = () => {
     const [status, setStatus] = useState("all");
     const [loading, setLoading] = useState(false);
 
+    // payment form data
+    const [selectedChallan, setSelectedChallan] = useState(null);
+    const [password, setPassword] = useState("");
+    const [paymentMode, setPaymentMode] = useState("UPI");
+
+
+
     const fetchChallans = async () => {
         setLoading(true);
         try {
@@ -62,6 +69,13 @@ const Challans = () => {
     useEffect(() => {
         fetchChallans();
     }, [status]);
+
+    const handlePayClick = (challan_id) => {
+        setSelectedChallan(challan_id);
+        setPassword("");
+        setPaymentMode("UPI");
+        
+    }
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 md:px-8">
@@ -139,6 +153,11 @@ const Challans = () => {
                                         {c.total_amount}
                                     </div>
                                     <StatusBadge status={c.status} />
+                                    {c.status === "pending" && (
+                                        <button className="bg-green-500 px-3 py-1 rounded" onClick={() => handlePayClick(c.challan_id)}>
+                                            Pay
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

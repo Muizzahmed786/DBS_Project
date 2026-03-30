@@ -17,7 +17,6 @@ const getRegisteredVehicles=asyncHandler(async (req,res)=>{
     SELECT 
     vo.ownership_start_date,
     vo.ownership_end_date,
-
     v.*,
 
     u.user_id,
@@ -254,7 +253,7 @@ const getMyChallanByStatusCount=asyncHandler(async (req,res)=>{
   return res.status(200).json(new ApiResponse(200,totalChallanStatus,`Total challan count with ${status} status fetched successfully`))
 })
 
-const getMyVehiclesCount=asyncHandler(async (req,res)=>{
+const getMyVehiclesCount = asyncHandler(async (req,res)=>{
   if(req.user[0].role!=='citizen'){
     throw new ApiError(400,"Unauthorized request")
   }
@@ -271,7 +270,7 @@ const getMyPaymentCount=asyncHandler(async (req,res)=>{
   }
   const [rows]=await db.execute(`select count(distinct payment_id) as total_payments from payment where user_id=?;`,[req.user[0].user_id]);
   
-  const myTotalPayments=rows[0]?.my_vehicle_count || 0;
+  const myTotalPayments=rows[0]?.total_payments || 0;
 
   return res.status(200).json(new ApiResponse(200,myTotalPayments,`My payment count fetched successfully`))
 })
@@ -376,7 +375,7 @@ const makePayment = asyncHandler(async (req, res) => {
 });
 
 const insertVehicle = asyncHandler(async (req, res) => {
-     console.log(req.user[0])
+    console.log(req.user[0])
     if (req.user[0].role !== 'citizen') {
       throw new ApiError(403, "Unauthorized request");
     }
@@ -387,8 +386,8 @@ const insertVehicle = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Invalid Fuel Type");
     }
 
-    if (!['Car', 'Truck', 'Bus', 'Scooter', 'Motorcycle', 'SUV'].includes(vehicle_class)) {
-      throw new ApiError(400, "Invalid Fuel Type");
+    if (!['MCWG', 'HGV', 'LMV'].includes(vehicle_class)) {
+      throw new ApiError(400, "Invalid Vehicle Class Type");
     }
 
     const [rows] = await db.execute(`
@@ -397,6 +396,14 @@ const insertVehicle = asyncHandler(async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `, [registration_number, chassis_number, engine_number, vehicle_class, fuel_type, manufacturer, model, registration_date, registration_valid_till, insurance_valid_till, rto_id]
     );
+
+    const vehicle_id = rows.insertId;
+
+    await db.execute(`
+      INSERT INTO vehicle_ownership
+      (vehicle_id, user_id, ownership_start_date)
+      VALUES(?, ?, CURDATE())
+      `, [vehicle_id, req.user[0].user_id]);
 
     const [insertedVehicle]=await db.execute(`select * from vehicles where vehicle_id=?`,[rows.insertId]);
     if(insertedVehicle.length===0){

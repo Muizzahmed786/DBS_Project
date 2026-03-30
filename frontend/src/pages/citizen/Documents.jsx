@@ -150,7 +150,7 @@ const Documents = () => {
                 </div>
 
                 {/* ── Upload Panel ── */}
-                <div className="bg-[#0d1017] border border-white/[0.06] rounded-2xl p-5 mb-7">
+                <div className="bg-[#0d1017] border border-white/6 rounded-2xl p-5 mb-7">
                     <p className="text-[11px] font-semibold tracking-widest uppercase text-slate-500 mb-4">
                         Upload Documents
                     </p>
@@ -167,8 +167,8 @@ const Documents = () => {
                                         ${isActive
                                             ? "border-sky-400 bg-sky-500/6"
                                             : picked
-                                                ? "border-sky-500/40 bg-sky-500/[0.04]"
-                                                : "border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.02]"}`}
+                                                ? "border-sky-500/40 bg-sky-500/4"
+                                                : "border-white/8 hover:border-white/16 hover:bg-white/2"}`}
                                     onDragOver={e => { e.preventDefault(); setDragging(name); }}
                                     onDragLeave={() => setDragging(null)}
                                     onDrop={e => handleDrop(e, name)}
@@ -181,7 +181,7 @@ const Documents = () => {
                                         className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                                     />
                                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors
-                                        ${picked ? "bg-sky-500/15" : "bg-white/[0.04] group-hover:bg-white/[0.07]"}`}>
+                                        ${picked ? "bg-sky-500/15" : "bg-white/4 group-hover:bg-white/[0.07]"}`}>
                                         {picked
                                             ? <File size={15} className="text-sky-400" />
                                             : <CloudUpload size={15} className="text-slate-500 group-hover:text-slate-400" />}
@@ -192,7 +192,7 @@ const Documents = () => {
                                             {label}
                                         </p>
                                         {picked
-                                            ? <p className="text-[11px] text-sky-400/80 max-w-[140px] truncate mx-auto">
+                                            ? <p className="text-[11px] text-sky-400/80 max-w-35 truncate mx-auto">
                                                 {files[name].name}
                                               </p>
                                             : <p className="text-[11px] text-slate-600">Click or drag &amp; drop</p>}
@@ -209,7 +209,7 @@ const Documents = () => {
                         className={`w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold tracking-wide transition-all duration-200
                             ${hasFiles && !uploading
                                 ? "bg-sky-500 hover:bg-sky-400 text-[#080a0f] shadow-lg shadow-sky-500/20 hover:-translate-y-px active:translate-y-0"
-                                : "bg-white/[0.04] text-slate-600 cursor-not-allowed"}`}
+                                : "bg-white/4 text-slate-600 cursor-not-allowed"}`}
                     >
                         {uploading
                             ? <div className="w-4 h-4 rounded-full border-2 border-[#080a0f]/30 border-t-[#080a0f] animate-spin" />
@@ -228,7 +228,7 @@ const Documents = () => {
                 {/* ── Empty State ── */}
                 {!loading && docs.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-                        <div className="w-14 h-14 rounded-2xl bg-[#0d1017] border border-white/[0.06] flex items-center justify-center text-slate-700">
+                        <div className="w-14 h-14 rounded-2xl bg-[#0d1017] border border-white/6 flex items-center justify-center text-slate-700">
                             <FolderOpen size={24} />
                         </div>
                         <div>
@@ -250,7 +250,7 @@ const Documents = () => {
                                         transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl ${s.border}`}
                                 >
                                     {/* coloured top bar on hover */}
-                                    <div className={`absolute top-0 left-0 right-0 h-[2px] ${s.bar} opacity-0 group-hover:opacity-100 transition-opacity duration-200`} />
+                                    <div className={`absolute top-0 left-0 right-0 h-0.5 ${s.bar} opacity-0 group-hover:opacity-100 transition-opacity duration-200`} />
 
                                     {/* icon */}
                                     <div className={`w-9 h-9 rounded-xl ${s.iconBg} ${s.iconText} flex items-center justify-center mb-4`}>
@@ -281,7 +281,6 @@ const Documents = () => {
                         })}
                     </div>
                 )}
-
             </div>
         </div>
     );
