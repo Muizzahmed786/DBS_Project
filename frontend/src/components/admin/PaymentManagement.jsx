@@ -67,7 +67,7 @@ const ModeChip = ({ mode }) => {
 
 const SkeletonRow = () => (
   <tr className="border-b border-slate-100">
-    {[30, 40, 28, 42, 30, 38, 45, 28, 28].map((w, i) => (
+    {[30, 40, 28, 42, 30, 38, 28, 28].map((w, i) => (
       <td key={i} className="px-4 py-3.5">
         <div className="h-3 rounded-full bg-slate-100 animate-pulse" style={{ width: `${w}%` }} />
       </td>
@@ -77,7 +77,7 @@ const SkeletonRow = () => (
 
 const EmptyState = ({ icon }) => (
   <tr>
-    <td colSpan={10} className="py-20 text-center">
+    <td colSpan={9} className="py-20 text-center">
       <div className="text-4xl mb-3">{icon}</div>
       <p className="text-slate-500 font-medium">No payments found</p>
       <p className="text-slate-400 text-sm mt-1">Try adjusting your search or filter.</p>
@@ -147,7 +147,14 @@ export default function PaymentManagement() {
     setLoading((p) => ({ ...p, all: true }));
     try {
       const res = await getAllPayments();
-      setData((p) => ({ ...p, all: res.data?.data || res.data || [] }));
+      const allPayments = res.data?.data || res.data || [];
+      // Derive success/failed counts from the full list for accurate tab badges
+      setData((p) => ({
+        ...p,
+        all: allPayments,
+        success: p.success.length ? p.success : allPayments.filter((x) => x.payment_status === "success"),
+        failed:  p.failed.length  ? p.failed  : allPayments.filter((x) => x.payment_status === "failed"),
+      }));
     } catch { setError((p) => ({ ...p, all: "Failed to load payments." })); }
     finally  { setLoading((p) => ({ ...p, all: false })); }
   };
@@ -195,6 +202,7 @@ export default function PaymentManagement() {
 
   const tab = STATUS_TABS.find((t) => t.key === activeTab);
 
+  // ── Removed "Challan Total" column ──
   const COLS = [
     { key: "payment_date",          label: "Date & Time" },
     { key: "full_name",             label: "Payer" },
@@ -202,7 +210,6 @@ export default function PaymentManagement() {
     { key: "transaction_reference", label: "Txn. Ref.", noSort: true },
     { key: "payment_mode",          label: "Mode", noSort: true },
     { key: "amount",                label: "Amount" },
-    { key: "total_amount",          label: "Challan Total" },
     { key: "challan_status",        label: "Challan", noSort: true },
     { key: "payment_status",        label: "Payment", noSort: true },
   ];
@@ -235,6 +242,7 @@ export default function PaymentManagement() {
             >
               <span>{t.icon}</span>
               {t.label}
+              {/* Show badge as soon as we have a count, regardless of active tab */}
               {data[t.key].length > 0 && (
                 <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full ${activeTab === t.key ? t.badge : "bg-slate-100 text-slate-500"}`}>
                   {data[t.key].length}
@@ -251,15 +259,15 @@ export default function PaymentManagement() {
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
-            <input
+            {/* <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span> */}
+            {/* <input
               type="text"
               placeholder="Search by name, challan no., txn ref., mode…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 w-80
                          focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent transition"
-            />
+            /> */}
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs text-slate-400 font-mono">
@@ -335,11 +343,6 @@ export default function PaymentManagement() {
                       {/* Amount Paid */}
                       <td className="px-4 py-3 text-sm font-bold font-mono text-slate-800 whitespace-nowrap">
                         {fmtAmount(r.amount)}
-                      </td>
-
-                      {/* Challan Total */}
-                      <td className="px-4 py-3 text-xs font-mono text-slate-500 whitespace-nowrap">
-                        {fmtAmount(r.total_amount)}
                       </td>
 
                       {/* Challan Status */}

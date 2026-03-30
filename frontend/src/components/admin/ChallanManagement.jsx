@@ -46,10 +46,9 @@ const SkeletonRow = () => (
 
 const EmptyState = ({ activeKey }) => (
   <tr>
-    <td colSpan={10} className="py-20 text-center">
+    <td colSpan={11} className="py-20 text-center">
       <div className="text-4xl mb-3">{activeKey === "paid" ? "✅" : activeKey === "pending" ? "⏳" : "📋"}</div>
       <p className="text-slate-500 font-medium">No challans found</p>
-      <p className="text-slate-400 text-sm mt-1">Try adjusting your search or filter.</p>
     </td>
   </tr>
 );
@@ -71,7 +70,7 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort, className = "" }
   </th>
 );
 
-// ─── Stats Card ───────────────────────────────────────────────────────────────
+// ─── Stats Bar ────────────────────────────────────────────────────────────────
 
 const StatsBar = ({ all, pending, paid }) => {
   const totalAmount   = all.reduce((s, c) => s + Number(c.total_amount || 0), 0);
@@ -79,9 +78,9 @@ const StatsBar = ({ all, pending, paid }) => {
   const paidAmount    = paid.reduce((s, c) => s + Number(c.total_amount || 0), 0);
 
   const stats = [
-    { label: "Total Challans",   value: all.length,        sub: fmtAmount(totalAmount),   color: "text-slate-800" },
-    { label: "Pending",          value: pending.length,    sub: fmtAmount(pendingAmount), color: "text-amber-600",   bg: "bg-amber-50 border-amber-200" },
-    { label: "Paid",             value: paid.length,       sub: fmtAmount(paidAmount),    color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
+    { label: "Total Challans",  value: all.length     || "—", sub: fmtAmount(totalAmount),   color: "text-slate-800",   bg: "bg-white border-slate-200" },
+    { label: "Pending",         value: pending.length || "—", sub: fmtAmount(pendingAmount), color: "text-amber-600",   bg: "bg-amber-50 border-amber-200" },
+    { label: "Paid",            value: paid.length    || "—", sub: fmtAmount(paidAmount),    color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
     {
       label: "Collection Rate",
       value: all.length ? `${Math.round((paid.length / all.length) * 100)}%` : "—",
@@ -94,7 +93,7 @@ const StatsBar = ({ all, pending, paid }) => {
   return (
     <div className="flex flex-wrap gap-3 self-center">
       {stats.map((s) => (
-        <div key={s.label} className={`px-4 py-2.5 rounded-lg border text-center min-w-[110px] ${s.bg || "bg-white border-slate-200"}`}>
+        <div key={s.label} className={`px-4 py-2.5 rounded-lg border text-center min-w-[110px] ${s.bg}`}>
           <div className={`text-xl font-bold font-mono ${s.color}`}>{s.value}</div>
           <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
           {s.sub && <div className={`text-xs font-semibold mt-0.5 ${s.color}`}>{s.sub}</div>}
@@ -113,7 +112,6 @@ export default function ChallanManagement() {
   const [loading, setLoading] = useState({ all: false, pending: false, paid: false });
   const [error, setError]     = useState({ all: null,  pending: null,  paid: null });
 
-  const [search,  setSearch]  = useState("");
   const [sortCol, setSortCol] = useState("violation_date");
   const [sortDir, setSortDir] = useState("desc");
 
@@ -123,7 +121,14 @@ export default function ChallanManagement() {
     setLoading((p) => ({ ...p, all: true }));
     try {
       const res = await getAllChallans();
-      setData((p) => ({ ...p, all: res.data?.data || res.data || [] }));
+      const allChallans = res.data?.data || res.data || [];
+      // Pre-populate pending/paid from the full list so tab badges show immediately
+      setData((p) => ({
+        ...p,
+        all: allChallans,
+        pending: p.pending.length ? p.pending : allChallans.filter((x) => x.status === "pending"),
+        paid:    p.paid.length    ? p.paid    : allChallans.filter((x) => x.status === "paid"),
+      }));
     } catch { setError((p) => ({ ...p, all: "Failed to load challans." })); }
     finally  { setLoading((p) => ({ ...p, all: false })); }
   };
@@ -142,10 +147,9 @@ export default function ChallanManagement() {
 
   const handleTab = (key) => {
     setActiveTab(key);
-    setSearch("");
     setSortCol("violation_date");
     setSortDir("desc");
-    if (key === "all")                fetchAll();
+    if (key === "all")                       fetchAll();
     if (key === "pending" || key === "paid") fetchByStatus(key);
   };
 
@@ -154,22 +158,15 @@ export default function ChallanManagement() {
     else { setSortCol(col); setSortDir("asc"); }
   };
 
-  // ── Filtered + sorted rows ──
+  // ── Sorted rows (no search filter) ──
   const rows = data[activeTab];
+
   const sorted = useMemo(() => {
-    const q = search.toLowerCase();
-    const filtered = rows.filter((r) =>
-      [r.challan_number, r.offender_name, r.mobile_number, r.vehicle_number,
-       r.licence_number, r.violation, r.location, r.offence_section]
-        .some((v) => (v || "").toLowerCase().includes(q))
-    );
-    return [...filtered].sort((a, b) => {
+    return [...rows].sort((a, b) => {
       const av = a[sortCol] ?? ""; const bv = b[sortCol] ?? "";
       return sortDir === "asc" ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
     });
-  }, [rows, search, sortCol, sortDir]);
-
-  const tab = STATUS_TABS.find((t) => t.key === activeTab);
+  }, [rows, sortCol, sortDir]);
 
   const COLS = [
     { key: "challan_number",  label: "Challan No." },
@@ -226,29 +223,11 @@ export default function ChallanManagement() {
       {/* ── Body ── */}
       <div className="px-8 py-6">
 
-        {/* Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
-            <input
-              type="text"
-              placeholder="Search by name, challan no., vehicle, location…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 w-80
-                         focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent transition"
-            />
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400 font-mono">
-              {sorted.length} / {rows.length} records
-            </span>
-            {sorted.length > 0 && (
-              <span className="text-xs font-semibold text-slate-600 font-mono">
-                Total: {fmtAmount(sorted.reduce((s, c) => s + Number(c.total_amount || 0), 0))}
-              </span>
-            )}
-          </div>
+        {/* Record count */}
+        <div className="flex justify-end mb-4">
+          <span className="text-xs text-slate-400 font-mono">
+            {sorted.length} record{sorted.length !== 1 ? "s" : ""}
+          </span>
         </div>
 
         {/* Error */}
