@@ -1,17 +1,31 @@
 import { useEffect, useState } from "react";
 import { getMyPaymentHistory } from "../../api/citizen.js";
 import { CreditCard, CheckCircle, XCircle, Clock } from "lucide-react";
+const formatDate = (timestamp) => {
+  return new Date(timestamp).toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
 
+const formatTime = (timestamp) => {
+  return new Date(timestamp).toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
 const StatusBadge = ({ status }) => {
   const base = "px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1";
 
   if (status === "success" || status === "paid") {
-    return <span className={`${base} bg-emerald-100 text-emerald-700`}><CheckCircle size={12}/>Success</span>;
+    return <span className={`${base} bg-emerald-100 text-emerald-700`}><CheckCircle size={12} />Success</span>;
   }
   if (status === "failed") {
-    return <span className={`${base} bg-red-100 text-red-700`}><XCircle size={12}/>Failed</span>;
+    return <span className={`${base} bg-red-100 text-red-700`}><XCircle size={12} />Failed</span>;
   }
-  return <span className={`${base} bg-amber-100 text-amber-700`}><Clock size={12}/>Pending</span>;
+  return <span className={`${base} bg-amber-100 text-amber-700`}><Clock size={12} />Pending</span>;
 };
 
 export default function PaymentHistory() {
@@ -22,6 +36,7 @@ export default function PaymentHistory() {
     const fetchPayments = async () => {
       try {
         const res = await getMyPaymentHistory();
+        console.log(res);
         setPayments(res.data.data);
       } catch (err) {
         console.error(err);
@@ -69,6 +84,7 @@ export default function PaymentHistory() {
                 <th className="px-4 py-3 text-left">Amount</th>
                 <th className="px-4 py-3 text-left">Mode</th>
                 <th className="px-4 py-3 text-left">Date</th>
+                <th className="px-4 py-3 text-left">Time</th>
                 <th className="px-4 py-3 text-left">Status</th>
               </tr>
             </thead>
@@ -78,7 +94,8 @@ export default function PaymentHistory() {
                   <td className="px-4 py-3 font-mono text-slate-300">{p.transaction_reference}</td>
                   <td className="px-4 py-3 font-semibold text-white">₹{Number(p.amount).toLocaleString("en-IN")}</td>
                   <td className="px-4 py-3 text-slate-300">{p.payment_mode}</td>
-                  <td className="px-4 py-3 text-slate-400">{new Date(p.payment_date).toLocaleDateString("en-IN")}</td>
+                  <td className="px-4 py-3 text-slate-400">{formatDate(p.payment_date)}</td>
+                  <td className="px-4 py-3 text-slate-400">{formatTime(p.payment_date)}</td>
                   <td className="px-4 py-3"><StatusBadge status={p.status} /></td>
                 </tr>
               ))}

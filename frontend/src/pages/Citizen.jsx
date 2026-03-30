@@ -7,15 +7,17 @@ import {
   FolderOpen,
   User,
   Car,
+  CreditCard,
 } from "lucide-react";
 
 const citizenNavItems = [
   { to: "/citizen/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/citizen/challans",  label: "Challans",  icon: FileText         },
-  { to: "/citizen/documents", label: "Documents", icon: FolderOpen       },
-  { to: "/citizen/profile",   label: "Profile",   icon: User             },
-  { to: "/citizen/vehicles",  label: "Vehicles",  icon: Car              },
-  { to: "/citizen/payments",  label: "Payment History",  icon: FileText               },
+  { to: "/citizen/challans", label: "Challans", icon: FileText },
+  { to: "/citizen/documents", label: "Documents", icon: FolderOpen },
+  { to: "/citizen/profile", label: "Profile", icon: User },
+  { to: "/citizen/vehicles", label: "Vehicles", icon: Car },
+  { to: "/citizen/payments", label: "Payment History", icon: FileText },
+  { to: "/citizen/make-payments", label: "Challan Payment", icon: CreditCard },
 ];
 
 const Citizen = () => {

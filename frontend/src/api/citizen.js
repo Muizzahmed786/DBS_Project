@@ -54,3 +54,9 @@ export const getMyPaymentCount = () => {
 export const getMyPaymentHistory=()=>{
     return API.get("/citizens/get-my-payment-history");
 }
+export const makePayment = (data) => {
+  return API.post(`/citizens/make-payment/${data.challan_id}`, {
+    password: data.password,
+    payment_mode: data.payment_mode,
+  });
+};

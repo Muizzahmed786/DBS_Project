@@ -25,6 +25,7 @@ import PaymentHistory from "../components/citizen/PaymentHistory.jsx";
 import AllRtoOffices from "../components/admin/AllRtoOffices.jsx";
 import AddRtoOffice from "../components/admin/AddRtoOffice.jsx";
 import AddViolationType from "../components/admin/AddViolationType.jsx";
+import ChallanPayment from "../components/citizen/ChallanPayment.jsx";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -55,6 +56,7 @@ const AppRoutes = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="vehicles" element={<Vehicles />} />
           <Route path="payments" element={<PaymentHistory />} />
+          <Route path="make-payments" element={<ChallanPayment />} />
         </Route>
       </Route>
 

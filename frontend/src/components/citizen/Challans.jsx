@@ -32,9 +32,9 @@ const StatusBadge = ({ status }) => {
 };
 
 const FILTERS = [
-    { value: "all",     label: "All" },
+    { value: "all", label: "All" },
     { value: "pending", label: "Pending" },
-    { value: "paid",    label: "Paid" },
+    { value: "paid", label: "Paid" },
 ];
 
 const Challans = () => {
@@ -80,11 +80,10 @@ const Challans = () => {
                         <button
                             key={f.value}
                             onClick={() => setStatus(f.value)}
-                            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                status === f.value
+                            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${status === f.value
                                     ? "bg-sky-500 text-white shadow-sm shadow-sky-500/30"
                                     : "text-slate-400 hover:text-white"
-                            }`}
+                                }`}
                         >
                             {f.label}
                         </button>
@@ -126,9 +125,23 @@ const Challans = () => {
                                     <div className="w-10 h-10 rounded-xl bg-slate-700/80 flex items-center justify-center text-slate-400 shrink-0 group-hover:bg-sky-500/10 group-hover:text-sky-400 transition-all duration-200">
                                         <Car size={18} />
                                     </div>
-                                    <div className="min-w-0">
-                                        <p className="text-white font-semibold text-sm">{c.vehicle_number}</p>
-                                        <p className="text-slate-400 text-sm mt-0.5 line-clamp-2">{c.description}</p>
+                                    <div className="min-w-0 space-y-1">
+                                        <p className="text-white font-semibold text-[16px] truncate">
+                                            {c.full_name}
+                                        </p>
+
+                                        <p className="text-gray-300 font-medium text-[13px]">{c.vehicle_number}
+                                        </p>
+
+                                        {/* Tertiary */}
+                                        <p className="text-gray-200 text-[13px]">{c.description}
+                                        </p>
+
+                                        {/* Meta Info */}
+                                        <div className="text-gray-400 text-[12px] flex flex-wrap gap-x-3">
+                                            <span>{c.location} | </span>
+                                            <span>{formatDateTime(c.date)}</span>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -148,5 +161,18 @@ const Challans = () => {
         </div>
     );
 };
+const formatDateTime = (timestamp) => {
+  if (!timestamp) return "";
 
+  const date = new Date(timestamp);
+
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
 export default Challans;
