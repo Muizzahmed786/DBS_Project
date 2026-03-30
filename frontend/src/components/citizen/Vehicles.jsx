@@ -20,7 +20,7 @@ const EMPTY_FORM = {
     registration_date: "",
     registration_valid_till: "",
     insurance_valid_till: "",
-    rto_id: ""
+    rto_code: ""
 };
 
 const TEXT_FIELDS = [
@@ -31,7 +31,7 @@ const TEXT_FIELDS = [
     { label: "Fuel Type",           key: "fuel_type",           placeholder: "Petrol / Diesel / Electric / CNG" },
     { label: "Manufacturer",        key: "manufacturer",        placeholder: "Maruti Suzuki" },
     { label: "Model",               key: "model",               placeholder: "Swift Dzire" },
-    { label: "RTO ID",              key: "rto_id",              placeholder: "RTO office ID" },
+    { label: "RTO code",              key: "rto_code",              placeholder: "RTO office code" },
 ];
 
 const DATE_FIELDS = [
@@ -58,7 +58,7 @@ const Vehicles = () => {
                 setSubmitting(false);
                 return;
             }
-            await insertVehicle({...form, rto_id: Number(form.rto_id)});
+            await insertVehicle({...form});
             const res = await getRegisteredVehicles();
             setVehicles(res.data.data);
             setForm(EMPTY_FORM);

@@ -384,9 +384,9 @@ const insertVehicle = asyncHandler(async (req, res) => {
     registration_number, chassis_number, engine_number,
     vehicle_class, fuel_type, manufacturer, model,
     registration_date, registration_valid_till,
-    insurance_valid_till, rto_id
+    insurance_valid_till, rto_code
   } = req.body;
-
+  console.log(rto_code)
   if (!['Electric', 'CNG', 'Diesel', 'Petrol'].includes(fuel_type)) {
     throw new ApiError(400, "Invalid Fuel Type");
   }
@@ -394,7 +394,12 @@ const insertVehicle = asyncHandler(async (req, res) => {
   if (!['MCWG', 'HGV', 'LMV'].includes(vehicle_class)) {
     throw new ApiError(400, "Invalid Vehicle Class Type");
   }
-
+  const [rtoTable]=await db.execute('select rto_id from rto where rto_code=?',[rto_code]);
+  if(rtoTable.length==0){
+    throw new ApiError(404,"No such rto code found");
+  }
+  console.log(rtoTable)
+  const rto_id=rtoTable[0].rto_id;
   const [rows] = await db.execute(`
     INSERT INTO vehicles 
     (registration_number, chassis_number, engine_number, vehicle_class, fuel_type, manufacturer, model, registration_date, registration_valid_till, insurance_valid_till, rto_id)
