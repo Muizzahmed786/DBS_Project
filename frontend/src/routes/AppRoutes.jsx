@@ -22,6 +22,9 @@ import GetIssuedChallans from "../components/officer/GetIssuedChallans.jsx";
 import ViolationTypesOfficer from "../components/officer/ViolationTypes.jsx";
 import Officer from "../pages/Officer.jsx";
 import PaymentHistory from "../components/citizen/PaymentHistory.jsx";
+import AllRtoOffices from "../components/admin/AllRtoOffices.jsx";
+import AddRtoOffice from "../components/admin/AddRtoOffice.jsx";
+import AddViolationType from "../components/admin/AddViolationType.jsx";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -37,6 +40,9 @@ const AppRoutes = () => {
           <Route path="payments" element={<PaymentManagement />} />
           <Route path="violations" element={<ViolationTypes />} />
           <Route path="vehicles" element={<VehicleManagement />} />
+          <Route path="offices" element={<AllRtoOffices />} />
+          <Route path="add-office" element={<AddRtoOffice />} />
+          <Route path="add-violation-type" element={<AddViolationType />} />
         </Route>
       </Route>
 

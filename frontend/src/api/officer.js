@@ -1,27 +1,27 @@
 import API from './axios.js'
 
 export const getMyIssuedChallans = () => {
-    return API.get('/officer/get-my-challan-issued');
+    return API.get('/officers/get-my-challan-issued');
 }
 
 export const getAllViolationTypes = () => {
-    return API.get('/officer/get-all-violation-types');
+    return API.get('/officers/get-all-violation-types');
 }
 
 export const getMyIssuedChallanCount = () => {
-    return API.get('/officer/get-my-issued-challan-count');
+    return API.get('/officers/get-my-issued-challan-count');
 }
 
 export const getIssuedDlCountByRto = (rtoId) => {
-    return API.get(`/officer/get-my-issued-dl-count/${rtoId}`);
+    return API.get(`/officers/get-my-issued-dl-count/${rtoId}`);
 }
 
 export const issueChallan = (data) => {
-    return API.post('/officer/issue-challan', data);
+    return API.post('/officers/issue-challan', data);
 }
 
 export const issueDrivingLicence = (data) => {
-    return API.post('/officer/issue-licence', data);
+    return API.post('/officers/issue-licence', data);
 }
 
 export const getTotalFineCollected = () => {

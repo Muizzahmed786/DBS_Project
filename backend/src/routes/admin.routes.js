@@ -1,6 +1,6 @@
 import {Router} from "express";
 import { verifyJWT } from "../middlewares/auth-middleware.js";
-import {getAllRegisteredVehicles,getAllVehicleOwnershipDetails,getAllCitizens,getAllOfficers,getAllAdmins,getRtoVehicleOwnershipDetails,getRtoRegisteredVehicles,getChallansByStatus,getAllChallans,getAllPayments,getPaymentsByStatus, getTotalChallansCount,getTotalRevenue,getChallanCountByStatus} from "../controllers/admin.controller.js";
+import {getAllRegisteredVehicles,getAllVehicleOwnershipDetails,getAllCitizens,getAllOfficers,getAllAdmins,getRtoVehicleOwnershipDetails,getRtoRegisteredVehicles,getChallansByStatus,getAllChallans,getAllPayments,getPaymentsByStatus, getTotalChallansCount,getTotalRevenue,getChallanCountByStatus,getAllRtoOffices,addRtoOffice,addViolationType} from "../controllers/admin.controller.js";
 import {getAllViolationTypes} from "../controllers/user.controller.js"
 const router=Router()
 router.route("/get-all-violation-types").get(verifyJWT,getAllViolationTypes);
@@ -26,4 +26,8 @@ router.route("/get-total-challans-count").get(verifyJWT,getTotalChallansCount)
 
 router.route("/get-total-revenue").get(verifyJWT,getTotalRevenue)
 router.route("/get-total-challan-count/:status").get(verifyJWT,getChallanCountByStatus)
+
+router.route("/get-all-rto-offices").get(verifyJWT,getAllRtoOffices)
+router.route("/add-rto-office").post(verifyJWT,addRtoOffice)
+router.route("/add-violation-type").post(verifyJWT,addViolationType)
 export default router

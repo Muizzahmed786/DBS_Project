@@ -65,3 +65,12 @@ export const getChallanCountByStatus = (status) => {
 export const getAllViolationTypes = () => {
     return API.get('/admin/get-all-violation-types');
 }
+export const getAllRtoOffices = () => {
+    return API.get('/admin/get-all-rto-offices');
+}
+export const addRtoOffice = (form) => {
+  return API.post('/admin/add-rto-office', form);
+};
+export const addViolationType = (form) => {
+  return API.post('/admin/add-violation-type', form);
+};
