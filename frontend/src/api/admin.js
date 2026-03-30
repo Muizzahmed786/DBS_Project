@@ -18,16 +18,16 @@ export const getAllVehicles = () => {
     return API.get('/admin/get-all-vehicles');
 }
 
-export const getRtoVehicles = () => {
-    return API.get('/admin/get-rto-vehicles');
+export const getRtoVehicles = (data) => {
+    return API.post('/admin/get-rto-vehicles',data);
 }
 
 export const getAllVehicleOwnershipDetails = () => {
     return API.get('/admin/get-all-vehicle-ownership-details');
 }
 
-export const getRtoVehicleOwnershipDetails = () => {
-    return API.get('/admin/get-rto-vehicle-ownership-details');
+export const getRtoVehicleOwnershipDetails = (data) => {
+    return API.post('/admin/get-rto-vehicle-ownership-details',data);
 }
 
 // Challans

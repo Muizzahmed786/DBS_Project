@@ -9,18 +9,18 @@ import {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { key: "all-vehicles",     label: "All Vehicles",    icon: "🚗" },
-  { key: "rto-vehicles",     label: "RTO Vehicles",    icon: "🏢" },
-  { key: "all-ownership",    label: "All Ownership",   icon: "📋" },
-  { key: "rto-ownership",    label: "RTO Ownership",   icon: "📍" },
+  { key: "all-vehicles", label: "All Vehicles", icon: "🚗" },
+  { key: "rto-vehicles", label: "RTO Vehicles", icon: "🏢" },
+  { key: "all-ownership", label: "All Ownership", icon: "📋" },
+  { key: "rto-ownership", label: "RTO Ownership", icon: "📍" },
 ];
 
 const FUEL_COLORS = {
-  petrol:   "bg-orange-100 text-orange-700",
-  diesel:   "bg-yellow-100 text-yellow-700",
+  petrol: "bg-orange-100 text-orange-700",
+  diesel: "bg-yellow-100 text-yellow-700",
   electric: "bg-green-100 text-green-700",
-  cng:      "bg-blue-100 text-blue-700",
-  hybrid:   "bg-teal-100 text-teal-700",
+  cng: "bg-blue-100 text-blue-700",
+  hybrid: "bg-teal-100 text-teal-700",
 };
 
 const fmtDate = (iso) => {
@@ -181,15 +181,15 @@ const VehiclesTable = ({ rows, loading }) => {
   }, [rows, search, sortCol, sortDir]);
 
   const cols = [
-    { key: "registration_number",     label: "Reg. No." },
-    { key: "manufacturer",            label: "Manufacturer" },
-    { key: "model",                   label: "Model" },
-    { key: "vehicle_class",           label: "Class" },
-    { key: "fuel_type",               label: "Fuel", noSort: true },
-    { key: "registration_date",       label: "Reg. Date" },
+    { key: "registration_number", label: "Reg. No." },
+    { key: "manufacturer", label: "Manufacturer" },
+    { key: "model", label: "Model" },
+    { key: "vehicle_class", label: "Class" },
+    { key: "fuel_type", label: "Fuel", noSort: true },
+    { key: "registration_date", label: "Reg. Date" },
     { key: "registration_valid_till", label: "Valid Till" },
-    { key: "insurance_valid_till",    label: "Insurance Till" },
-    { key: "chassis_number",          label: "Chassis No.", noSort: true },
+    { key: "insurance_valid_till", label: "Insurance Till" },
+    { key: "chassis_number", label: "Chassis No.", noSort: true },
   ];
 
   return (
@@ -205,20 +205,20 @@ const VehiclesTable = ({ rows, loading }) => {
           {loading
             ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} cols={cols.length} />)
             : sorted.length === 0
-            ? <EmptyState icon="🚗" label="vehicles" />
-            : sorted.map((r, i) => (
-              <tr key={r.vehicle_id || i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">{r.registration_number || "—"}</td>
-                <td className="px-4 py-3 text-sm font-medium text-slate-800">{r.manufacturer || "—"}</td>
-                <td className="px-4 py-3 text-sm text-slate-600">{r.model || "—"}</td>
-                <td className="px-4 py-3 text-xs text-slate-600 capitalize">{r.vehicle_class || "—"}</td>
-                <td className="px-4 py-3"><FuelBadge fuel={r.fuel_type} /></td>
-                <td className="px-4 py-3 text-xs font-mono text-slate-500">{fmtDate(r.registration_date)}</td>
-                <td className="px-4 py-3"><DateCell value={r.registration_valid_till} /></td>
-                <td className="px-4 py-3"><DateCell value={r.insurance_valid_till} /></td>
-                <td className="px-4 py-3 font-mono text-xs text-slate-400">{r.chassis_number || "—"}</td>
-              </tr>
-            ))}
+              ? <EmptyState icon="🚗" label="vehicles" />
+              : sorted.map((r, i) => (
+                <tr key={r.vehicle_id || i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">{r.registration_number || "—"}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-slate-800">{r.manufacturer || "—"}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{r.model || "—"}</td>
+                  <td className="px-4 py-3 text-xs text-slate-600 capitalize">{r.vehicle_class || "—"}</td>
+                  <td className="px-4 py-3"><FuelBadge fuel={r.fuel_type} /></td>
+                  <td className="px-4 py-3 text-xs font-mono text-slate-500">{fmtDate(r.registration_date)}</td>
+                  <td className="px-4 py-3"><DateCell value={r.registration_valid_till} /></td>
+                  <td className="px-4 py-3"><DateCell value={r.insurance_valid_till} /></td>
+                  <td className="px-4 py-3 font-mono text-xs text-slate-400">{r.chassis_number || "—"}</td>
+                </tr>
+              ))}
         </tbody>
       </TableWrap>
     </>
@@ -251,17 +251,17 @@ const OwnershipTable = ({ rows, loading }) => {
   }, [rows, search, sortCol, sortDir]);
 
   const cols = [
-    { key: "registration_number",     label: "Reg. No." },
-    { key: "full_name",               label: "Owner" },
-    { key: "mobile_number",           label: "Mobile" },
-    { key: "manufacturer",            label: "Vehicle" },
-    { key: "fuel_type",               label: "Fuel", noSort: true },
-    { key: "vehicle_class",           label: "Class" },
-    { key: "ownership_start_date",    label: "Owned Since" },
-    { key: "ownership_end_date",      label: "Owned Until" },
+    { key: "registration_number", label: "Reg. No." },
+    { key: "full_name", label: "Owner" },
+    { key: "mobile_number", label: "Mobile" },
+    { key: "manufacturer", label: "Vehicle" },
+    { key: "fuel_type", label: "Fuel", noSort: true },
+    { key: "vehicle_class", label: "Class" },
+    { key: "ownership_start_date", label: "Owned Since" },
+    { key: "ownership_end_date", label: "Owned Until" },
     { key: "registration_valid_till", label: "Reg. Valid" },
-    { key: "insurance_valid_till",    label: "Insurance" },
-    { key: "aadhaar_number",          label: "Aadhaar", noSort: true },
+    { key: "insurance_valid_till", label: "Insurance" },
+    { key: "aadhaar_number", label: "Aadhaar", noSort: true },
   ];
 
   return (
@@ -298,36 +298,36 @@ const OwnershipTable = ({ rows, loading }) => {
           {loading
             ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} cols={cols.length} />)
             : sorted.length === 0
-            ? <EmptyState icon="📋" label="ownership records" />
-            : sorted.map((r, i) => (
-              <tr key={r.ownership_id || i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">{r.registration_number || "—"}</td>
-                <td className="px-4 py-3">
-                  <div className="text-sm font-medium text-slate-800 whitespace-nowrap">{r.full_name || "—"}</div>
-                  <div className="text-xs text-slate-400 font-mono mt-0.5">{r.email || ""}</div>
-                </td>
-                <td className="px-4 py-3 font-mono text-xs text-slate-600 whitespace-nowrap">{r.mobile_number || "—"}</td>
-                <td className="px-4 py-3">
-                  <div className="text-sm font-medium text-slate-800">{r.manufacturer} {r.model}</div>
-                  <div className="text-xs text-slate-400 font-mono mt-0.5">{r.engine_number || ""}</div>
-                </td>
-                <td className="px-4 py-3"><FuelBadge fuel={r.fuel_type} /></td>
-                <td className="px-4 py-3 text-xs text-slate-600 capitalize">{r.vehicle_class || "—"}</td>
-                <td className="px-4 py-3 text-xs font-mono text-slate-500">{fmtDate(r.ownership_start_date)}</td>
-                <td className="px-4 py-3 text-xs font-mono text-slate-500">
-                  {r.ownership_end_date
-                    ? fmtDate(r.ownership_end_date)
-                    : <span className="text-emerald-600 font-semibold">Current</span>}
-                </td>
-                <td className="px-4 py-3"><DateCell value={r.registration_valid_till} /></td>
-                <td className="px-4 py-3"><DateCell value={r.insurance_valid_till} /></td>
-                <td className="px-4 py-3 font-mono text-xs text-slate-500">
-                  {showAadhaar
-                    ? (r.aadhaar_number || "—")
-                    : `•••• •••• ${String(r.aadhaar_number || "").slice(-4) || "????"}`}
-                </td>
-              </tr>
-            ))}
+              ? <EmptyState icon="📋" label="ownership records" />
+              : sorted.map((r, i) => (
+                <tr key={r.ownership_id || i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">{r.registration_number || "—"}</td>
+                  <td className="px-4 py-3">
+                    <div className="text-sm font-medium text-slate-800 whitespace-nowrap">{r.full_name || "—"}</div>
+                    <div className="text-xs text-slate-400 font-mono mt-0.5">{r.email || ""}</div>
+                  </td>
+                  <td className="px-4 py-3 font-mono text-xs text-slate-600 whitespace-nowrap">{r.mobile_number || "—"}</td>
+                  <td className="px-4 py-3">
+                    <div className="text-sm font-medium text-slate-800">{r.manufacturer} {r.model}</div>
+                    <div className="text-xs text-slate-400 font-mono mt-0.5">{r.engine_number || ""}</div>
+                  </td>
+                  <td className="px-4 py-3"><FuelBadge fuel={r.fuel_type} /></td>
+                  <td className="px-4 py-3 text-xs text-slate-600 capitalize">{r.vehicle_class || "—"}</td>
+                  <td className="px-4 py-3 text-xs font-mono text-slate-500">{fmtDate(r.ownership_start_date)}</td>
+                  <td className="px-4 py-3 text-xs font-mono text-slate-500">
+                    {r.ownership_end_date
+                      ? fmtDate(r.ownership_end_date)
+                      : <span className="text-emerald-600 font-semibold">Current</span>}
+                  </td>
+                  <td className="px-4 py-3"><DateCell value={r.registration_valid_till} /></td>
+                  <td className="px-4 py-3"><DateCell value={r.insurance_valid_till} /></td>
+                  <td className="px-4 py-3 font-mono text-xs text-slate-500">
+                    {showAadhaar
+                      ? (r.aadhaar_number || "—")
+                      : `•••• •••• ${String(r.aadhaar_number || "").slice(-4) || "????"}`}
+                  </td>
+                </tr>
+              ))}
         </tbody>
       </TableWrap>
     </>
@@ -339,9 +339,9 @@ const OwnershipTable = ({ rows, loading }) => {
 export default function VehicleManagement() {
   const [activeTab, setActiveTab] = useState("all-vehicles");
 
-  const [allVehicles,  setAllVehicles]  = useState([]);
+  const [allVehicles, setAllVehicles] = useState([]);
   const [allOwnership, setAllOwnership] = useState([]);
-  const [rtoVehicles,  setRtoVehicles]  = useState([]);
+  const [rtoVehicles, setRtoVehicles] = useState([]);
   const [rtoOwnership, setRtoOwnership] = useState([]);
 
   const [loading, setLoading] = useState({
@@ -353,9 +353,9 @@ export default function VehicleManagement() {
     "rto-vehicles": null, "rto-ownership": null,
   });
 
-  const [rtoVehicleCode,      setRtoVehicleCode]      = useState("");
-  const [rtoOwnershipCode,    setRtoOwnershipCode]    = useState("");
-  const [fetchedRtoVehicle,   setFetchedRtoVehicle]   = useState("");
+  const [rtoVehicleCode, setRtoVehicleCode] = useState("");
+  const [rtoOwnershipCode, setRtoOwnershipCode] = useState("");
+  const [fetchedRtoVehicle, setFetchedRtoVehicle] = useState("");
   const [fetchedRtoOwnership, setFetchedRtoOwnership] = useState("");
 
   // ── Fetchers ──
@@ -366,7 +366,7 @@ export default function VehicleManagement() {
       const res = await getAllVehicles();
       setAllVehicles(res.data?.data || res.data || []);
     } catch { setError((p) => ({ ...p, "all-vehicles": "Failed to load vehicles." })); }
-    finally  { setLoading((p) => ({ ...p, "all-vehicles": false })); }
+    finally { setLoading((p) => ({ ...p, "all-vehicles": false })); }
   };
 
   const fetchAllOwnership = async () => {
@@ -376,7 +376,7 @@ export default function VehicleManagement() {
       const res = await getAllVehicleOwnershipDetails();
       setAllOwnership(res.data?.data || res.data || []);
     } catch { setError((p) => ({ ...p, "all-ownership": "Failed to load ownership details." })); }
-    finally  { setLoading((p) => ({ ...p, "all-ownership": false })); }
+    finally { setLoading((p) => ({ ...p, "all-ownership": false })); }
   };
 
   const fetchRtoVehicles = async () => {
@@ -384,11 +384,14 @@ export default function VehicleManagement() {
     setLoading((p) => ({ ...p, "rto-vehicles": true }));
     setError((p) => ({ ...p, "rto-vehicles": null }));
     try {
-      const res = await getRtoVehicles(rtoVehicleCode.trim());
+      const res = await getRtoVehicles({
+        rtoVehicleCode: rtoVehicleCode.trim()
+      });
+      console.log(res);
       setRtoVehicles(res.data?.data || res.data || []);
       setFetchedRtoVehicle(rtoVehicleCode.trim());
-    } catch { setError((p) => ({ ...p, "rto-vehicles": `Failed to load vehicles for RTO ${rtoVehicleCode}.` })); }
-    finally  { setLoading((p) => ({ ...p, "rto-vehicles": false })); }
+    } catch (err) { setError((p) => ({ ...p, "rto-vehicles": `Failed to load vehicles for RTO ${rtoVehicleCode}.` })); console.log(err) }
+    finally { setLoading((p) => ({ ...p, "rto-vehicles": false })); }
   };
 
   const fetchRtoOwnership = async () => {
@@ -396,11 +399,11 @@ export default function VehicleManagement() {
     setLoading((p) => ({ ...p, "rto-ownership": true }));
     setError((p) => ({ ...p, "rto-ownership": null }));
     try {
-      const res = await getRtoVehicleOwnershipDetails(rtoOwnershipCode.trim());
+      const res = await getRtoVehicleOwnershipDetails({rtoOwnershipCode:rtoOwnershipCode.trim()});
       setRtoOwnership(res.data?.data || res.data || []);
       setFetchedRtoOwnership(rtoOwnershipCode.trim());
     } catch { setError((p) => ({ ...p, "rto-ownership": `Failed to load ownership for RTO ${rtoOwnershipCode}.` })); }
-    finally  { setLoading((p) => ({ ...p, "rto-ownership": false })); }
+    finally { setLoading((p) => ({ ...p, "rto-ownership": false })); }
   };
 
   // Fetch both on mount so stats bar always has accurate counts
@@ -411,13 +414,13 @@ export default function VehicleManagement() {
 
   const handleTab = (key) => {
     setActiveTab(key);
-    if (key === "all-vehicles")  fetchAllVehicles();
+    if (key === "all-vehicles") fetchAllVehicles();
     if (key === "all-ownership") fetchAllOwnership();
   };
 
   // ── Stats bar ──
   const stats = [
-    { label: "Total Vehicles",    value: allVehicles.length  || "—" },
+    { label: "Total Vehicles", value: allVehicles.length || "—" },
     { label: "Ownership Records", value: allOwnership.length || "—" },
     {
       label: "Insurance Expired",

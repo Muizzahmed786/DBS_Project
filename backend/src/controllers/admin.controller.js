@@ -52,8 +52,12 @@ const getRtoRegisteredVehicles = asyncHandler(async (req, res) => {
   if (req.user[0]?.role !== 'admin') {
     throw new ApiError(404, "Unauthorized access");
   }
-  const { rtoCode } = req.body;
-  const [rtoVehicles] = await db.execute(`select * from vehicles v join rto r on v.rto_id=r.rto_id where rto_code=?`, [rtoCode]);
+  
+  const { rtoVehicleCode } = req.body;
+  const [rtoVehicles] = await db.execute(`select * from vehicles v join rto r on v.rto_id=r.rto_id where rto_code=?`, [rtoVehicleCode]);
+  if(rtoVehicles.length===0){
+    throw new ApiError(400,"No vehicles exist for the rto code");
+  }
   return res.status(200).json(new ApiResponse(200, rtoVehicles, "All vehicles belonging to rto code fetched successfully"));
 })
 
@@ -61,10 +65,10 @@ const getRtoVehicleOwnershipDetails = asyncHandler(async (req, res) => {
   if (req.user[0]?.role !== 'admin') {
     throw new ApiError(404, "Unauthorized access");
   }
-  const { rtoCode } = req.body;
-
+  const { rtoOwnershipCode } = req.body;
+  console.log(req.body);
   const [rtoOwnershipDetails] = await db.execute(`select 
-    ownership_id,ownership_start_date,ownership_end_date,user_id,vehicle_id,registration_number,chassis_number,engine_number,vehicle_class,fuel_type,manufacturer,model,registration_date,registration_valid_till,insurance_valid_till,full_name,mobile_number,email,aadhaar_number from vehicle_ownership natural join users natural join vehicles natural join rto where rto_code=?`, [rtoCode])
+    ownership_id,ownership_start_date,ownership_end_date,user_id,vehicle_id,registration_number,chassis_number,engine_number,vehicle_class,fuel_type,manufacturer,model,registration_date,registration_valid_till,insurance_valid_till,full_name,mobile_number,email,aadhaar_number from vehicle_ownership natural join users natural join vehicles natural join rto where rto_code=?`, [rtoOwnershipCode])
 
   return res.status(200).json(new ApiResponse(200, rtoOwnershipDetails, "All vehicle ownership details fetched successfully"));
 })
