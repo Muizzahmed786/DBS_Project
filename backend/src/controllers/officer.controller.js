@@ -14,7 +14,8 @@ const getMyIssuedChallans = asyncHandler(async (req, res) => {
     c.violation_date,
     c.status,
     c.total_amount,
-    
+    c.location,
+
     vt.description,
     
     v.registration_number,
@@ -38,7 +39,7 @@ const getMyIssuedChallans = asyncHandler(async (req, res) => {
 
     WHERE c.issued_by = ?
     ORDER BY issue_date desc;`, [req.user[0].user_id]);
-
+    console.log(challans)
   return res.status(200).json(new ApiResponse(200, challans, "All challans issued by me fetched"));
 })
 const issueChallan = asyncHandler(async (req, res) => {

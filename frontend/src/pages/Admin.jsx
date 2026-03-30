@@ -3,7 +3,7 @@ import Sidebar from "../components/layout/Sidebar";
 import { useAuth } from "../context/useAuth"; // Import your auth hook
 import { 
   LayoutDashboard, Users, FileWarning, 
-  Car, CreditCard, Settings 
+  Car, CreditCard, Settings,Building,Building2,TriangleAlert 
 } from "lucide-react";
 
 const adminNavItems = [
@@ -12,7 +12,10 @@ const adminNavItems = [
     { to: "/admin/challans", label: "Challans", icon: FileWarning },
     { to: "/admin/vehicles", label: "Vehicles", icon: Car },
     { to: "/admin/payments", label: "Payments", icon: CreditCard },
+    { to: "/admin/add-office", label: "Add Rto Office", icon: Building2  },
+    { to: "/admin/add-violation-type", label: "Add Violation Type", icon:TriangleAlert  },
     { to: "/admin/violations", label: "Violations", icon: Settings },
+    { to: "/admin/offices", label: "Rto Offices", icon: Building  },
 ];
 
 const AdminLayout = () => {

@@ -42,6 +42,7 @@ export default function ViolationTypes() {
         setLoading(false);
       })
       .catch((err) => {
+        console.error(err);
         setError("Failed to load violation types.");
         setLoading(false);
       });
