@@ -15,6 +15,7 @@ const citizenNavItems = [
   { to: "/citizen/documents", label: "Documents", icon: FolderOpen       },
   { to: "/citizen/profile",   label: "Profile",   icon: User             },
   { to: "/citizen/vehicles",  label: "Vehicles",  icon: Car              },
+  { to: "/citizen/payments",  label: "Payment History",  icon: FileText               },
 ];
 
 const Citizen = () => {

@@ -376,36 +376,58 @@ const makePayment = asyncHandler(async (req, res) => {
 });
 
 const insertVehicle = asyncHandler(async (req, res) => {
-     console.log(req.user[0])
-    if (req.user[0].role !== 'citizen') {
-      throw new ApiError(403, "Unauthorized request");
-    }
+  if (req.user[0].role !== 'citizen') {
+    throw new ApiError(403, "Unauthorized request");
+  }
 
-    const {registration_number, chassis_number, engine_number, vehicle_class, fuel_type, manufacturer, model, registration_date, registration_valid_till, insurance_valid_till, rto_id} = req.body;
+  const {
+    registration_number, chassis_number, engine_number,
+    vehicle_class, fuel_type, manufacturer, model,
+    registration_date, registration_valid_till,
+    insurance_valid_till, rto_id
+  } = req.body;
 
-    if (!['Electric', 'CNG', 'Diesel', 'Petrol'].includes(fuel_type)) {
-      throw new ApiError(400, "Invalid Fuel Type");
-    }
+  if (!['Electric', 'CNG', 'Diesel', 'Petrol'].includes(fuel_type)) {
+    throw new ApiError(400, "Invalid Fuel Type");
+  }
 
-    if (!['Car', 'Truck', 'Bus', 'Scooter', 'Motorcycle', 'SUV'].includes(vehicle_class)) {
-      throw new ApiError(400, "Invalid Fuel Type");
-    }
+  if (!['MCWG', 'HGV', 'LMV'].includes(vehicle_class)) {
+    throw new ApiError(400, "Invalid Vehicle Class Type");
+  }
 
-    const [rows] = await db.execute(`
-      INSERT INTO vehicles 
-      (registration_number, chassis_number, engine_number, vehicle_class, fuel_type, manufacturer, model, registration_date, registration_valid_till, insurance_valid_till, rto_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `, [registration_number, chassis_number, engine_number, vehicle_class, fuel_type, manufacturer, model, registration_date, registration_valid_till, insurance_valid_till, rto_id]
-    );
+  const [rows] = await db.execute(`
+    INSERT INTO vehicles 
+    (registration_number, chassis_number, engine_number, vehicle_class, fuel_type, manufacturer, model, registration_date, registration_valid_till, insurance_valid_till, rto_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      registration_number, chassis_number, engine_number,
+      vehicle_class, fuel_type, manufacturer, model,
+      registration_date, registration_valid_till,
+      insurance_valid_till, rto_id
+    ]
+  );
 
-    const [insertedVehicle]=await db.execute(`select * from vehicles where vehicle_id=?`,[rows.insertId]);
-    if(insertedVehicle.length===0){
-      throw new ApiError(400,"Vehicle not inserted");
-    }
-    return res.status(200).json(
-      new ApiResponse(200, insertedVehicle[0], "Vehicle inserted successfully")
-    )
+  const vehicle_id = rows.insertId;
+
+  await db.execute(`
+    INSERT INTO vehicle_ownership
+    (vehicle_id, user_id, ownership_start_date)
+    VALUES (?, ?, CURDATE())`,
+    [vehicle_id, req.user[0].user_id]
+  );
+
+  const [insertedVehicle] = await db.execute(
+    `SELECT * FROM vehicles WHERE vehicle_id = ?`,
+    [vehicle_id]
+  );
+
+  if (insertedVehicle.length === 0) {
+    throw new ApiError(400, "Vehicle not inserted");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, insertedVehicle[0], "Vehicle inserted successfully")
+  );
 });
-
 
 export {getRegisteredVehicles,getAllChallans,getChallansByStatus, getMyProfile,getMyDocuments,uploadDocuments,getMyChallanCount,insertVehicle,getMyChallanByStatusCount,getMyVehiclesCount,getMyPaymentCount,getMyPaymentByStatusCount,makePayment,getMyPaymentHistory}
