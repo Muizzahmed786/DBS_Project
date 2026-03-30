@@ -259,7 +259,7 @@ const getMyVehiclesCount = asyncHandler(async (req,res)=>{
   }
   const [rows]=await db.execute(`select count(distinct vehicle_id) as my_vehicle_count from vehicle_ownership vo where user_id=?;`,[req.user[0].user_id]);
 
-  const myTotalVehicles=rows[0]?.my_vehicle_count || 0;
+  const myTotalVehicles=rows[0]?.my_total_challan || 0;
 
   return res.status(200).json(new ApiResponse(200,myTotalVehicles,`My vehicles count fetched successfully`))
 })
