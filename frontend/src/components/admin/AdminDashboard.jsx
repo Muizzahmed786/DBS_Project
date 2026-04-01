@@ -267,7 +267,7 @@ export default function AdminDashboard() {
             </div>
             {loading ? (
               <div className="flex items-center gap-8">
-                <div className="w-36 h-36 rounded-full border-[18px] border-slate-100 animate-pulse" />
+                <div className="w-36 h-36 rounded-full border-18 border-slate-100 animate-pulse" />
                 <div className="flex flex-col gap-4">
                   <div className="h-3 w-28 rounded-full bg-slate-100 animate-pulse" />
                   <div className="h-3 w-20 rounded-full bg-slate-100 animate-pulse" />
