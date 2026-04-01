@@ -19,24 +19,24 @@ const STEPS = ["Applicant", "Licence Details", "Review"];
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const StepBar = ({ current }) => (
-  <div className="flex items-center mb-10">
+  <div className="flex items-center gap-0 mb-10">
     {STEPS.map((label, i) => (
       <div key={label} className="flex items-center">
         <div className="flex flex-col items-center gap-1.5">
           <div
-            className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold border transition-all duration-300 ${
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 ${
               i < current
-                ? "bg-teal-500 border-teal-500 text-white"
+                ? "bg-indigo-500 border-indigo-500 text-slate-900"
                 : i === current
-                ? "bg-white border-teal-500 text-teal-600"
-                : "bg-white border-slate-200 text-slate-400"
+                ? "bg-slate-900 border-indigo-500 text-indigo-500"
+                : "bg-slate-900 border-slate-700 text-slate-600"
             }`}
           >
             {i < current ? "✓" : i + 1}
           </div>
           <span
-            className={`text-[10px] font-bold tracking-widest uppercase ${
-              i === current ? "text-teal-600" : i < current ? "text-teal-400" : "text-slate-400"
+            className={`text-xs font-semibold tracking-wider uppercase ${
+              i === current ? "text-indigo-500" : i < current ? "text-slate-400" : "text-slate-700"
             }`}
           >
             {label}
@@ -44,8 +44,8 @@ const StepBar = ({ current }) => (
         </div>
         {i < STEPS.length - 1 && (
           <div
-            className={`h-px w-14 sm:w-20 mx-2 mb-5 transition-all duration-500 ${
-              i < current ? "bg-teal-400" : "bg-slate-200"
+            className={`h-0.5 w-16 sm:w-24 mx-2 mb-5 transition-all duration-500 ${
+              i < current ? "bg-indigo-500" : "bg-slate-800"
             }`}
           />
         )}
@@ -56,12 +56,12 @@ const StepBar = ({ current }) => (
 
 const Field = ({ label, required, error, children, hint }) => (
   <div className="space-y-1.5">
-    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest">
+    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-widest">
       {label} {required && <span className="text-rose-500">*</span>}
     </label>
     {children}
-    {hint && !error && <p className="text-xs text-slate-400">{hint}</p>}
-    {error && <p className="text-xs text-rose-500">{error}</p>}
+    {hint && !error && <p className="text-xs text-slate-600">{hint}</p>}
+    {error && <p className="text-xs text-rose-400">{error}</p>}
   </div>
 );
 
@@ -72,14 +72,14 @@ const TextInput = ({ name, value, onChange, placeholder, type = "text" }) => (
     value={value}
     onChange={onChange}
     placeholder={placeholder}
-    className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 bg-white focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all font-mono"
+    className="w-full bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-600 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-all"
   />
 );
 
 const ReviewRow = ({ label, value }) => (
-  <div className="flex justify-between items-start gap-4 py-3 border-b border-slate-100 last:border-0">
-    <span className="text-xs text-slate-400 uppercase tracking-wider flex-shrink-0">{label}</span>
-    <span className="text-sm text-slate-800 font-semibold text-right break-all">{value || "—"}</span>
+  <div className="flex justify-between items-center px-4 py-3 gap-4 border-b border-slate-700/50 last:border-0">
+    <span className="text-xs text-slate-500 uppercase tracking-wider flex-shrink-0">{label}</span>
+    <span className="text-sm text-slate-200 font-semibold text-right break-all">{value || "—"}</span>
   </div>
 );
 
@@ -87,7 +87,7 @@ const ReviewRow = ({ label, value }) => (
 
 export default function IssueLicence() {
   const [step, setStep] = useState(0);
-  const [lookupMethod, setLookupMethod] = useState("email"); // "email" | "mobile"
+  const [lookupMethod, setLookupMethod] = useState("email");
   const [form, setForm] = useState({
     email: "",
     mobile: "",
@@ -181,61 +181,60 @@ export default function IssueLicence() {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-slate-100 flex items-start justify-center py-12 px-4"
-      style={{ fontFamily: "'Sora', 'Nunito', sans-serif" }}
+      className="min-h-screen bg-slate-950 flex items-start justify-center py-12 px-4"
+      style={{ fontFamily: "'DM Mono', 'Fira Mono', monospace" }}
     >
-      <div className="w-full max-w-lg">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="w-full max-w-xl relative">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-teal-200">
-            <span className="text-white text-lg">🪪</span>
-          </div>
-          <div>
-            <h1 className="text-xl font-black text-slate-900 tracking-tight">Issue Driving Licence</h1>
-            <p className="text-xs text-slate-500">Motor Vehicles Department · Officer Portal</p>
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-9 h-9 bg-indigo-500 rounded-lg flex items-center justify-center">
+              <span className="text-slate-900 font-black text-sm">🪪</span>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-slate-100 tracking-tight">Issue Driving Licence</h1>
+              <p className="text-xs text-slate-500">Motor Vehicles Department · Officer Portal</p>
+            </div>
           </div>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/80 border border-slate-100 p-8">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl shadow-black/50">
           {/* ── Success ── */}
           {step === 3 && result ? (
             <div className="text-center space-y-6">
-              <div className="w-16 h-16 bg-teal-50 border-2 border-teal-200 rounded-2xl flex items-center justify-center mx-auto">
-                <span className="text-3xl">✅</span>
+              <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/30 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-3xl">✓</span>
               </div>
               <div>
-                <h2 className="text-lg font-black text-teal-700">Licence Issued!</h2>
-                <p className="text-xs text-slate-500 mt-1">The driving licence has been created successfully</p>
+                <h2 className="text-lg font-bold text-emerald-400 mb-1">Licence Issued</h2>
+                <p className="text-xs text-slate-500">The driving licence has been created successfully</p>
               </div>
 
               {/* DL Card Preview */}
-              <div className="bg-gradient-to-br from-teal-600 to-teal-800 rounded-2xl p-5 text-left text-white shadow-lg shadow-teal-200">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <p className="text-teal-300 text-[10px] uppercase tracking-widest">Driving Licence</p>
-                    <p className="text-xl font-black tracking-widest mt-0.5">{result.licence_number}</p>
+              <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-5 text-left space-y-3">
+                {[
+                  { label: "Licence Number", value: result.licence_number },
+                  { label: "Issue Date", value: result.issue_date },
+                  { label: "Expiry Date", value: result.expiry_date },
+                  { label: "Issuing RTO", value: result.issuing_rto_id },
+                  { label: "Categories", value: result.vehicle_categories },
+                  { label: "Status", value: result.status?.toUpperCase() },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex justify-between items-center">
+                    <span className="text-xs text-slate-500 uppercase tracking-wider">{label}</span>
+                    <span className="text-sm text-slate-200 font-semibold">{value ?? "—"}</span>
                   </div>
-                  <span className="bg-white/20 px-2 py-1 rounded-lg text-xs font-bold">{result.status?.toUpperCase()}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  {[
-                    { l: "Issue Date", v: result.issue_date },
-                    { l: "Expiry Date", v: result.expiry_date },
-                    { l: "Issuing RTO", v: result.issuing_rto_id },
-                    { l: "Categories", v: result.vehicle_categories },
-                  ].map(({ l, v }) => (
-                    <div key={l}>
-                      <p className="text-teal-300 text-[10px] uppercase tracking-wider">{l}</p>
-                      <p className="font-bold mt-0.5 font-mono">{v}</p>
-                    </div>
-                  ))}
-                </div>
+                ))}
               </div>
 
               <button
                 onClick={handleReset}
-                className="w-full py-3.5 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-2xl text-sm tracking-wide transition-all"
+                className="w-full py-3 bg-indigo-500 hover:bg-indigo-400 text-slate-900 font-bold rounded-xl text-sm tracking-wide transition-all"
               >
                 Issue Another Licence
               </button>
@@ -247,16 +246,16 @@ export default function IssueLicence() {
               {/* ── Step 0: Applicant ── */}
               {step === 0 && (
                 <div className="space-y-5">
-                  <div className="mb-2">
-                    <h2 className="text-base font-black text-slate-800">Applicant Lookup</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Find the citizen by email or mobile number</p>
+                  <div>
+                    <h2 className="text-base font-bold text-slate-200 mb-0.5">Applicant Lookup</h2>
+                    <p className="text-xs text-slate-600">Find the citizen by email or mobile number</p>
                   </div>
 
                   {/* Toggle */}
-                  <div className="flex bg-slate-100 rounded-xl p-1 gap-1">
+                  <div className="flex bg-slate-800 rounded-xl p-1 gap-1">
                     {[
-                      { key: "email", label: "📧 Email" },
-                      { key: "mobile", label: "📱 Mobile" },
+                      { key: "email", label: " Email" },
+                      { key: "mobile", label: " Mobile" },
                     ].map(({ key, label }) => (
                       <button
                         key={key}
@@ -266,8 +265,8 @@ export default function IssueLicence() {
                         }}
                         className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${
                           lookupMethod === key
-                            ? "bg-white text-teal-700 shadow-sm"
-                            : "text-slate-500 hover:text-slate-700"
+                            ? "bg-slate-700 text-indigo-400 shadow-sm"
+                            : "text-slate-600 hover:text-slate-400"
                         }`}
                       >
                         {label}
@@ -288,7 +287,7 @@ export default function IssueLicence() {
                   ) : (
                     <Field label="Mobile Number" required error={errors.mobile}>
                       <div className="flex gap-2">
-                        <span className="flex items-center px-3 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-600 font-mono">
+                        <span className="flex items-center px-3 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-400 font-mono">
                           +91
                         </span>
                         <input
@@ -298,7 +297,7 @@ export default function IssueLicence() {
                           onChange={handleChange}
                           placeholder="9876543210"
                           maxLength={10}
-                          className="flex-1 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 bg-white focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 transition-all font-mono"
+                          className="flex-1 bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-600 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-all"
                         />
                       </div>
                     </Field>
@@ -309,9 +308,9 @@ export default function IssueLicence() {
               {/* ── Step 1: Licence Details ── */}
               {step === 1 && (
                 <div className="space-y-6">
-                  <div className="mb-2">
-                    <h2 className="text-base font-black text-slate-800">Licence Configuration</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Set RTO, vehicle categories and validity</p>
+                  <div>
+                    <h2 className="text-base font-bold text-slate-200 mb-0.5">Licence Configuration</h2>
+                    <p className="text-xs text-slate-600">Set RTO, vehicle categories and validity</p>
                   </div>
 
                   <Field label="Issuing RTO CODE" required error={errors.rtoCode} hint="e.g. KA-05, MH-12">
@@ -334,16 +333,16 @@ export default function IssueLicence() {
                             onClick={() => toggleCategory(code)}
                             className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-left text-xs font-semibold transition-all ${
                               selected
-                                ? "bg-teal-50 border-teal-400 text-teal-800"
-                                : "bg-white border-slate-200 text-slate-600 hover:border-slate-300"
+                                ? "bg-indigo-500/10 border-indigo-500/60 text-indigo-400"
+                                : "bg-slate-800/50 border-slate-700 text-slate-400 hover:border-slate-600"
                             }`}
                           >
                             <span className="text-base">{icon}</span>
                             <span className="leading-tight">
                               <span className="block font-bold text-[11px]">{code}</span>
-                              <span className="text-[10px] text-slate-400 font-normal">{label}</span>
+                              <span className="text-[10px] text-slate-500 font-normal">{label}</span>
                             </span>
-                            {selected && <span className="ml-auto text-teal-500 text-xs">✓</span>}
+                            {selected && <span className="ml-auto text-indigo-400 text-xs">✓</span>}
                           </button>
                         );
                       })}
@@ -359,8 +358,8 @@ export default function IssueLicence() {
                           onClick={() => setForm((p) => ({ ...p, validity_years: yr }))}
                           className={`flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all ${
                             form.validity_years === yr
-                              ? "bg-teal-600 border-teal-600 text-white"
-                              : "bg-white border-slate-200 text-slate-600 hover:border-slate-300"
+                              ? "bg-indigo-500 border-indigo-500 text-slate-900"
+                              : "bg-slate-800/50 border-slate-700 text-slate-400 hover:border-slate-600"
                           }`}
                         >
                           {yr} yr{yr > 1 ? "s" : ""}
@@ -374,12 +373,12 @@ export default function IssueLicence() {
               {/* ── Step 2: Review ── */}
               {step === 2 && (
                 <div className="space-y-5">
-                  <div className="mb-2">
-                    <h2 className="text-base font-black text-slate-800">Review & Confirm</h2>
-                    <p className="text-xs text-slate-500 mt-0.5">Verify all details before issuing the licence</p>
+                  <div>
+                    <h2 className="text-base font-bold text-slate-200 mb-0.5">Review & Confirm</h2>
+                    <p className="text-xs text-slate-600">Verify all details before issuing the licence</p>
                   </div>
 
-                  <div className="bg-slate-50 border border-slate-100 rounded-2xl px-5 py-2">
+                  <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl overflow-hidden divide-y divide-slate-700/50">
                     <ReviewRow
                       label={lookupMethod === "email" ? "Email" : "Mobile"}
                       value={lookupMethod === "email" ? form.email : `+91 ${form.mobile}`}
@@ -392,17 +391,17 @@ export default function IssueLicence() {
                     <ReviewRow label="Validity" value={`${form.validity_years} years`} />
                   </div>
 
-                  <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex gap-2">
-                    <span className="text-amber-500 flex-shrink-0 mt-0.5">⚠️</span>
-                    <p className="text-xs text-amber-700 leading-relaxed">
+                  <div className="bg-amber-950/30 border border-amber-700/40 rounded-xl px-4 py-3 flex gap-2">
+                    <span className="text-amber-500 flex-shrink-0 mt-0.5">⚠</span>
+                    <p className="text-xs text-amber-400 leading-relaxed">
                       This action will issue a permanent driving licence to the applicant. Please ensure all details are correct before proceeding.
                     </p>
                   </div>
 
                   {apiError && (
-                    <div className="bg-rose-50 border border-rose-200 rounded-2xl px-4 py-3 flex gap-2">
-                      <span className="text-rose-500 flex-shrink-0">⚠</span>
-                      <p className="text-xs text-rose-700">{apiError}</p>
+                    <div className="bg-rose-950/40 border border-rose-700/50 rounded-xl px-4 py-3 text-rose-400 text-sm flex items-start gap-2">
+                      <span className="mt-0.5 flex-shrink-0">⚠</span>
+                      <span>{apiError}</span>
                     </div>
                   )}
                 </div>
@@ -414,7 +413,7 @@ export default function IssueLicence() {
                   <button
                     onClick={handleBack}
                     disabled={submitting}
-                    className="px-5 py-3 text-sm font-bold text-slate-500 hover:text-slate-800 border border-slate-200 hover:border-slate-400 rounded-2xl transition-all disabled:opacity-40"
+                    className="px-5 py-2.5 text-sm font-semibold text-slate-400 hover:text-slate-200 border border-slate-700 hover:border-slate-500 rounded-xl transition-all disabled:opacity-40"
                   >
                     ← Back
                   </button>
@@ -423,7 +422,7 @@ export default function IssueLicence() {
                 {step < 2 ? (
                   <button
                     onClick={handleNext}
-                    className="px-7 py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-2xl text-sm tracking-wide transition-all active:scale-95 shadow-lg shadow-teal-200"
+                    className="px-6 py-2.5 bg-indigo-500 hover:bg-indigo-400 text-slate-900 font-bold rounded-xl text-sm tracking-wide transition-all active:scale-95"
                   >
                     Continue →
                   </button>
@@ -431,15 +430,15 @@ export default function IssueLicence() {
                   <button
                     onClick={handleSubmit}
                     disabled={submitting}
-                    className="px-7 py-3 bg-teal-600 hover:bg-teal-500 disabled:bg-teal-300 text-white font-bold rounded-2xl text-sm tracking-wide transition-all active:scale-95 shadow-lg shadow-teal-200 flex items-center gap-2"
+                    className="px-6 py-2.5 bg-indigo-500 hover:bg-indigo-400 disabled:bg-indigo-500/40 text-slate-900 font-bold rounded-xl text-sm tracking-wide transition-all active:scale-95 flex items-center gap-2"
                   >
                     {submitting ? (
                       <>
-                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span className="w-4 h-4 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
                         Issuing…
                       </>
                     ) : (
-                      "🪪 Issue Licence"
+                      "Issue Licence 🪪"
                     )}
                   </button>
                 )}
@@ -448,7 +447,7 @@ export default function IssueLicence() {
           )}
         </div>
 
-        <p className="text-center text-xs text-slate-400 mt-6">
+        <p className="text-center text-xs text-slate-700 mt-6">
           Authorized Officer Use Only · Motor Vehicles Department
         </p>
       </div>

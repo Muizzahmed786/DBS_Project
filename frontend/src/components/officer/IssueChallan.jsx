@@ -14,7 +14,7 @@ const InputField = ({ label, name, value, onChange, placeholder, required, hint 
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="w-full bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-600 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/40 transition-all"
+      className="w-full bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-600 rounded-lg px-4 py-3 text-sm font-mono focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/40 transition-all"
     />
     {hint && <p className="text-xs text-slate-600">{hint}</p>}
   </div>
@@ -28,9 +28,9 @@ const StepIndicator = ({ current }) => (
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 ${
               i < current
-                ? "bg-amber-500 border-amber-500 text-slate-900"
+                ? "bg-indigo-500 border-indigo-500 text-slate-900"
                 : i === current
-                ? "bg-slate-900 border-amber-500 text-amber-500"
+                ? "bg-slate-900 border-indigo-500 text-indigo-500"
                 : "bg-slate-900 border-slate-700 text-slate-600"
             }`}
           >
@@ -38,7 +38,7 @@ const StepIndicator = ({ current }) => (
           </div>
           <span
             className={`text-xs font-semibold tracking-wider uppercase ${
-              i === current ? "text-amber-500" : i < current ? "text-slate-400" : "text-slate-700"
+              i === current ? "text-indigo-500" : i < current ? "text-slate-400" : "text-slate-700"
             }`}
           >
             {label}
@@ -47,7 +47,7 @@ const StepIndicator = ({ current }) => (
         {i < steps.length - 1 && (
           <div
             className={`h-0.5 w-16 sm:w-24 mx-2 mb-5 transition-all duration-500 ${
-              i < current ? "bg-amber-500" : "bg-slate-800"
+              i < current ? "bg-indigo-500" : "bg-slate-800"
             }`}
           />
         )}
@@ -137,14 +137,14 @@ export default function IssueChallan() {
     >
       {/* Ambient glow */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-amber-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-3xl" />
       </div>
 
       <div className="w-full max-w-xl relative">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-9 h-9 bg-amber-500 rounded-lg flex items-center justify-center">
+            <div className="w-9 h-9 bg-indigo-500 rounded-lg flex items-center justify-center">
               <span className="text-slate-900 font-black text-sm">⚡</span>
             </div>
             <div>
@@ -184,7 +184,7 @@ export default function IssueChallan() {
 
               <button
                 onClick={handleReset}
-                className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-xl text-sm tracking-wide transition-all"
+                className="w-full py-3 bg-indigo-500 hover:bg-indigo-400 text-slate-900 font-bold rounded-xl text-sm tracking-wide transition-all"
               >
                 Issue Another Challan
               </button>
@@ -314,7 +314,7 @@ export default function IssueChallan() {
                 {step < 2 ? (
                   <button
                     onClick={handleNext}
-                    className="px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-xl text-sm tracking-wide transition-all active:scale-95"
+                    className="px-6 py-2.5 bg-indigo-500 hover:bg-indigo-400 text-slate-900 font-bold rounded-xl text-sm tracking-wide transition-all active:scale-95"
                   >
                     Continue →
                   </button>
@@ -322,7 +322,7 @@ export default function IssueChallan() {
                   <button
                     onClick={handleSubmit}
                     disabled={submitting}
-                    className="px-6 py-2.5 bg-amber-500 hover:bg-amber-400 disabled:bg-amber-500/40 text-slate-900 font-bold rounded-xl text-sm tracking-wide transition-all active:scale-95 flex items-center gap-2"
+                    className="px-6 py-2.5 bg-indigo-500 hover:bg-indigo-400 disabled:bg-indigo-500/40 text-slate-900 font-bold rounded-xl text-sm tracking-wide transition-all active:scale-95 flex items-center gap-2"
                   >
                     {submitting ? (
                       <>
