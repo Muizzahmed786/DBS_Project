@@ -1,294 +1,162 @@
 import { useState, useEffect } from "react";
 import { getAllViolationTypes } from "../../api/admin.js";
- 
-const tagColors = [
-  { bg: "#fff3cd", text: "#7d5a00", border: "#f5c518" },
-  { bg: "#fde8e8", text: "#8b1a1a", border: "#e57373" },
-  { bg: "#e8f5e9", text: "#1b5e20", border: "#66bb6a" },
-  { bg: "#e3f2fd", text: "#0d3c6e", border: "#42a5f5" },
-  { bg: "#f3e5f5", text: "#4a148c", border: "#ab47bc" },
-  { bg: "#fff8e1", text: "#5d4037", border: "#ffca28" },
+import { Search, TriangleAlert } from "lucide-react";
+
+/* ── Tokens ─────────────────────────────────────────────────── */
+const PRIMARY    = "#003f87";
+const ON_SURFACE = "#1a1d23";
+const MUTED      = "#42454e";
+const SURFACE    = "#f3f4f5";
+const cardShadow = "0 4px 24px rgba(0,63,135,0.07), 0 1px 4px rgba(0,63,135,0.04)";
+
+/* Semantic accent cycle — one per card, keeps badges visually distinct */
+const CARD_ACCENTS = [
+    { bg: "rgba(217,119,6,0.08)",  color: "#d97706",  badge: { bg: "#fff3cd", text: "#92400e" } },
+    { bg: "rgba(186,26,26,0.08)",  color: "#ba1a1a",  badge: { bg: "#ffdad6", text: "#ba1a1a" } },
+    { bg: "rgba(5,150,105,0.08)",  color: "#059669",  badge: { bg: "#d4edda", text: "#2e7d32" } },
+    { bg: "rgba(0,63,135,0.08)",   color: PRIMARY,    badge: { bg: "rgba(0,63,135,0.10)", text: PRIMARY } },
+    { bg: "rgba(124,58,237,0.08)", color: "#7c3aed",  badge: { bg: "rgba(124,58,237,0.10)", text: "#7c3aed" } },
+    { bg: "rgba(14,165,233,0.08)", color: "#0ea5e9",  badge: { bg: "rgba(14,165,233,0.10)", text: "#0369a1" } },
 ];
- 
+
 const SkeletonCard = () => (
-  <div style={{
-    background: "#fff",
-    border: "1.5px solid #f0f0f0",
-    borderRadius: "14px",
-    padding: "28px 24px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-    animation: "pulse 1.5s ease-in-out infinite",
-  }}>
-    <div style={{ height: "13px", width: "55%", background: "#f0f0f0", borderRadius: "6px" }} />
-    <div style={{ height: "22px", width: "80%", background: "#f0f0f0", borderRadius: "6px" }} />
-    <div style={{ height: "13px", width: "40%", background: "#f0f0f0", borderRadius: "6px" }} />
-    <div style={{ height: "13px", width: "65%", background: "#f0f0f0", borderRadius: "6px" }} />
-  </div>
-);
- 
-export default function ViolationTypes() {
-  const [violations, setViolations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [search, setSearch] = useState("");
-  // const [hovered, setHovered] = useState(null);
- 
-  useEffect(() => {
-    getAllViolationTypes()
-      .then((res) => {
-        setViolations(res.data?.data || res.data || []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load violation types.");
-        setLoading(false);
-      });
-  }, []);
- 
-  const filtered = violations.filter((v) =>
-    (v.name || v.violationType || "").toLowerCase().includes(search.toLowerCase())
-  );
- 
-  return (
-    <div style={{
-      minHeight: "100vh",
-      background: "#f7f8fa",
-      fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
-      padding: "0",
-    }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(18px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .violation-card {
-          animation: fadeUp 0.35s ease both;
-          transition: box-shadow 0.18s, transform 0.18s, border-color 0.18s;
-        }
-        .violation-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 32px rgba(30,40,80,0.10);
-          border-color: #c8d0e7 !important;
-        }
-        .search-input:focus {
-          outline: none;
-          border-color: #4f6ef7 !important;
-          box-shadow: 0 0 0 3px rgba(79,110,247,0.10);
-        }
-        .badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          padding: "3px 10px";
-          border-radius: "20px";
-          font-size: "11.5px";
-          font-weight: 600;
-          letter-spacing: "0.3px";
-        }
-      `}</style>
- 
-      {/* Header */}
-      <div style={{
-        background: "#fff",
-        borderBottom: "1.5px solid #ebebeb",
-        padding: "32px 48px 24px",
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "20px",
-      }}>
-        <div>
-          <div style={{
-            fontSize: "11px",
-            fontWeight: 600,
-            letterSpacing: "2px",
-            color: "#4f6ef7",
-            textTransform: "uppercase",
-            marginBottom: "6px",
-            fontFamily: "'DM Mono', monospace",
-          }}>
-            Admin Panel
-          </div>
-          <h1 style={{
-            margin: 0,
-            fontSize: "28px",
-            fontWeight: 700,
-            color: "#151a2d",
-            letterSpacing: "-0.5px",
-          }}>
-            Violation Types
-          </h1>
-          <p style={{ margin: "6px 0 0", color: "#8a94a8", fontSize: "14px" }}>
-            {loading ? "Loading..." : `${filtered.length} violation${filtered.length !== 1 ? "s" : ""} found`}
-          </p>
-        </div>
- 
-        {/* Search */}
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search violations..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            padding: "10px 18px",
-            borderRadius: "10px",
-            border: "1.5px solid #e2e6f0",
-            fontSize: "14px",
-            width: "240px",
-            background: "#f7f8fa",
-            color: "#151a2d",
-            fontFamily: "inherit",
-            transition: "border-color 0.18s, box-shadow 0.18s",
-          }}
-        />
-      </div>
- 
-      {/* Content */}
-      <div style={{ padding: "36px 48px" }}>
-        {error && (
-          <div style={{
-            background: "#fde8e8",
-            border: "1.5px solid #e57373",
-            borderRadius: "12px",
-            padding: "18px 24px",
-            color: "#8b1a1a",
-            fontSize: "14px",
-            fontWeight: 500,
-          }}>
-            ⚠ {error}
-          </div>
-        )}
- 
-        {loading ? (
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "20px",
-          }}>
-            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
-          </div>
-        ) : filtered.length === 0 ? (
-          <div style={{
-            textAlign: "center",
-            padding: "80px 0",
-            color: "#8a94a8",
-          }}>
-            <div style={{ fontSize: "42px", marginBottom: "12px" }}>🔍</div>
-            <div style={{ fontSize: "17px", fontWeight: 600, color: "#151a2d" }}>No results found</div>
-            <div style={{ fontSize: "14px", marginTop: "6px" }}>Try adjusting your search.</div>
-          </div>
-        ) : (
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: "20px",
-          }}>
-            {filtered.map((v, i) => {
-              const tag = tagColors[i % tagColors.length];
-              const name = v.description || "Unknown";
-              const fine = v.penalty_amount || 1000;
-              const desc = v.description || null;
-              const code = v.offence_section|| null;
-              console.log(code);
-              return (
-                <div
-                  key={v.violation_type_id || i}
-                  className="violation-card"
-                  style={{
-                    animationDelay: `${i * 0.045}s`,
-                    background: "#fff",
-                    border: "1.5px solid #eaecf4",
-                    borderRadius: "14px",
-                    padding: "24px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "12px",
-                    cursor: "default",
-                  }}
-                >
-                  {/* Top row */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
-                    <span style={{
-                      background: tag.bg,
-                      color: tag.text,
-                      border: `1.5px solid ${tag.border}`,
-                      padding: "3px 11px",
-                      borderRadius: "20px",
-                      fontSize: "11.5px",
-                      fontWeight: 600,
-                      letterSpacing: "0.3px",
-                      whiteSpace: "nowrap",
-                    }}>
-                      {"Violation"}
-                    </span>
-                    {code && (
-                      <span style={{
-                        fontFamily: "'DM Mono', monospace",
-                        fontSize: "11px",
-                        color: "#8a94a8",
-                        background: "#f7f8fa",
-                        padding: "3px 9px",
-                        borderRadius: "6px",
-                        border: "1px solid #e2e6f0",
-                      }}>
-                        {code}
-                      </span>
-                    )}
-                  </div>
- 
-                  {/* Name */}
-                  <div style={{
-                    fontSize: "17px",
-                    fontWeight: 700,
-                    color: "#151a2d",
-                    letterSpacing: "-0.2px",
-                    lineHeight: 1.3,
-                  }}>
-                    {name}
-                  </div>
- 
-                  {/* Description */}
-                  {desc && (
-                    <div style={{
-                      fontSize: "13.5px",
-                      color: "#6b7280",
-                      lineHeight: 1.6,
-                    }}>
-                      {desc}
-                    </div>
-                  )}
- 
-                  {/* Divider */}
-                  <div style={{ borderTop: "1px solid #f0f0f0", marginTop: "4px" }} />
- 
-                  {/* Fine */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: "12px", color: "#8a94a8", fontWeight: 500 }}>Fine Amount</span>
-                    <span style={{
-                      fontSize: "16px",
-                      fontWeight: 700,
-                      color: fine != null ? "#1b7a3e" : "#bbb",
-                      fontFamily: "'DM Mono', monospace",
-                    }}>
-                      {fine != null ? `₹${Number(fine).toLocaleString("en-IN")}` : "—"}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+    <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 animate-pulse" style={{ boxShadow: cardShadow }}>
+        <div className="h-3 rounded-full" style={{ width: "55%", background: SURFACE }} />
+        <div className="h-5 rounded-full" style={{ width: "80%", background: SURFACE }} />
+        <div className="h-3 rounded-full" style={{ width: "40%", background: SURFACE }} />
     </div>
-  );
+);
+
+export default function ViolationTypes() {
+    const [violations, setViolations] = useState([]);
+    const [loading, setLoading]       = useState(true);
+    const [error, setError]           = useState(null);
+    const [search, setSearch]         = useState("");
+
+    useEffect(() => {
+        getAllViolationTypes()
+            .then((res) => { setViolations(res.data?.data || res.data || []); setLoading(false); })
+            .catch((err) => { console.error(err); setError("Failed to load violation types."); setLoading(false); });
+    }, []);
+
+    const filtered = violations.filter((v) =>
+        (v.description || "").toLowerCase().includes(search.toLowerCase())
+    );
+
+    return (
+        <div className="min-h-screen" style={{ background: SURFACE }}>
+
+            {/* ── Header ──────────────────────────────────── */}
+            <div className="bg-white px-8 py-8 flex flex-wrap items-center justify-between gap-4"
+                 style={{ borderBottom: "1px solid rgba(197,200,212,0.30)" }}>
+                <div>
+                    <p className="text-[0.75rem] font-medium uppercase tracking-[0.08em] mb-1" style={{ color: PRIMARY }}>Admin Panel</p>
+                    <h1 className="text-[1.75rem] font-bold tracking-[-0.02em]" style={{ color: ON_SURFACE }}>Violation Types</h1>
+                    <p className="text-[0.9375rem] mt-1" style={{ color: MUTED }}>
+                        {loading ? "Loading…" : `${filtered.length} violation${filtered.length !== 1 ? "s" : ""} found`}
+                    </p>
+                </div>
+
+                {/* Search */}
+                <div className="relative">
+                    <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: MUTED }} />
+                    <input
+                        type="text" placeholder="Search violations…"
+                        value={search} onChange={(e) => setSearch(e.target.value)}
+                        className="pl-9 pr-4 py-2.5 rounded-xl text-[0.875rem] outline-none w-60 transition-all duration-200"
+                        style={{ background: "#d8dde5", border: "none", color: ON_SURFACE }}
+                        onFocus={(e) => { e.target.style.background = "#e0e4ea"; e.target.style.boxShadow = `0 0 0 2px ${PRIMARY}`; }}
+                        onBlur={(e)  => { e.target.style.background = "#d8dde5"; e.target.style.boxShadow = "none"; }}
+                    />
+                </div>
+            </div>
+
+            {/* ── Content ───────────────────────────────────── */}
+            <div className="px-8 py-8">
+                {error && (
+                    <div className="mb-6 rounded-xl px-4 py-3 text-[0.875rem] font-medium"
+                         style={{ background: "#ffdad6", color: "#ba1a1a" }}>
+                        ⚠ {error}
+                    </div>
+                )}
+
+                {/* Skeleton grid */}
+                {loading && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+                    </div>
+                )}
+
+                {/* Empty state */}
+                {!loading && filtered.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
+                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-white"
+                             style={{ boxShadow: cardShadow, color: "#c5c8d4" }}>
+                            <TriangleAlert size={24} />
+                        </div>
+                        <p className="text-[1rem] font-semibold" style={{ color: ON_SURFACE }}>No violations found</p>
+                        <p className="text-[0.875rem]" style={{ color: MUTED }}>Try adjusting your search.</p>
+                    </div>
+                )}
+
+                {/* Card grid */}
+                {!loading && filtered.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {filtered.map((v, i) => {
+                            const acc  = CARD_ACCENTS[i % CARD_ACCENTS.length];
+                            const name = v.description || "Unknown";
+                            const fine = v.penalty_amount ?? null;
+                            const code = v.offence_section || null;
+                            return (
+                                <div
+                                    key={v.violation_type_id || i}
+                                    className="bg-white rounded-2xl p-5 flex flex-col gap-3 cursor-default transition-all duration-200"
+                                    style={{ boxShadow: cardShadow }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,63,135,0.12)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = cardShadow; e.currentTarget.style.transform = "translateY(0)"; }}
+                                >
+                                    {/* Top row — semantic badge + section code */}
+                                    <div className="flex items-start justify-between gap-2">
+                                        <span className="px-2.5 py-0.5 rounded-full text-[0.75rem] font-bold"
+                                              style={{ background: acc.badge.bg, color: acc.badge.text }}>
+                                            Violation
+                                        </span>
+                                        {code && (
+                                            <span className="font-mono text-[0.75rem] px-2 py-0.5 rounded"
+                                                  style={{ background: SURFACE, color: MUTED }}>
+                                                {code}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Icon + Name */}
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                                             style={{ background: acc.bg, color: acc.color }}>
+                                            <TriangleAlert size={16} />
+                                        </div>
+                                        <p className="text-[1rem] font-bold leading-snug" style={{ color: ON_SURFACE }}>
+                                            {name}
+                                        </p>
+                                    </div>
+
+                                    {/* Ghost separator at 30% opacity */}
+                                    <div style={{ borderTop: "1px solid rgba(197,200,212,0.30)" }} />
+
+                                    {/* Fine amount */}
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[0.8125rem]" style={{ color: MUTED }}>Fine Amount</span>
+                                        <span className="text-[1rem] font-bold font-mono"
+                                              style={{ color: fine != null ? "#059669" : "#c5c8d4" }}>
+                                            {fine != null ? `₹${Number(fine).toLocaleString("en-IN")}` : "—"}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 }

@@ -1,0 +1,27 @@
+/* Google Fonts & keyframe animations only — everything else is Tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@keyframes auth-fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes auth-slide-down {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-auth-fade-up {
+    animation: auth-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-auth-slide-down {
+    animation: auth-slide-down 0.22s ease both;
+}
+
+/* Staggered field entrance */
+.auth-field-1 { animation: auth-fade-up 0.38s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.auth-field-2 { animation: auth-fade-up 0.38s 0.14s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.auth-field-3 { animation: auth-fade-up 0.38s 0.20s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.auth-field-4 { animation: auth-fade-up 0.38s 0.26s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.auth-field-5 { animation: auth-fade-up 0.38s 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }

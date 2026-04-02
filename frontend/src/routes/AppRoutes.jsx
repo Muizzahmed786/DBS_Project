@@ -9,6 +9,10 @@ import VehicleManagement from '../components/admin/VehicleManagement.jsx';
 import ViolationTypes from '../components/admin/ViolationTypes.jsx';
 import Register from "../pages/Register.jsx";
 import Login from "../pages/Login.jsx";
+import OfficerLogin from "../pages/OfficerLogin.jsx";
+import OfficerRegister from "../pages/OfficerRegister.jsx";
+import AdminLogin from "../pages/AdminLogin.jsx";
+import PortalSelect from "../pages/PortalSelect.jsx";
 import Citizen from "../pages/Citizen.jsx";
 import CitizenDashboard from "../components/citizen/CitizenDashboard.jsx";
 import Profile from "../components/citizen/Profile.jsx";
@@ -26,12 +30,24 @@ import AllRtoOffices from "../components/admin/AllRtoOffices.jsx";
 import AddRtoOffice from "../components/admin/AddRtoOffice.jsx";
 import AddViolationType from "../components/admin/AddViolationType.jsx";
 import ChallanPayment from "../components/citizen/ChallanPayment.jsx";
+
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      {/* ── Portal selection ─────────────────── */}
+      <Route path="/" element={<PortalSelect />} />
+
+      {/* ── Citizen auth ───────────────────────── */}
+      <Route path="/portal" element={<PortalSelect />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      {/* ── Officer auth ───────────────────────── */}
+      <Route path="/officer/login" element={<OfficerLogin />} />
+      <Route path="/officer/register" element={<OfficerRegister />} />
+
+      {/* ── Admin auth ─────────────────────────── */}
+      <Route path="/admin/login" element={<AdminLogin />} />
 
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
         <Route path="/admin" element={<Admin />}>

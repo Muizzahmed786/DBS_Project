@@ -6,47 +6,45 @@ import {
   getMyPaymentCount,
 } from "../../api/citizen";
 import {
-  FileWarning,
-  Car,
-  CreditCard,
-  CheckCircle,
-  Clock,
-  TrendingUp,
-  AlertCircle,
+  FileWarning, Car, CreditCard, CheckCircle, Clock, TrendingUp, AlertCircle,
 } from "lucide-react";
 
-const StatCard = ({ icon: Icon, label, value, accent, loading }) => (
+/* Ambient shadow — tinted, high diffusion, NOT a dark drop-shadow */
+const cardShadow = "0 4px 24px rgba(0,63,135,0.07), 0 1px 4px rgba(0,63,135,0.04)";
+
+const StatCard = ({ icon: Icon, label, value, accent, accent2, loading }) => (
   <div
-    style={{ borderColor: accent + "33", background: accent + "0d" }}
-    className="rounded-2xl border p-5 flex flex-col gap-3 transition-transform hover:-translate-y-1 duration-200"
+    className="rounded-2xl bg-white p-5 flex flex-col gap-3 transition-transform hover:-translate-y-1 duration-200 cursor-default"
+    style={{ boxShadow: cardShadow }}
   >
     <div className="flex items-center justify-between">
-      <span className="text-slate-400 text-sm font-medium">{label}</span>
-      <div
-        style={{ background: accent + "22", color: accent }}
-        className="p-2 rounded-xl"
-      >
+      <span className="text-[0.8125rem] font-medium uppercase tracking-[0.04em] text-[#42454e]">
+        {label}
+      </span>
+      <div className="p-2 rounded-xl" style={{ background: accent + "18", color: accent }}>
         <Icon size={18} />
       </div>
     </div>
     {loading ? (
-      <div className="h-8 w-16 rounded-lg bg-slate-700 animate-pulse" />
+      <div className="h-8 w-16 rounded-lg bg-[#e0e4ea] animate-pulse" />
     ) : (
-      <span className="text-3xl font-bold text-white">{value ?? 0}</span>
+      <span className="text-[2rem] font-bold text-[#1a1d23] tracking-[-0.02em] leading-none">
+        {value ?? 0}
+      </span>
     )}
   </div>
 );
 
 const CitizenDashboard = () => {
   const [stats, setStats] = useState({
-    totalChallans: null,
+    totalChallans:   null,
     pendingChallans: null,
-    paidChallans: null,
-    totalVehicles: null,
-    totalPayments: null,
+    paidChallans:    null,
+    totalVehicles:   null,
+    totalPayments:   null,
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -58,13 +56,12 @@ const CitizenDashboard = () => {
           getMyVehicleCount(),
           getMyPaymentCount(),
         ]);
-
         setStats({
-          totalChallans: total.data.data,
+          totalChallans:   total.data.data,
           pendingChallans: pending.data.data,
-          paidChallans: paid.data.data,
-          totalVehicles: vehicles.data.data,
-          totalPayments: payments.data.data,
+          paidChallans:    paid.data.data,
+          totalVehicles:   vehicles.data.data,
+          totalPayments:   payments.data.data,
         });
       } catch (err) {
         setError("Failed to load dashboard data. Please try again.");
@@ -72,105 +69,96 @@ const CitizenDashboard = () => {
         setLoading(false);
       }
     };
-
     fetchStats();
   }, []);
 
   const cards = [
-    {
-      icon: FileWarning,
-      label: "Total Challans",
-      value: stats.totalChallans,
-      accent: "#60a5fa",
-    },
-    {
-      icon: Clock,
-      label: "Pending Challans",
-      value: stats.pendingChallans,
-      accent: "#fb923c",
-    },
-    {
-      icon: CheckCircle,
-      label: "Paid Challans",
-      value: stats.paidChallans,
-      accent: "#34d399",
-    },
-    {
-      icon: Car,
-      label: "My Vehicles",
-      value: stats.totalVehicles,
-      accent: "#a78bfa",
-    },
-    {
-      icon: CreditCard,
-      label: "Total Payments",
-      value: stats.totalPayments,
-      accent: "#f472b6",
-    },
+    { icon: FileWarning, label: "Total Challans",   value: stats.totalChallans,   accent: "#003f87" },
+    { icon: Clock,       label: "Pending Challans", value: stats.pendingChallans, accent: "#d97706" },
+    { icon: CheckCircle, label: "Paid Challans",    value: stats.paidChallans,    accent: "#059669" },
+    { icon: Car,         label: "My Vehicles",      value: stats.totalVehicles,   accent: "#7c3aed" },
+    { icon: CreditCard,  label: "Total Payments",   value: stats.totalPayments,   accent: "#db2777" },
   ];
 
-  // Compliance % — only when data is loaded and totalChallans > 0
   const compliance =
-    !loading &&
-    stats.totalChallans > 0
+    !loading && stats.totalChallans > 0
       ? Math.round((stats.paidChallans / stats.totalChallans) * 100)
       : null;
 
   return (
-    <div className="text-white space-y-8">
-      {/* Header */}
+    <div className="space-y-8">
+      {/* ── Page Header ───────────────────────────────────── */}
       <div>
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-slate-400 text-sm mt-1">
-          Overview of your traffic activity
+        <p className="text-[0.8125rem] font-medium text-[#003f87] uppercase tracking-[0.08em] mb-1">
+          Overview
+        </p>
+        <h1 className="text-[1.75rem] font-bold text-[#1a1d23] tracking-[-0.02em] leading-tight">
+          Dashboard
+        </h1>
+        <p className="text-[0.9375rem] text-[#42454e] mt-1">
+          Your traffic activity at a glance
         </p>
       </div>
 
-      {/* Error */}
+      {/* ── Error ─────────────────────────────────────────── */}
       {error && (
-        <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-4 py-3 text-sm">
+        <div
+          className="flex items-center gap-3 rounded-xl px-4 py-3 text-[0.875rem] font-medium"
+          style={{ background: "#ffdad6", color: "#ba1a1a" }}
+        >
           <AlertCircle size={16} />
           {error}
         </div>
       )}
 
-      {/* Stat Cards */}
+      {/* ── Stat Cards ────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {cards.map((card) => (
           <StatCard key={card.label} {...card} loading={loading} />
         ))}
       </div>
 
-      {/* Compliance Bar */}
+      {/* ── Compliance Bar ────────────────────────────────── */}
       {!loading && stats.totalChallans > 0 && (
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-800/40 p-6 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-slate-300 font-medium">
-              <TrendingUp size={18} className="text-emerald-400" />
-              Challan Compliance Rate
+        <div
+          className="rounded-2xl bg-white p-6"
+          style={{ boxShadow: cardShadow }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <TrendingUp size={18} style={{ color: "#059669" }} />
+              <span className="text-[1rem] font-semibold text-[#1a1d23]">
+                Challan Compliance Rate
+              </span>
             </div>
-            <span className="text-emerald-400 font-bold text-lg">
+            <span className="text-[1.125rem] font-bold" style={{ color: "#059669" }}>
               {compliance}%
             </span>
           </div>
-          <div className="w-full bg-slate-700 rounded-full h-2.5">
+
+          {/* Progress bar — tonal bg, no border */}
+          <div className="w-full rounded-full h-2.5 bg-[#e0e4ea]">
             <div
-              className="h-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-700"
-              style={{ width: `${compliance}%` }}
+              className="h-2.5 rounded-full transition-all duration-700"
+              style={{
+                width: `${compliance}%`,
+                background: "linear-gradient(90deg, #059669, #34d399)",
+              }}
             />
           </div>
-          <p className="text-slate-500 text-xs">
+
+          <p className="text-[0.8125rem] text-[#42454e] mt-3">
             {stats.paidChallans} of {stats.totalChallans} challans cleared
           </p>
         </div>
       )}
 
-      {/* Empty state */}
+      {/* ── Empty State ───────────────────────────────────── */}
       {!loading && !error && stats.totalChallans === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-center text-slate-500 space-y-3">
-          <CheckCircle size={40} className="text-emerald-500/50" />
-          <p className="text-lg font-medium text-slate-300">All clear!</p>
-          <p className="text-sm">You have no challans on record.</p>
+        <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
+          <CheckCircle size={40} style={{ color: "#059669", opacity: 0.5 }} />
+          <p className="text-[1.125rem] font-semibold text-[#1a1d23]">All clear!</p>
+          <p className="text-[0.875rem] text-[#42454e]">You have no challans on record.</p>
         </div>
       )}
     </div>

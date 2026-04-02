@@ -5,316 +5,261 @@ import {
   getChallanCountByStatus,
 } from "../../api/admin.js";
 
-const fmtAmount = (n) =>
-  n != null ? `₹${Number(n).toLocaleString("en-IN")}` : "—";
+/* ── Shared tokens ──────────────────────────────────────────── */
+const cardShadow  = "0 4px 24px rgba(0,63,135,0.07), 0 1px 4px rgba(0,63,135,0.04)";
+const PRIMARY     = "#003f87";
+const ON_SURFACE  = "#1a1d23";
+const MUTED       = "#42454e";
+const SURFACE_LOW = "#f3f4f5";
 
-const fmtCount = (n) =>
-  n != null ? Number(n).toLocaleString("en-IN") : "—";
+const fmtAmount = (n) => n != null ? `₹${Number(n).toLocaleString("en-IN")}` : "—";
+const fmtCount  = (n) => n != null ? Number(n).toLocaleString("en-IN")       : "—";
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
-
-const StatSkeleton = () => (
-  <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-3 shadow-sm">
-    <div className="h-3 w-24 rounded-full bg-slate-100 animate-pulse" />
-    <div className="h-8 w-32 rounded-full bg-slate-100 animate-pulse" />
-    <div className="h-3 w-20 rounded-full bg-slate-100 animate-pulse" />
-  </div>
-);
-
-// ─── Stat Card ────────────────────────────────────────────────────────────────
-
-const StatCard = ({ label, value, sub, icon, iconBg, valueColor = "text-slate-900", trend }) => (
-  <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col gap-1 hover:shadow-md transition-shadow">
-    <div className="flex items-start justify-between mb-2">
-      <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${iconBg}`}>
-        {icon}
-      </span>
-      {trend != null && (
-        <span className={`text-xs font-semibold px-2 py-1 rounded-full font-mono
-          ${trend >= 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"}`}>
-          {trend >= 0 ? "▲" : "▼"} {Math.abs(trend)}%
-        </span>
-      )}
-    </div>
-    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</p>
-    <p className={`text-3xl font-bold font-mono tracking-tight ${valueColor}`}>{value}</p>
-    {sub && <p className="text-xs text-slate-400 mt-1">{sub}</p>}
-  </div>
-);
-
-// ─── Donut Chart (pure SVG) ───────────────────────────────────────────────────
-
-const DonutChart = ({ paid, pending, total }) => {
-  if (!total) return null;
-  const r = 54;
-  const cx = 70;
-  const cy = 70;
-  const circ = 2 * Math.PI * r;
-  const paidPct   = paid / total;
-  const paidDash  = paidPct * circ;
-  const pendingDash = (pending / total) * circ;
-
-  return (
-    <div className="flex items-center gap-8">
-      <svg width="140" height="140" viewBox="0 0 140 140">
-        {/* Track */}
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f1f5f9" strokeWidth="18" />
-        {/* Pending arc */}
-        <circle
-          cx={cx} cy={cy} r={r}
-          fill="none"
-          stroke="#fbbf24"
-          strokeWidth="18"
-          strokeDasharray={`${pendingDash} ${circ - pendingDash}`}
-          strokeDashoffset={-paidDash}
-          strokeLinecap="round"
-          style={{ transition: "stroke-dasharray 0.7s ease" }}
-        />
-        {/* Paid arc */}
-        <circle
-          cx={cx} cy={cy} r={r}
-          fill="none"
-          stroke="#10b981"
-          strokeWidth="18"
-          strokeDasharray={`${paidDash} ${circ - paidDash}`}
-          strokeDashoffset={circ * 0.25}
-          strokeLinecap="round"
-          style={{ transition: "stroke-dasharray 0.7s ease" }}
-        />
-        {/* Centre label */}
-        <text x={cx} y={cy - 6} textAnchor="middle" fontSize="18" fontWeight="700" fill="#0f172a" fontFamily="monospace">
-          {total}
-        </text>
-        <text x={cx} y={cy + 12} textAnchor="middle" fontSize="10" fill="#94a3b8" fontFamily="sans-serif">
-          total
-        </text>
-      </svg>
-
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-emerald-400 shrink-0" />
-          <div>
-            <p className="text-xs text-slate-500 font-medium">Paid</p>
-            <p className="text-lg font-bold font-mono text-emerald-600">{fmtCount(paid)}</p>
-            <p className="text-xs text-slate-400">{total ? Math.round((paid / total) * 100) : 0}% of total</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-amber-400 shrink-0" />
-          <div>
-            <p className="text-xs text-slate-500 font-medium">Pending</p>
-            <p className="text-lg font-bold font-mono text-amber-600">{fmtCount(pending)}</p>
-            <p className="text-xs text-slate-400">{total ? Math.round((pending / total) * 100) : 0}% of total</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ─── Progress Bar ─────────────────────────────────────────────────────────────
-
-const ProgressBar = ({ label, value, max, color }) => {
-  const pct = max ? Math.round((value / max) * 100) : 0;
-  return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex justify-between items-center">
-        <span className="text-xs font-medium text-slate-600">{label}</span>
-        <span className="text-xs font-mono font-bold text-slate-700">{pct}%</span>
-      </div>
-      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-        <div
-          className={`h-full rounded-full transition-all duration-700 ${color}`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-    </div>
-  );
-};
-
-// ─── Main Component ───────────────────────────────────────────────────────────
-
-export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    totalCount:   null,
-    paidCount:    null,
-    pendingCount: null,
-    totalRevenue: null,
-  });
-  const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(null);
-
-  useEffect(() => {
-    const fetchAll = async () => {
-      setLoading(true);
-      try {
-        const [totalRes, revenueRes, paidRes, pendingRes] = await Promise.all([
-          getTotalChallansCount(),
-          getTotalRevenue(),
-          getChallanCountByStatus("paid"),
-          getChallanCountByStatus("pending"),
-        ]);
-
-        const extract = (res) => res.data?.data ?? res.data ?? {};
-
-        const total   = extract(totalRes);
-        const revenue = extract(revenueRes);
-        const paid    = extract(paidRes);
-        const pending = extract(pendingRes);
-
-        setStats({
-          totalCount:   Number(total.total_challans   ?? total.count   ?? total ?? 0),
-          paidCount:    Number(paid.count             ?? paid.total    ?? paid ?? 0),
-          pendingCount: Number(pending.count          ?? pending.total ?? pending ?? 0),
-          totalRevenue: Number(revenue.total_revenue  ?? revenue.amount ?? revenue ?? 0),
-        });
-      } catch {
-        setError("Failed to load dashboard stats. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAll();
-  }, []);
-
-  const { totalCount, paidCount, pendingCount, totalRevenue } = stats;
-  const collectionRate = totalCount ? Math.round((paidCount / totalCount) * 100) : 0;
-  const avgFine = paidCount ? Math.round(totalRevenue / paidCount) : 0;
-
-  return (
-    <div className="min-h-screen bg-slate-50">
-
-      {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-200 px-8 py-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">
-              Admin Panel
-            </p>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Overview of challan activity and revenue collection.
-            </p>
-          </div>
-          <div className="text-xs font-mono text-slate-400 bg-slate-100 px-3 py-1.5 rounded-lg">
-            Last updated: {new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
-          </div>
-        </div>
-      </div>
-
-      <div className="px-8 py-8 flex flex-col gap-8">
-
-        {/* Error */}
-        {error && (
-          <div className="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
-            ⚠ {error}
-          </div>
-        )}
-
-        {/* ── Stat Cards ── */}
+/* ── Page header (shared layout) ───────────────────────────── */
+const PageHeader = ({ overline, title, subtitle, right }) => (
+    <div className="bg-white px-8 pt-8 pb-6 flex flex-wrap items-start justify-between gap-4"
+         style={{ borderBottom: "1px solid rgba(197,200,212,0.30)" }}>
         <div>
-          <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">Overview</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            {loading ? (
-              Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)
-            ) : (
-              <>
-                <StatCard
-                  label="Total Challans"
-                  value={fmtCount(totalCount)}
-                  sub="All issued challans"
-                  icon="📋"
-                  iconBg="bg-slate-100"
-                />
-                <StatCard
-                  label="Paid Challans"
-                  value={fmtCount(paidCount)}
-                  sub={`${collectionRate}% collection rate`}
-                  icon="✅"
-                  iconBg="bg-emerald-50"
-                  valueColor="text-emerald-600"
-                />
-                <StatCard
-                  label="Pending Challans"
-                  value={fmtCount(pendingCount)}
-                  sub="Awaiting payment"
-                  icon="⏳"
-                  iconBg="bg-amber-50"
-                  valueColor="text-amber-600"
-                />
-                <StatCard
-                  label="Total Revenue"
-                  value={fmtAmount(totalRevenue)}
-                  sub={`Avg. ${fmtAmount(avgFine)} per paid challan`}
-                  icon="💰"
-                  iconBg="bg-indigo-50"
-                  valueColor="text-indigo-600"
-                />
-              </>
-            )}
-          </div>
+            <p className="text-[0.75rem] font-medium uppercase tracking-[0.08em] mb-1" style={{ color: PRIMARY }}>
+                {overline}
+            </p>
+            <h1 className="text-[1.75rem] font-bold tracking-[-0.02em] leading-tight" style={{ color: ON_SURFACE }}>
+                {title}
+            </h1>
+            {subtitle && <p className="text-[0.9375rem] mt-1" style={{ color: MUTED }}>{subtitle}</p>}
         </div>
-
-        {/* ── Bottom Row ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-          {/* Challan Breakdown Donut */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-            <div className="mb-5">
-              <h2 className="text-sm font-bold text-slate-800">Challan Breakdown</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Distribution of paid vs pending challans</p>
-            </div>
-            {loading ? (
-              <div className="flex items-center gap-8">
-                <div className="w-36 h-36 rounded-full border-[18px] border-slate-100 animate-pulse" />
-                <div className="flex flex-col gap-4">
-                  <div className="h-3 w-28 rounded-full bg-slate-100 animate-pulse" />
-                  <div className="h-3 w-20 rounded-full bg-slate-100 animate-pulse" />
-                </div>
-              </div>
-            ) : (
-              <DonutChart paid={paidCount} pending={pendingCount} total={totalCount} />
-            )}
-          </div>
-
-          {/* Collection Progress */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-            <div className="mb-5">
-              <h2 className="text-sm font-bold text-slate-800">Collection Progress</h2>
-              <p className="text-xs text-slate-400 mt-0.5">How challan statuses compare to total</p>
-            </div>
-            {loading ? (
-              <div className="flex flex-col gap-5">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex flex-col gap-2">
-                    <div className="h-3 w-24 rounded-full bg-slate-100 animate-pulse" />
-                    <div className="h-2 w-full rounded-full bg-slate-100 animate-pulse" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col gap-5">
-                <ProgressBar label="Paid Challans"    value={paidCount}    max={totalCount} color="bg-emerald-400" />
-                <ProgressBar label="Pending Challans" value={pendingCount} max={totalCount} color="bg-amber-400" />
-                <ProgressBar label="Revenue Realised" value={paidCount}    max={totalCount} color="bg-indigo-400" />
-
-                <div className="mt-2 pt-4 border-t border-slate-100 grid grid-cols-2 gap-4">
-                  <div className="bg-slate-50 rounded-xl p-3 text-center">
-                    <p className="text-xs text-slate-400 mb-1">Collection Rate</p>
-                    <p className="text-2xl font-bold font-mono text-indigo-600">{collectionRate}%</p>
-                  </div>
-                  <div className="bg-slate-50 rounded-xl p-3 text-center">
-                    <p className="text-xs text-slate-400 mb-1">Avg. Fine Collected</p>
-                    <p className="text-2xl font-bold font-mono text-emerald-600">{fmtAmount(avgFine)}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-      </div>
+        {right && <div className="self-center">{right}</div>}
     </div>
-  );
+);
+
+/* ── Skeleton ───────────────────────────────────────────────── */
+const StatSkeleton = () => (
+    <div className="bg-white rounded-2xl p-6 flex flex-col gap-3" style={{ boxShadow: cardShadow }}>
+        <div className="h-3 w-24 rounded-full bg-[#e0e4ea] animate-pulse" />
+        <div className="h-8 w-32 rounded-full bg-[#e0e4ea] animate-pulse" />
+        <div className="h-3 w-20 rounded-full bg-[#e0e4ea] animate-pulse" />
+    </div>
+);
+
+/* ── Stat Card ──────────────────────────────────────────────── */
+const StatCard = ({ label, value, sub, icon, accent, valueColor }) => (
+    <div className="bg-white rounded-2xl p-6 flex flex-col gap-1 transition-all duration-200 cursor-default"
+         style={{ boxShadow: cardShadow }}
+         onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,63,135,0.12)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+         onMouseLeave={(e) => { e.currentTarget.style.boxShadow = cardShadow; e.currentTarget.style.transform = "translateY(0)"; }}
+    >
+        <div className="flex items-start justify-between mb-2">
+            <span className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                  style={{ background: accent + "18" }}>
+                {icon}
+            </span>
+        </div>
+        <p className="text-[0.75rem] font-medium uppercase tracking-[0.05em]" style={{ color: MUTED }}>{label}</p>
+        <p className="text-[2rem] font-bold font-mono tracking-tight leading-none" style={{ color: valueColor || ON_SURFACE }}>
+            {value}
+        </p>
+        {sub && <p className="text-[0.8125rem] mt-1" style={{ color: MUTED }}>{sub}</p>}
+    </div>
+);
+
+/* ── Donut Chart ────────────────────────────────────────────── */
+const DonutChart = ({ paid, pending, total }) => {
+    if (!total) return null;
+    const r = 54, cx = 70, cy = 70, circ = 2 * Math.PI * r;
+    const paidDash    = (paid / total) * circ;
+    const pendingDash = (pending / total) * circ;
+    return (
+        <div className="flex items-center gap-8">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle cx={cx} cy={cy} r={r} fill="none" stroke={SURFACE_LOW} strokeWidth="18"/>
+                <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f59e0b" strokeWidth="18"
+                        strokeDasharray={`${pendingDash} ${circ - pendingDash}`}
+                        strokeDashoffset={-paidDash} strokeLinecap="round"
+                        style={{ transition: "stroke-dasharray 0.7s ease" }}/>
+                <circle cx={cx} cy={cy} r={r} fill="none" stroke="#059669" strokeWidth="18"
+                        strokeDasharray={`${paidDash} ${circ - paidDash}`}
+                        strokeDashoffset={circ * 0.25} strokeLinecap="round"
+                        style={{ transition: "stroke-dasharray 0.7s ease" }}/>
+                <text x={cx} y={cy - 6} textAnchor="middle" fontSize="18" fontWeight="700"
+                      fill={ON_SURFACE} fontFamily="monospace">{total}</text>
+                <text x={cx} y={cy + 12} textAnchor="middle" fontSize="10" fill={MUTED}
+                      fontFamily="Inter, sans-serif">total</text>
+            </svg>
+            <div className="flex flex-col gap-4">
+                {[
+                    { label: "Paid",    count: paid,    color: "#059669", dot: "#059669" },
+                    { label: "Pending", count: pending, color: "#d97706", dot: "#f59e0b" },
+                ].map(({ label, count, color, dot }) => (
+                    <div key={label} className="flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full shrink-0" style={{ background: dot }} />
+                        <div>
+                            <p className="text-[0.8125rem] font-medium" style={{ color: MUTED }}>{label}</p>
+                            <p className="text-[1.125rem] font-bold font-mono" style={{ color }}>{fmtCount(count)}</p>
+                            <p className="text-[0.75rem]" style={{ color: MUTED }}>
+                                {total ? Math.round((count / total) * 100) : 0}% of total
+                            </p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+/* ── Progress Bar ───────────────────────────────────────────── */
+const ProgressBar = ({ label, value, max, barColor }) => {
+    const pct = max ? Math.round((value / max) * 100) : 0;
+    return (
+        <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between items-center">
+                <span className="text-[0.8125rem] font-medium" style={{ color: MUTED }}>{label}</span>
+                <span className="text-[0.8125rem] font-mono font-bold" style={{ color: ON_SURFACE }}>{pct}%</span>
+            </div>
+            {/* Progress bar track — tonal surface, no border */}
+            <div className="h-2 rounded-full overflow-hidden" style={{ background: SURFACE_LOW }}>
+                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: barColor }} />
+            </div>
+        </div>
+    );
+};
+
+/* ── Main Component ─────────────────────────────────────────── */
+export default function AdminDashboard() {
+    const [stats, setStats] = useState({
+        totalCount: null, paidCount: null, pendingCount: null, totalRevenue: null,
+    });
+    const [loading, setLoading] = useState(true);
+    const [error, setError]     = useState(null);
+
+    useEffect(() => {
+        const fetchAll = async () => {
+            setLoading(true);
+            try {
+                const [totalRes, revenueRes, paidRes, pendingRes] = await Promise.all([
+                    getTotalChallansCount(), getTotalRevenue(),
+                    getChallanCountByStatus("paid"), getChallanCountByStatus("pending"),
+                ]);
+                const extract = (res) => res.data?.data ?? res.data ?? {};
+                const total   = extract(totalRes);
+                const revenue = extract(revenueRes);
+                const paid    = extract(paidRes);
+                const pending = extract(pendingRes);
+                setStats({
+                    totalCount:   Number(total.total_challans   ?? total.count   ?? total   ?? 0),
+                    paidCount:    Number(paid.count             ?? paid.total    ?? paid    ?? 0),
+                    pendingCount: Number(pending.count          ?? pending.total ?? pending ?? 0),
+                    totalRevenue: Number(revenue.total_revenue  ?? revenue.amount ?? revenue ?? 0),
+                });
+            } catch {
+                setError("Failed to load dashboard stats. Please try again.");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchAll();
+    }, []);
+
+    const { totalCount, paidCount, pendingCount, totalRevenue } = stats;
+    const collectionRate = totalCount ? Math.round((paidCount / totalCount) * 100) : 0;
+    const avgFine        = paidCount  ? Math.round(totalRevenue / paidCount)        : 0;
+
+    const cards = [
+        { label: "Total Challans",   value: fmtCount(totalCount),     sub: "All issued challans",                        icon: "📋", accent: PRIMARY,    valueColor: ON_SURFACE },
+        { label: "Paid Challans",    value: fmtCount(paidCount),      sub: `${collectionRate}% collection rate`,         icon: "✅", accent: "#059669",  valueColor: "#059669"  },
+        { label: "Pending Challans", value: fmtCount(pendingCount),   sub: "Awaiting payment",                           icon: "⏳", accent: "#d97706",  valueColor: "#d97706"  },
+        { label: "Total Revenue",    value: fmtAmount(totalRevenue),  sub: `Avg. ${fmtAmount(avgFine)} per challan`,     icon: "💰", accent: "#7c3aed",  valueColor: "#7c3aed"  },
+    ];
+
+    return (
+        <div className="min-h-screen" style={{ background: SURFACE_LOW }}>
+            <PageHeader
+                overline="Admin Panel"
+                title="Dashboard"
+                subtitle="Overview of challan activity and revenue collection."
+                right={
+                    <span className="text-[0.75rem] font-mono px-3 py-1.5 rounded-lg"
+                          style={{ background: "#e8ebef", color: MUTED }}>
+                        Updated: {new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                }
+            />
+
+            <div className="px-8 py-8 flex flex-col gap-8">
+                {/* Error */}
+                {error && (
+                    <div className="rounded-xl px-4 py-3 text-[0.875rem] font-medium"
+                         style={{ background: "#ffdad6", color: "#ba1a1a" }}>
+                        ⚠ {error}
+                    </div>
+                )}
+
+                {/* Stat Cards */}
+                <div>
+                    <p className="text-[0.75rem] font-medium uppercase tracking-[0.06em] mb-4" style={{ color: MUTED }}>Overview</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                        {loading
+                            ? Array.from({ length: 4 }).map((_, i) => <StatSkeleton key={i} />)
+                            : cards.map((c) => <StatCard key={c.label} {...c} />)
+                        }
+                    </div>
+                </div>
+
+                {/* Bottom Row */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Donut */}
+                    <div className="bg-white rounded-2xl p-6" style={{ boxShadow: cardShadow }}>
+                        <p className="text-[0.75rem] font-medium uppercase tracking-[0.06em] mb-1" style={{ color: MUTED }}>Breakdown</p>
+                        <h2 className="text-[1rem] font-bold mb-1" style={{ color: ON_SURFACE }}>Challan Distribution</h2>
+                        <p className="text-[0.8125rem] mb-5" style={{ color: MUTED }}>Paid vs pending</p>
+                        {loading
+                            ? <div className="flex items-center gap-8">
+                                <div className="w-36 h-36 rounded-full border-[18px] border-[#e0e4ea] animate-pulse" />
+                                <div className="flex flex-col gap-4">
+                                    <div className="h-3 w-28 rounded-full bg-[#e0e4ea] animate-pulse" />
+                                    <div className="h-3 w-20 rounded-full bg-[#e0e4ea] animate-pulse" />
+                                </div>
+                              </div>
+                            : <DonutChart paid={paidCount} pending={pendingCount} total={totalCount} />
+                        }
+                    </div>
+
+                    {/* Progress bars */}
+                    <div className="bg-white rounded-2xl p-6" style={{ boxShadow: cardShadow }}>
+                        <p className="text-[0.75rem] font-medium uppercase tracking-[0.06em] mb-1" style={{ color: MUTED }}>Collection</p>
+                        <h2 className="text-[1rem] font-bold mb-1" style={{ color: ON_SURFACE }}>Collection Progress</h2>
+                        <p className="text-[0.8125rem] mb-5" style={{ color: MUTED }}>Status vs total challans</p>
+                        {loading
+                            ? <div className="flex flex-col gap-5">
+                                {[1,2,3].map((i) => (
+                                    <div key={i} className="flex flex-col gap-2">
+                                        <div className="h-3 w-24 rounded-full bg-[#e0e4ea] animate-pulse" />
+                                        <div className="h-2 w-full rounded-full bg-[#e0e4ea] animate-pulse" />
+                                    </div>
+                                ))}
+                              </div>
+                            : <div className="flex flex-col gap-5">
+                                <ProgressBar label="Paid Challans"    value={paidCount}    max={totalCount} barColor="#059669" />
+                                <ProgressBar label="Pending Challans" value={pendingCount} max={totalCount} barColor="#f59e0b" />
+                                <ProgressBar label="Revenue Realised" value={paidCount}    max={totalCount} barColor={PRIMARY}  />
+
+                                {/* Ghost border separator at 30% opacity */}
+                                <div className="pt-4 grid grid-cols-2 gap-4"
+                                     style={{ borderTop: "1px solid rgba(197,200,212,0.30)" }}>
+                                    {[
+                                        { label: "Collection Rate",    value: `${collectionRate}%`, color: PRIMARY    },
+                                        { label: "Avg. Fine Collected", value: fmtAmount(avgFine),  color: "#059669"  },
+                                    ].map(({ label, value, color }) => (
+                                        <div key={label} className="rounded-xl p-3 text-center" style={{ background: SURFACE_LOW }}>
+                                            <p className="text-[0.75rem] mb-1" style={{ color: MUTED }}>{label}</p>
+                                            <p className="text-[1.5rem] font-bold font-mono" style={{ color }}>{value}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                              </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }

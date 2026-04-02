@@ -2,6 +2,15 @@ import { useEffect, useState } from "react";
 import { getRegisteredVehicles, insertVehicle } from "../../api/citizen.js";
 import { Car, Bike, Truck, Hash, Plus, X, ChevronDown } from "lucide-react";
 
+const cardShadow = "0 4px 24px rgba(0,63,135,0.07), 0 1px 4px rgba(0,63,135,0.04)";
+
+const inputBase =
+    "w-full rounded-xl px-[1rem] py-[0.8rem] text-[0.9375rem] text-[#1a1d23] outline-none transition-all duration-200";
+const inputHandlers = {
+    onFocus: (e) => { e.target.style.background = "#e0e4ea"; e.target.style.boxShadow = "0 0 0 2px #003f87"; },
+    onBlur:  (e) => { e.target.style.background = "#d8dde5"; e.target.style.boxShadow = "none"; },
+};
+
 const getVehicleIcon = (model = "") => {
     const m = model.toLowerCase();
     if (m.includes("bike") || m.includes("scooter") || m.includes("motorcycle")) return Bike;
@@ -10,17 +19,9 @@ const getVehicleIcon = (model = "") => {
 };
 
 const EMPTY_FORM = {
-    registration_number: "",
-    chassis_number: "",
-    engine_number: "",
-    vehicle_class: "",
-    fuel_type: "",
-    manufacturer: "",
-    model: "",
-    registration_date: "",
-    registration_valid_till: "",
-    insurance_valid_till: "",
-    rto_code: ""
+    registration_number: "", chassis_number: "", engine_number: "",
+    vehicle_class: "", fuel_type: "", manufacturer: "", model: "",
+    registration_date: "", registration_valid_till: "", insurance_valid_till: "", rto_code: "",
 };
 
 const TEXT_FIELDS = [
@@ -31,21 +32,21 @@ const TEXT_FIELDS = [
     { label: "Fuel Type",           key: "fuel_type",           placeholder: "Petrol / Diesel / Electric / CNG" },
     { label: "Manufacturer",        key: "manufacturer",        placeholder: "Maruti Suzuki" },
     { label: "Model",               key: "model",               placeholder: "Swift Dzire" },
-    { label: "RTO code",              key: "rto_code",              placeholder: "RTO office code" },
+    { label: "RTO Code",            key: "rto_code",            placeholder: "RTO office code" },
 ];
 
 const DATE_FIELDS = [
-    { label: "Registration Date",        key: "registration_date" },
-    { label: "Registration Valid Till",  key: "registration_valid_till" },
-    { label: "Insurance Valid Till",     key: "insurance_valid_till" },
+    { label: "Registration Date",       key: "registration_date" },
+    { label: "Registration Valid Till", key: "registration_valid_till" },
+    { label: "Insurance Valid Till",    key: "insurance_valid_till" },
 ];
 
 const Vehicles = () => {
-    const [vehicles, setVehicles]   = useState([]);
-    const [loading, setLoading]     = useState(false);
-    const [showForm, setShowForm]   = useState(false);
+    const [vehicles, setVehicles]     = useState([]);
+    const [loading, setLoading]       = useState(false);
+    const [showForm, setShowForm]     = useState(false);
     const [submitting, setSubmitting] = useState(false);
-    const [form, setForm]           = useState(EMPTY_FORM);
+    const [form, setForm]             = useState(EMPTY_FORM);
 
     const handleChange = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
 
@@ -53,12 +54,12 @@ const Vehicles = () => {
         event.preventDefault();
         setSubmitting(true);
         try {
-            if(!form.registration_number || !form.vehicle_class || !form.fuel_type){
-                alert("Please fill the required fields (Registration Number, Vehicle Class, Fuel Type");
+            if (!form.registration_number || !form.vehicle_class || !form.fuel_type) {
+                alert("Please fill the required fields (Registration Number, Vehicle Class, Fuel Type)");
                 setSubmitting(false);
                 return;
             }
-            await insertVehicle({...form});
+            await insertVehicle({ ...form });
             const res = await getRegisteredVehicles();
             setVehicles(res.data.data);
             setForm(EMPTY_FORM);
@@ -88,120 +89,157 @@ const Vehicles = () => {
     }, []);
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-8 md:px-8">
+        <div className="max-w-4xl mx-auto">
 
-            {/* Header */}
-            <div className="mb-8 flex items-center justify-between">
+            {/* ── Header ───────────────────────────────────── */}
+            <div className="mb-8 flex items-start justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">My Vehicles</h1>
-                    <p className="text-slate-400 text-sm mt-1">
+                    <p className="text-[0.8125rem] font-medium text-[#003f87] uppercase tracking-[0.08em] mb-1">
+                        My Fleet
+                    </p>
+                    <h1 className="text-[1.75rem] font-bold text-[#1a1d23] tracking-[-0.02em] leading-tight">
+                        Vehicles
+                    </h1>
+                    <p className="text-[0.9375rem] text-[#42454e] mt-1">
                         {vehicles.length} registered vehicle{vehicles.length !== 1 ? "s" : ""}
                     </p>
                 </div>
 
-                {/* Toggle form button */}
+                {/* Add Vehicle button — gradient primary */}
                 <button
                     onClick={() => setShowForm(prev => !prev)}
-                    className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 active:scale-95 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all duration-200"
+                    className="flex items-center gap-2 text-white text-[0.875rem] font-semibold px-5 py-2.5 rounded-[1.5rem] transition-all duration-200 active:scale-95"
+                    style={{
+                        background:  "linear-gradient(135deg, #003f87 0%, #0056b3 100%)",
+                        boxShadow:   "0 4px 16px rgba(0,63,135,0.28)",
+                        border: "none",
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,63,135,0.36)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,63,135,0.28)"; e.currentTarget.style.transform = "translateY(0)"; }}
                 >
                     {showForm ? <X size={16} /> : <Plus size={16} />}
                     {showForm ? "Cancel" : "Add Vehicle"}
                 </button>
             </div>
 
-            {/* Add Vehicle Form */}
+            {/* ── Add Vehicle Form ──────────────────────────── */}
             {showForm && (
-                <form
-                    onSubmit={handleSubmit}
-                    className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 mb-8"
+                <div
+                    className="bg-white rounded-2xl p-6 mb-8"
+                    style={{ boxShadow: cardShadow }}
                 >
-                    <div className="flex items-center justify-between mb-5">
-                        <h2 className="text-white font-semibold text-base">Vehicle Details</h2>
-                        <ChevronDown size={16} className="text-slate-500" />
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-[1.125rem] font-semibold text-[#1a1d23]">Vehicle Details</h2>
+                        <ChevronDown size={16} className="text-[#c5c8d4]" />
                     </div>
 
-                    {/* Text fields grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                        {TEXT_FIELDS.map(({ label, key, placeholder }) => (
-                            <div key={key} className="flex flex-col gap-1.5">
-                                <label className="text-slate-400 text-xs font-medium">{label}</label>
-                                <input
-                                    type="text"
-                                    value={form[key]}
-                                    placeholder={placeholder}
-                                    onChange={(e) => handleChange(key, e.target.value)}
-                                    className="bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30 transition-colors"
-                                />
-                            </div>
-                        ))}
-                    </div>
+                    <form onSubmit={handleSubmit}>
+                        {/* Text fields grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5 mb-5">
+                            {TEXT_FIELDS.map(({ label, key, placeholder }) => (
+                                <div key={key} className="flex flex-col">
+                                    <label className="text-[0.8125rem] font-medium text-[#42454e] uppercase tracking-[0.05em] mb-[0.7rem]">
+                                        {label}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={form[key]}
+                                        placeholder={placeholder}
+                                        onChange={(e) => handleChange(key, e.target.value)}
+                                        className={inputBase}
+                                        style={{ background: "#d8dde5", border: "none" }}
+                                        {...inputHandlers}
+                                    />
+                                </div>
+                            ))}
+                        </div>
 
-                    {/* Date fields grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                        {DATE_FIELDS.map(({ label, key }) => (
-                            <div key={key} className="flex flex-col gap-1.5">
-                                <label className="text-slate-400 text-xs font-medium">{label}</label>
-                                <input
-                                    type="date"
-                                    value={form[key]}
-                                    onChange={(e) => handleChange(key, e.target.value)}
-                                    className="bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/30 transition-colors"
-                                />
-                            </div>
-                        ))}
-                    </div>
+                        {/* Date fields grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-5 mb-7">
+                            {DATE_FIELDS.map(({ label, key }) => (
+                                <div key={key} className="flex flex-col">
+                                    <label className="text-[0.8125rem] font-medium text-[#42454e] uppercase tracking-[0.05em] mb-[0.7rem]">
+                                        {label}
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={form[key]}
+                                        onChange={(e) => handleChange(key, e.target.value)}
+                                        className={inputBase}
+                                        style={{ background: "#d8dde5", border: "none" }}
+                                        {...inputHandlers}
+                                    />
+                                </div>
+                            ))}
+                        </div>
 
-                    {/* Submit */}
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-700/50">
-                        <button
-                            type="button"
-                            onClick={() => { setShowForm(false); setForm(EMPTY_FORM); }}
-                            className="text-slate-400 hover:text-white text-sm px-4 py-2 rounded-lg transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={submitting}
-                            className="flex items-center gap-2 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm px-6 py-2 rounded-lg transition-all duration-200 active:scale-95"
-                        >
-                            {submitting ? (
-                                <>
-                                    <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                                    Saving…
-                                </>
-                            ) : (
-                                <>
-                                    <Plus size={15} />
-                                    Add Vehicle
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </form>
-            )}
+                        {/* Tonal separator — no 1px line */}
+                        <div className="h-px bg-[#f0f2f5] mb-5" />
 
-            {/* Loading */}
-            {loading && (
-                <div className="flex justify-center py-16">
-                    <div className="w-8 h-8 rounded-full border-2 border-sky-500 border-t-transparent animate-spin" />
+                        {/* Actions */}
+                        <div className="flex items-center justify-end gap-3">
+                            {/* Tertiary button — text only */}
+                            <button
+                                type="button"
+                                onClick={() => { setShowForm(false); setForm(EMPTY_FORM); }}
+                                className="text-[#003f87] text-[0.875rem] font-medium px-4 py-2 rounded-lg transition-opacity duration-150 hover:opacity-70"
+                                style={{ background: "none", border: "none" }}
+                            >
+                                Cancel
+                            </button>
+
+                            {/* Primary button */}
+                            <button
+                                type="submit"
+                                disabled={submitting}
+                                className="flex items-center gap-2 text-white font-semibold text-[0.875rem] px-6 py-2.5 rounded-[1.5rem] transition-all duration-200 active:scale-95"
+                                style={{
+                                    background: "linear-gradient(135deg, #003f87 0%, #0056b3 100%)",
+                                    boxShadow: "0 4px 16px rgba(0,63,135,0.28)",
+                                    border: "none",
+                                    opacity: submitting ? 0.65 : 1,
+                                    cursor: submitting ? "not-allowed" : "pointer",
+                                }}
+                            >
+                                {submitting ? (
+                                    <>
+                                        <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                                        Saving…
+                                    </>
+                                ) : (
+                                    <>
+                                        <Plus size={15} />
+                                        Add Vehicle
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </form>
                 </div>
             )}
 
-            {/* Empty State */}
+            {/* ── Loading ──────────────────────────────────── */}
+            {loading && (
+                <div className="flex justify-center py-16">
+                    <div className="w-8 h-8 rounded-full border-2 border-[#003f87] border-t-transparent animate-spin" />
+                </div>
+            )}
+
+            {/* ── Empty State ──────────────────────────────── */}
             {!loading && vehicles.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-600">
+                    <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center"
+                         style={{ boxShadow: cardShadow, color: "#c5c8d4" }}>
                         <Car size={28} />
                     </div>
                     <div>
-                        <p className="text-white font-medium">No vehicles registered</p>
-                        <p className="text-slate-500 text-sm mt-1">Your registered vehicles will appear here</p>
+                        <p className="text-[1rem] font-semibold text-[#1a1d23]">No vehicles registered</p>
+                        <p className="text-[0.875rem] text-[#42454e] mt-1">Your registered vehicles will appear here</p>
                     </div>
                 </div>
             )}
 
-            {/* Vehicle Grid */}
+            {/* ── Vehicle Grid ─────────────────────────────── */}
             {!loading && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {vehicles.map((v) => {
@@ -209,25 +247,29 @@ const Vehicles = () => {
                         return (
                             <div
                                 key={v.vehicle_id}
-                                className="group bg-slate-800/50 border border-slate-700/60 rounded-2xl p-5 hover:border-sky-500/30 hover:bg-slate-800/70 transition-all duration-200 cursor-default"
+                                className="bg-white rounded-2xl p-5 cursor-default transition-all duration-200"
+                                style={{ boxShadow: cardShadow }}
+                                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,63,135,0.12), 0 2px 8px rgba(0,63,135,0.06)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = cardShadow; e.currentTarget.style.transform = "translateY(0)"; }}
                             >
-                                {/* Icon */}
-                                <div className="w-12 h-12 rounded-xl bg-slate-700/60 flex items-center justify-center text-slate-400 mb-4 group-hover:bg-sky-500/10 group-hover:text-sky-400 transition-all duration-200">
+                                {/* Vehicle icon */}
+                                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-200"
+                                     style={{ background: "#f0f2f5", color: "#003f87" }}>
                                     <Icon size={22} />
                                 </div>
 
-                                {/* Vehicle Number Plate */}
+                                {/* Registration plate */}
                                 <div className="flex items-center gap-2 mb-2">
-                                    <span className="font-mono text-lg font-bold text-white tracking-widest">
+                                    <span className="font-mono text-[1.125rem] font-bold text-[#1a1d23] tracking-widest">
                                         {v.registration_number}
                                     </span>
                                 </div>
 
-                                {/* Model */}
-                                <p className="text-slate-400 text-sm">{v.model}</p>
+                                <p className="text-[0.875rem] text-[#42454e]">{v.model}</p>
 
-                                {/* Divider */}
-                                <div className="mt-4 pt-4 border-t border-slate-700/50 flex items-center gap-1.5 text-xs text-slate-500">
+                                {/* Tonal separator — spacing only, no border */}
+                                <div className="mt-4 pt-4 flex items-center gap-1.5 text-[0.75rem] text-[#c5c8d4]"
+                                     style={{ borderTop: "1px solid rgba(197,200,212,0.30)" }}>
                                     <Hash size={11} />
                                     ID: {v.vehicle_id}
                                 </div>
