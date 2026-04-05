@@ -7,7 +7,8 @@ import {
   FileWarning,
   FilePlus,
   CreditCard,
-  Settings
+  Settings,
+  File,
 } from "lucide-react";
 
 // 🔹 Officer Sidebar Items
@@ -17,6 +18,7 @@ const officerNavItems = [
   { to: "/officer/issue-licence", label: "Issue Licence", icon: CreditCard },
   { to: "/officer/challans", label: "My Challans", icon: FileWarning },
   { to: "/officer/violations", label: "Violation Types", icon: Settings },
+  { to: "/officer/citizen-documents", label: "Document Management", icon: File },
 ];
 
 const OfficerLayout = () => {
