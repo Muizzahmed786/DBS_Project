@@ -3,7 +3,7 @@ import { LogOut, Menu, X, TrafficCone } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../../context/useAuth.js";
 import { logoutUser } from "../../api/auth.js";
-
+import toast from 'react-hot-toast';
 const Sidebar = ({ navItems = [], roleName = "User" }) => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const navigate = useNavigate();
@@ -12,8 +12,9 @@ const Sidebar = ({ navItems = [], roleName = "User" }) => {
     const handleSignOut = async () => {
         try {
             await logoutUser();
+            toast.success("Logged Out Successflly")
         } catch (err) {
-            console.error("Logout failed:", err);
+            toast.error("Logout failed:", err);
         } finally {
             setUser(null);
             navigate("/", { replace: true });

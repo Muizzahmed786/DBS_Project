@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, getCurrentUser } from '../api/auth.js';
 import { useAuth } from "../context/useAuth.js";
-
+import toast from 'react-hot-toast';
 const Login = () => {
     const navigate = useNavigate();
     const { setUser } = useAuth();
@@ -23,7 +23,7 @@ const Login = () => {
         console.log("User role:", user?.role);
 
         setUser(user);
-
+        toast.success("Login Successfull");
         const role = user?.role;
         if (role === 'admin') navigate('/admin/dashboard');
         else if (role === 'citizen') navigate('/citizen/dashboard');
@@ -34,7 +34,7 @@ const Login = () => {
         console.error("Full error:", err);
         console.error("Error message:", err.message);
         console.error("Error response:", err.response?.data);
-        window.alert(err.response?.data?.message || err.message);
+        toast.error("Login Failed");
     }
     };
 

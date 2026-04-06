@@ -3,7 +3,7 @@ import {
   AlertCircle, CheckCircle2, CreditCard, Landmark, Zap, Lock, ChevronRight, FileText, X, Car,
 } from "lucide-react";
 import { getChallansByStatus, makePayment } from "../../api/citizen.js";
-
+import toast from 'react-hot-toast';
 const PAYMENT_MODES = [
   { id: "UPI", label: "UPI", Icon: Zap },
   { id: "Card", label: "Card", Icon: CreditCard },
@@ -35,8 +35,10 @@ const PaymentModal = ({ challan, onClose, onSuccess }) => {
         onSuccess(res.data);
         onClose();
       }, 1800);
+      toast.success("Payment Successfull");
     } catch (err) {
       setError(err.message);
+      toast.error("Payment Failed");
     } finally {
       setSubmitting(false);
     }

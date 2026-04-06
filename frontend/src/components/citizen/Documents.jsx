@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMyDocuments, uploadUserDocuments, uploadVehicleDocuments, getRegisteredVehicles } from "../../api/citizen.js";
 import { FolderOpen, FileCheck2, ExternalLink, Upload, File, CloudUpload, Car, ChevronDown, Check } from "lucide-react";
-
+import toast from 'react-hot-toast';
 // ── doc-type styling ─────────────────────────────────────────────────────────
 const DOC_STYLES = {
     "dl": {
@@ -188,7 +188,7 @@ const Documents = () => {
     // POST /citizens/upload-documents
     const handleUploadUserDocs = async () => {
         if (!userFiles.aadhaar && !userFiles.licence) {
-            alert("Please select at least one personal document"); return;
+            toast.error("Please select at least one personal document"); return;
         }
         const formData = new FormData();
         if (userFiles.aadhaar) formData.append("aadhaar", userFiles.aadhaar);
@@ -197,7 +197,7 @@ const Documents = () => {
         setUploadingUser(true);
         try {
             await uploadUserDocuments(formData);
-            alert("Personal documents uploaded successfully");
+            toast.success("Personal documents uploaded successfully");
             window.location.reload();
         } catch (err) {
             console.error(err);
@@ -209,9 +209,9 @@ const Documents = () => {
     // POST /citizens/upload-documents/:vehicleId
     const handleUploadVehicleDocs = async () => {
         if (!vehicleFiles.vehicleRc && !vehicleFiles.insurance) {
-            alert("Please select at least one vehicle document"); return;
+            toast.error("Please select at least one vehicle document"); return;
         }
-        if (!selectedVehicle) { alert("Please select a vehicle"); return; }
+        if (!selectedVehicle) { toast.error("Please select a vehicle"); return; }
 
         const formData = new FormData();
         if (vehicleFiles.vehicleRc)  formData.append("vehicleRc",  vehicleFiles.vehicleRc);
@@ -220,7 +220,7 @@ const Documents = () => {
         setUploadingVehicle(true);
         try {
             await uploadVehicleDocuments(formData, selectedVehicle.vehicle_id);
-            alert("Vehicle documents uploaded successfully");
+            toast.success("Vehicle documents uploaded successfully");
             window.location.reload();
         } catch (err) {
             console.error(err);

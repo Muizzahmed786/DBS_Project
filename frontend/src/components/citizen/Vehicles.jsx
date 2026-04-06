@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getRegisteredVehicles, insertVehicle } from "../../api/citizen.js";
 import { Car, Bike, Truck, Hash, Plus, X, ChevronDown } from "lucide-react";
-
+import toast from 'react-hot-toast';
 const getVehicleIcon = (model = "") => {
     const m = model.toLowerCase();
     if (m.includes("bike") || m.includes("scooter") || m.includes("motorcycle")) return Bike;
@@ -54,7 +54,7 @@ const Vehicles = () => {
         setSubmitting(true);
         try {
             if(!form.registration_number || !form.vehicle_class || !form.fuel_type){
-                alert("Please fill the required fields (Registration Number, Vehicle Class, Fuel Type");
+                toast.error("Please fill the required fields (Registration Number, Vehicle Class, Fuel Type");
                 setSubmitting(false);
                 return;
             }
@@ -63,10 +63,10 @@ const Vehicles = () => {
             setVehicles(res.data.data);
             setForm(EMPTY_FORM);
             setShowForm(false);
-            alert("Vehicle added successfully");
+            toast.success("Vehicle added successfully");
         } catch (err) {
             console.error(err);
-            alert("Failed to add vehicle");
+            toast.error("Failed to add vehicle");
         } finally {
             setSubmitting(false);
         }
