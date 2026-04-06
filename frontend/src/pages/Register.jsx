@@ -1,7 +1,7 @@
 import { registerUser } from "../api/auth.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import toast from 'react-hot-toast';
 const Register = () => {
     const navigate = useNavigate();
 
@@ -24,11 +24,11 @@ const Register = () => {
                 throw new Error("Registration failed, please try again");
             }
 
-            alert("Registration Successful");
+            toast.success("Registration Successful");
             navigate("/login");
         } catch (err) {
             console.error(err);
-            alert(err.response?.data?.message || "Something went wrong");
+            toast.error("Something went wrong");
         }
     };
 
