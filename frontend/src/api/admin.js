@@ -79,25 +79,20 @@ export const addViolationType = (form) => {
 // Audit Logs
 
 export const getAllAuditLogs = () => {
-    return API.get('/audit-logs');
-}
-
-export const filterAuditLogs = (data) => {
-    return API.get('/audit-logs/filter', { data });
-}
-
+  return API.get('/admin/audit-logs');
+};
+export const filterAuditLogs = (table = "*", operation = "*") => {
+  return API.get(`/admin/audit-logs/filter/${table}/${operation}`);
+};
 export const deleteFilteredLogs = (data) => {
-    return API.delete('/audit-logs/filter', { data });
-}
-
+  return API.delete('/admin/audit-logs/filter', { data });
+};
 export const deleteOldestLogs = (data) => {
-    return API.delete('/audit-logs/oldest', { data });
-}
-
+  return API.delete('/admin/audit-logs/oldest', { data });
+};
 export const deleteLogsBetweenDates = (data) => {
-    return API.delete('/audit-logs/date-range', { data });
-}
-
-export const countLogsBetweenDates = (params) => {
-    return API.get('/audit-logs/date-range/count', { params });
-}
+  return API.delete('/admin/audit-logs/date-range', { data });
+};
+export const countLogsBetweenDates = (startDate, endDate) => {
+  return API.get(`/admin/audit-logs/date-range/${startDate}/${endDate}`);
+};
