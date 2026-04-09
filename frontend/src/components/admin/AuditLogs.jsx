@@ -9,260 +9,8 @@ import {
   countLogsBetweenDates,
 } from "../../api/admin.js"; // adjust path as needed
 
-/* ─── styles ─── */
-const GlobalStyle = () => (
-  <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:        #0a0c10;
-      --surface:   #111318;
-      --border:    #1e2230;
-      --border-hi: #2e3450;
-      --accent:    #00e5ff;
-      --accent2:   #ff4d6d;
-      --accent3:   #7b61ff;
-      --text:      #c8d0e8;
-      --muted:     #4a5068;
-      --mono:      'IBM Plex Mono', monospace;
-      --sans:      'IBM Plex Sans', sans-serif;
-      --radius:    6px;
-      --shadow:    0 4px 24px rgba(0,0,0,.5);
-    }
-
-    body { background: var(--bg); color: var(--text); font-family: var(--sans); }
-
-    .al-root {
-      min-height: 100vh;
-      padding: 32px 24px;
-      max-width: 1280px;
-      margin: 0 auto;
-    }
-
-    .al-header {
-      display: flex;
-      align-items: baseline;
-      gap: 16px;
-      margin-bottom: 36px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 20px;
-    }
-    .al-header h1 {
-      font-family: var(--mono);
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #fff;
-      letter-spacing: -0.02em;
-    }
-    .al-header h1 span { color: var(--accent); }
-    .al-badge {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      padding: 3px 8px;
-      border: 1px solid var(--accent);
-      border-radius: 40px;
-      color: var(--accent);
-      letter-spacing: .08em;
-    }
-
-    .al-layout { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
-    @media (max-width: 860px) { .al-layout { grid-template-columns: 1fr; } }
-
-    .al-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .al-panel-title {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .al-divider { border: none; border-top: 1px solid var(--border); }
-
-    .al-label {
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-bottom: 5px;
-      display: block;
-      font-family: var(--mono);
-      letter-spacing: .06em;
-    }
-    .al-input, .al-select {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border-hi);
-      border-radius: var(--radius);
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 0.8rem;
-      padding: 8px 10px;
-      outline: none;
-      transition: border-color .18s;
-    }
-    .al-input:focus, .al-select:focus { border-color: var(--accent); }
-    .al-select option { background: var(--surface); }
-
-    .al-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      border: none;
-      border-radius: var(--radius);
-      padding: 9px 14px;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: .04em;
-      cursor: pointer;
-      transition: opacity .15s, transform .1s;
-      width: 100%;
-    }
-    .al-btn:active { transform: scale(.97); }
-    .al-btn:disabled { opacity: .4; cursor: not-allowed; }
-    .al-btn-primary { background: var(--accent); color: #000; }
-    .al-btn-danger  { background: var(--accent2); color: #fff; }
-    .al-btn-ghost   {
-      background: transparent;
-      border: 1px solid var(--border-hi);
-      color: var(--text);
-    }
-    .al-btn-ghost:hover { border-color: var(--accent3); color: var(--accent3); }
-    .al-btn-toolbar { width: auto; padding: 8px 16px; }
-
-    .al-count-result {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      padding: 10px 12px;
-      background: rgba(123,97,255,.12);
-      border: 1px solid rgba(123,97,255,.3);
-      border-radius: var(--radius);
-      color: var(--accent3);
-      text-align: center;
-    }
-
-    .al-main { display: flex; flex-direction: column; gap: 16px; }
-    .al-toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-
-    .al-table-wrap {
-      overflow-x: auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-    }
-    .al-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-    .al-table thead { position: sticky; top: 0; z-index: 1; }
-    .al-table th {
-      background: #0d0f16;
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      padding: 11px 14px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-    .al-table td {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-      font-family: var(--mono);
-      color: var(--text);
-      max-width: 260px;
-    }
-    .al-table tr:last-child td { border-bottom: none; }
-    .al-table tr:hover td { background: rgba(255,255,255,.02); }
-
-    .al-op {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: 0.65rem;
-      font-family: var(--mono);
-      letter-spacing: .08em;
-      font-weight: 600;
-    }
-    .al-op-INSERT { background: rgba(0,229,255,.12);  color: var(--accent);  border: 1px solid rgba(0,229,255,.25); }
-    .al-op-UPDATE { background: rgba(123,97,255,.12); color: var(--accent3); border: 1px solid rgba(123,97,255,.25); }
-    .al-op-DELETE { background: rgba(255,77,109,.12); color: var(--accent2); border: 1px solid rgba(255,77,109,.25); }
-
-    .al-json {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--muted);
-      white-space: pre-wrap;
-      word-break: break-all;
-      max-height: 72px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: max-height .2s ease, color .15s;
-    }
-    .al-json.expanded { max-height: 400px; color: var(--text); }
-    .al-json-null { color: #2e3450; font-style: italic; font-family: var(--mono); font-size: 0.72rem; }
-
-    .al-empty {
-      text-align: center;
-      padding: 56px 0;
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 0.82rem;
-    }
-    .al-spinner {
-      width: 22px; height: 22px;
-      border: 2px solid var(--border-hi);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      margin: 0 auto 14px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .al-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.7);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 200;
-      backdrop-filter: blur(4px);
-    }
-    .al-modal {
-      background: var(--surface);
-      border: 1px solid var(--border-hi);
-      border-radius: 10px;
-      padding: 28px 32px;
-      max-width: 380px;
-      width: 90%;
-      box-shadow: var(--shadow);
-    }
-    .al-modal h3 {
-      font-family: var(--mono);
-      font-size: 1rem;
-      color: #fff;
-      margin-bottom: 10px;
-    }
-    .al-modal p {
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 22px;
-    }
-    .al-modal-actions { display: flex; gap: 10px; }
-    .al-modal-actions .al-btn { width: auto; flex: 1; }
-  `}</style>
-);
-
 /* ─── constants ─── */
-const TABLES =  [
+const TABLES = [
   "*",
   "users",
   "vehicles",
@@ -271,49 +19,402 @@ const TABLES =  [
   "driving_licence",
   "documents",
   "violation_types",
-  "rto"
+  "rto",
 ];
-const OPS    = ["*", "INSERT", "UPDATE", "DELETE"];
+const OPS = ["*", "INSERT", "UPDATE", "DELETE"];
 
-/* ─── sub-components ─── */
+/* ─── styles ─── */
+const S = {
+  // layout
+  root: {
+    fontFamily: "var(--font-sans, system-ui, sans-serif)",
+    fontSize: "14px",
+    color: "var(--color-text-primary)",
+  },
+  header: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "1.25rem 1.5rem",
+    borderBottom: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
+  },
+  h1: {
+    fontSize: "15px",
+    fontWeight: 500,
+    margin: 0,
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+  },
+  h1Dollar: {
+    fontFamily: "var(--font-mono, monospace)",
+    color: "var(--color-text-secondary, #64748b)",
+  },
+  badge: {
+    fontSize: "10px",
+    fontWeight: 500,
+    letterSpacing: "0.06em",
+    padding: "2px 8px",
+    borderRadius: "6px",
+    background: "var(--color-background-secondary, #f8fafc)",
+    color: "var(--color-text-secondary, #64748b)",
+    border: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
+  },
+  rowCount: {
+    fontFamily: "var(--font-mono, monospace)",
+    fontSize: "12px",
+    color: "var(--color-text-secondary, #64748b)",
+    marginLeft: "auto",
+  },
+  layout: {
+    display: "grid",
+    gridTemplateColumns: "220px minmax(0, 1fr)",
+    minHeight: "500px",
+  },
+  // sidebar
+  sidebar: {
+    padding: "0 1rem 1.5rem 1.5rem",
+    borderRight: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
+    display: "flex",
+    flexDirection: "column",
+  },
+  section: {
+    padding: "1rem 0",
+    borderBottom: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  sectionLast: {
+    padding: "1rem 0",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+  sectionTitle: {
+    fontSize: "11px",
+    fontWeight: 500,
+    color: "var(--color-text-secondary, #64748b)",
+    letterSpacing: "0.05em",
+    textTransform: "uppercase",
+    marginBottom: "2px",
+  },
+  label: {
+    fontSize: "12px",
+    color: "var(--color-text-secondary, #64748b)",
+    display: "block",
+    marginBottom: "3px",
+  },
+  select: {
+    width: "100%",
+    fontSize: "13px",
+    padding: "5px 8px",
+    boxSizing: "border-box",
+    border: "0.5px solid var(--color-border-secondary, #cbd5e1)",
+    borderRadius: "6px",
+    background: "var(--color-background-primary, #fff)",
+    color: "var(--color-text-primary)",
+    outline: "none",
+    appearance: "none",
+    WebkitAppearance: "none",
+  },
+  input: {
+    width: "100%",
+    fontSize: "13px",
+    padding: "5px 8px",
+    boxSizing: "border-box",
+    border: "0.5px solid var(--color-border-secondary, #cbd5e1)",
+    borderRadius: "6px",
+    background: "var(--color-background-primary, #fff)",
+    color: "var(--color-text-primary)",
+    outline: "none",
+  },
+  // buttons
+  btn: {
+    fontSize: "12px",
+    fontWeight: 500,
+    padding: "6px 10px",
+    borderRadius: "6px",
+    cursor: "pointer",
+    border: "0.5px solid var(--color-border-secondary, #cbd5e1)",
+    background: "transparent",
+    color: "var(--color-text-primary)",
+    width: "100%",
+    textAlign: "center",
+  },
+  btnPrimary: {
+    fontSize: "12px",
+    fontWeight: 500,
+    padding: "6px 10px",
+    borderRadius: "6px",
+    cursor: "pointer",
+    border: "0.5px solid var(--color-border-info, #93c5fd)",
+    background: "transparent",
+    color: "var(--color-text-info, #1d4ed8)",
+    width: "100%",
+    textAlign: "center",
+  },
+  btnDanger: {
+    fontSize: "12px",
+    fontWeight: 500,
+    padding: "6px 10px",
+    borderRadius: "6px",
+    cursor: "pointer",
+    border: "0.5px solid var(--color-border-danger, #fca5a5)",
+    background: "transparent",
+    color: "var(--color-text-danger, #dc2626)",
+    width: "100%",
+    textAlign: "center",
+  },
+  btnToolbar: {
+    fontSize: "12px",
+    padding: "5px 10px",
+    borderRadius: "6px",
+    border: "0.5px solid var(--color-border-secondary, #cbd5e1)",
+    background: "transparent",
+    color: "var(--color-text-secondary, #64748b)",
+    cursor: "pointer",
+  },
+  countBadge: {
+    fontSize: "12px",
+    padding: "5px 8px",
+    borderRadius: "6px",
+    background: "var(--color-background-success, #f0fdf4)",
+    color: "var(--color-text-success, #16a34a)",
+    textAlign: "center",
+  },
+  // main
+  main: {
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+  },
+  toolbar: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "0.75rem 1.25rem",
+    borderBottom: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
+  },
+  tableWrap: {
+    overflowX: "auto",
+    flex: 1,
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    fontSize: "12.5px",
+  },
+  th: {
+    padding: "8px 12px",
+    fontSize: "11px",
+    fontWeight: 500,
+    color: "var(--color-text-secondary, #64748b)",
+    textAlign: "left",
+    letterSpacing: "0.04em",
+    whiteSpace: "nowrap",
+    background: "var(--color-background-secondary, #f8fafc)",
+    borderBottom: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
+  },
+  td: {
+    padding: "9px 12px",
+    borderBottom: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
+    verticalAlign: "top",
+  },
+  // modal
+  modalBg: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,0.35)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 100,
+    padding: "1rem",
+  },
+  modal: {
+    background: "var(--color-background-primary, #fff)",
+    border: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
+    borderRadius: "12px",
+    padding: "1.5rem",
+    maxWidth: "360px",
+    width: "100%",
+  },
+  modalTitle: {
+    fontSize: "15px",
+    fontWeight: 500,
+    margin: "0 0 6px",
+  },
+  modalMsg: {
+    fontSize: "13px",
+    color: "var(--color-text-secondary, #64748b)",
+    margin: "0 0 1.25rem",
+  },
+  modalActions: {
+    display: "flex",
+    gap: "8px",
+  },
+  modalCancel: {
+    flex: 1,
+    padding: "7px 12px",
+    borderRadius: "6px",
+    fontSize: "13px",
+    cursor: "pointer",
+    border: "0.5px solid var(--color-border-secondary, #cbd5e1)",
+    background: "transparent",
+    color: "var(--color-text-primary)",
+  },
+  modalConfirm: {
+    flex: 1,
+    padding: "7px 12px",
+    borderRadius: "6px",
+    fontSize: "13px",
+    cursor: "pointer",
+    border: "0.5px solid var(--color-border-danger, #fca5a5)",
+    background: "var(--color-background-danger, #fef2f2)",
+    color: "var(--color-text-danger, #dc2626)",
+  },
+  // misc
+  empty: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "8px",
+    padding: "4rem 2rem",
+    color: "var(--color-text-secondary, #64748b)",
+    fontSize: "13px",
+  },
+  muted: {
+    color: "var(--color-text-secondary, #64748b)",
+  },
+  mono: {
+    fontFamily: "var(--font-mono, monospace)",
+  },
+};
+
+/* ─── op pill ─── */
+const OP_STYLES = {
+  INSERT: {
+    background: "#eaf3de",
+    color: "#3b6d11",
+    border: "0.5px solid #c0dd97",
+  },
+  UPDATE: {
+    background: "#e6f1fb",
+    color: "#185fa5",
+    border: "0.5px solid #b5d4f4",
+  },
+  DELETE: {
+    background: "#fcebeb",
+    color: "#a32d2d",
+    border: "0.5px solid #f7c1c1",
+  },
+};
+
 function OpPill({ op }) {
-  return <span className={`al-op al-op-${op}`}>{op}</span>;
+  const style = OP_STYLES[op] ?? {
+    background: "#f1f5f9",
+    color: "#64748b",
+    border: "0.5px solid #e2e8f0",
+  };
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "2px 7px",
+        borderRadius: "6px",
+        fontSize: "10px",
+        fontWeight: 500,
+        fontFamily: "var(--font-mono, monospace)",
+        letterSpacing: "0.04em",
+        ...style,
+      }}
+    >
+      {op}
+    </span>
+  );
 }
 
+/* ─── json cell ─── */
 function JsonCell({ data }) {
   const [open, setOpen] = useState(false);
-  if (!data) return <span className="al-json-null">null</span>;
+  if (!data)
+    return (
+      <span style={{ ...S.mono, fontSize: "11px", fontStyle: "italic", ...S.muted }}>
+        null
+      </span>
+    );
   const text = typeof data === "string" ? data : JSON.stringify(data, null, 2);
   return (
     <pre
-      className={`al-json${open ? " expanded" : ""}`}
-      onClick={() => setOpen(v => !v)}
-      title={open ? "collapse" : "expand"}
+      onClick={() => setOpen((v) => !v)}
+      title={open ? "Click to collapse" : "Click to expand"}
+      style={{
+        fontSize: "11px",
+        fontFamily: "var(--font-mono, monospace)",
+        color: "var(--color-text-secondary, #64748b)",
+        background: "var(--color-background-secondary, #f8fafc)",
+        border: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
+        borderRadius: "6px",
+        padding: "6px 8px",
+        cursor: "pointer",
+        maxWidth: "260px",
+        overflow: open ? "auto" : "hidden",
+        maxHeight: open ? "320px" : "48px",
+        whiteSpace: "pre-wrap",
+        wordBreak: "break-all",
+        margin: 0,
+        transition: "max-height 0.2s",
+      }}
     >
       {text}
     </pre>
   );
 }
 
+/* ─── confirm modal ─── */
 function ConfirmModal({ message, onConfirm, onCancel }) {
   return (
-    <div className="al-overlay" onClick={onCancel}>
-      <div className="al-modal" onClick={e => e.stopPropagation()}>
-        <h3>Confirm Action</h3>
-        <p>{message}</p>
-        <div className="al-modal-actions">
-          <button className="al-btn al-btn-ghost" onClick={onCancel}>Cancel</button>
-          <button className="al-btn al-btn-danger" onClick={onConfirm}>Confirm Delete</button>
+    <div style={S.modalBg} onClick={onCancel}>
+      <div style={S.modal} onClick={(e) => e.stopPropagation()}>
+        <h3 style={S.modalTitle}>Confirm action</h3>
+        <p style={S.modalMsg}>{message}</p>
+        <div style={S.modalActions}>
+          <button style={S.modalCancel} onClick={onCancel}>
+            Cancel
+          </button>
+          <button style={S.modalConfirm} onClick={onConfirm}>
+            Confirm delete
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
+/* ─── spinner ─── */
+function Spinner() {
+  return (
+    <div
+      style={{
+        width: "20px",
+        height: "20px",
+        border: "2px solid var(--color-border-tertiary, #e2e8f0)",
+        borderTopColor: "var(--color-text-secondary, #64748b)",
+        borderRadius: "50%",
+        animation: "al-spin 0.7s linear infinite",
+      }}
+    />
+  );
+}
+
+/* ─── main component ─── */
 export default function AuditLogs() {
-  const [logs, setLogs]       = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [confirm, setConfirm] = useState(null);
+  const [logs, setLogs]         = useState([]);
+  const [loading, setLoading]   = useState(false);
+  const [confirm, setConfirm]   = useState(null);
   const [countResult, setCountResult] = useState(null);
 
   // filter
@@ -336,7 +437,6 @@ export default function AuditLogs() {
     setLoading(true);
     try {
       const res = await getAllAuditLogs();
-      console.log(res);
       setLogs(res.data?.data ?? []);
     } catch (e) {
       toast.error(e?.response?.data?.message ?? "Failed to fetch logs");
@@ -437,19 +537,22 @@ export default function AuditLogs() {
 
   return (
     <>
-      <GlobalStyle />
+      {/* spinner keyframe injected once */}
+      <style>{`@keyframes al-spin { to { transform: rotate(360deg); } }`}</style>
+
       <Toaster
         position="bottom-right"
         toastOptions={{
           style: {
-            background: "#111318",
-            color: "#c8d0e8",
-            border: "1px solid #2e3450",
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: "0.76rem",
+            background: "var(--color-background-primary, #fff)",
+            color: "var(--color-text-primary, #0f172a)",
+            border: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
+            fontSize: "13px",
+            borderRadius: "8px",
+            boxShadow: "none",
           },
-          success: { iconTheme: { primary: "#00e5ff", secondary: "#111318" } },
-          error:   { iconTheme: { primary: "#ff4d6d", secondary: "#111318" } },
+          success: { iconTheme: { primary: "#16a34a", secondary: "#fff" } },
+          error:   { iconTheme: { primary: "#dc2626", secondary: "#fff" } },
         }}
       />
 
@@ -461,68 +564,67 @@ export default function AuditLogs() {
         />
       )}
 
-      <div className="al-root">
+      <div style={S.root}>
         {/* header */}
-        <div className="al-header">
-          <h1><span>$</span> audit_logs</h1>
-          <span className="al-badge">ADMIN</span>
+        <div style={S.header}>
+          <h1 style={S.h1}>
+            <span style={S.h1Dollar}>$</span> audit_logs
+          </h1>
+          <span style={S.badge}>ADMIN</span>
+          <span style={S.rowCount}>{logs.length} row{logs.length !== 1 ? "s" : ""}</span>
         </div>
 
-        <div className="al-layout">
+        <div style={S.layout}>
           {/* ── SIDEBAR ── */}
-          <aside style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <aside style={S.sidebar}>
 
             {/* filter */}
-            <div className="al-panel">
-              <div className="al-panel-title">Filter &amp; View</div>
+            <div style={S.section}>
+              <div style={S.sectionTitle}>Filter &amp; view</div>
               <div>
-                <label className="al-label">Table</label>
-                <select className="al-select" value={filterTable} onChange={e => setFilterTable(e.target.value)}>
+                <label style={S.label}>Table</label>
+                <select style={S.select} value={filterTable} onChange={e => setFilterTable(e.target.value)}>
                   {TABLES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
               <div>
-                <label className="al-label">Operation</label>
-                <select className="al-select" value={filterOp} onChange={e => setFilterOp(e.target.value)}>
+                <label style={S.label}>Operation</label>
+                <select style={S.select} value={filterOp} onChange={e => setFilterOp(e.target.value)}>
                   {OPS.map(o => <option key={o} value={o}>{o}</option>)}
                 </select>
               </div>
-              <button className="al-btn al-btn-primary" onClick={handleFilter}>
-                Apply Filter
+              <button style={S.btnPrimary} onClick={handleFilter}>
+                Apply filter
               </button>
             </div>
-
-            <hr className="al-divider" />
 
             {/* delete filtered */}
-            <div className="al-panel">
-              <div className="al-panel-title">Delete by Filter</div>
+            <div style={S.section}>
+              <div style={S.sectionTitle}>Delete by filter</div>
               <div>
-                <label className="al-label">Table</label>
-                <select className="al-select" value={delTable} onChange={e => setDelTable(e.target.value)}>
+                <label style={S.label}>Table</label>
+                <select style={S.select} value={delTable} onChange={e => setDelTable(e.target.value)}>
                   {TABLES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
               <div>
-                <label className="al-label">Operation</label>
-                <select className="al-select" value={delOp} onChange={e => setDelOp(e.target.value)}>
+                <label style={S.label}>Operation</label>
+                <select style={S.select} value={delOp} onChange={e => setDelOp(e.target.value)}>
                   {OPS.map(o => <option key={o} value={o}>{o}</option>)}
                 </select>
               </div>
-              <button className="al-btn al-btn-danger" onClick={handleDeleteFiltered}>
-                Delete Matching
+              <button style={S.btnDanger} onClick={handleDeleteFiltered}>
+                Delete matching
               </button>
             </div>
 
-            <hr className="al-divider" />
-
             {/* delete oldest */}
-            <div className="al-panel">
-              <div className="al-panel-title">Delete Oldest N</div>
+            <div style={S.section}>
+              <div style={S.sectionTitle}>Delete oldest N</div>
               <div>
-                <label className="al-label">Count</label>
+                <label style={S.label}>Count</label>
                 <input
-                  className="al-input"
+                  style={S.input}
                   type="number"
                   min={1}
                   placeholder="e.g. 50"
@@ -530,97 +632,94 @@ export default function AuditLogs() {
                   onChange={e => setOldestCount(e.target.value)}
                 />
               </div>
-              <button className="al-btn al-btn-danger" onClick={handleDeleteOldest}>
-                Delete Oldest
+              <button style={S.btnDanger} onClick={handleDeleteOldest}>
+                Delete oldest
               </button>
             </div>
 
-            <hr className="al-divider" />
-
             {/* date range */}
-            <div className="al-panel">
-              <div className="al-panel-title">Date Range</div>
+            <div style={S.sectionLast}>
+              <div style={S.sectionTitle}>Date range</div>
               <div>
-                <label className="al-label">Start Date</label>
+                <label style={S.label}>Start date</label>
                 <input
-                  className="al-input"
+                  style={S.input}
                   type="date"
                   value={startDate}
                   onChange={e => { setStartDate(e.target.value); setCountResult(null); }}
                 />
               </div>
               <div>
-                <label className="al-label">End Date</label>
+                <label style={S.label}>End date</label>
                 <input
-                  className="al-input"
+                  style={S.input}
                   type="date"
                   value={endDate}
                   onChange={e => { setEndDate(e.target.value); setCountResult(null); }}
                 />
               </div>
-
               {countResult !== null && (
-                <div className="al-count-result">
-                  {countResult} log(s) in range
-                </div>
+                <div style={S.countBadge}>{countResult} log(s) in range</div>
               )}
-
-              <button className="al-btn al-btn-ghost" onClick={handleCountDateRange}>
-                Count in Range
+              <button style={S.btn} onClick={handleCountDateRange}>
+                Count in range
               </button>
-              <button className="al-btn al-btn-danger" onClick={handleDeleteDateRange}>
-                Delete in Range
+              <button style={S.btnDanger} onClick={handleDeleteDateRange}>
+                Delete in range
               </button>
             </div>
 
           </aside>
 
           {/* ── MAIN TABLE ── */}
-          <main className="al-main">
-            <div className="al-toolbar">
+          <main style={S.main}>
+            <div style={S.toolbar}>
               <button
-                className="al-btn al-btn-ghost al-btn-toolbar"
+                style={S.btnToolbar}
                 onClick={fetchAll}
                 disabled={loading}
               >
                 ↺ Refresh
               </button>
-              <span style={{ fontFamily: "var(--mono)", fontSize: "0.72rem", color: "var(--muted)", marginLeft: "auto" }}>
-                {logs.length} row(s)
-              </span>
             </div>
 
-            <div className="al-table-wrap">
+            <div style={S.tableWrap}>
               {loading ? (
-                <div className="al-empty">
-                  <div className="al-spinner" />
+                <div style={S.empty}>
+                  <Spinner />
                   Loading logs…
                 </div>
               ) : logs.length === 0 ? (
-                <div className="al-empty">No logs found.</div>
+                <div style={S.empty}>No logs found.</div>
               ) : (
-                <table className="al-table">
+                <table style={S.table}>
                   <thead>
                     <tr>
-                      <th>Log ID</th>
-                      <th>Table</th>
-                      <th>Operation</th>
-                      <th>Record ID</th>
-                      <th>Old Data</th>
-                      <th>New Data</th>
-                      <th>Changed At</th>
+                      {["Log ID", "Table", "Operation", "Record ID", "Old data", "New data", "Changed at"].map(h => (
+                        <th key={h} style={S.th}>{h}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
                     {logs.map(log => (
                       <tr key={log.log_id}>
-                        <td style={{ color: "var(--muted)" }}>#{log.log_id}</td>
-                        <td>{log.table_name}</td>
-                        <td><OpPill op={log.operation_type} /></td>
-                        <td>{log.record_id ?? "—"}</td>
-                        <td><JsonCell data={log.old_data} /></td>
-                        <td><JsonCell data={log.new_data} /></td>
-                        <td style={{ whiteSpace: "nowrap", color: "var(--muted)" }}>
+                        <td style={{ ...S.td, ...S.muted, ...S.mono, fontSize: "11px" }}>
+                          #{log.log_id}
+                        </td>
+                        <td style={S.td}>{log.table_name}</td>
+                        <td style={S.td}>
+                          <OpPill op={log.operation_type} />
+                        </td>
+                        <td style={{ ...S.td, ...S.mono, fontSize: "12px" }}>
+                          {log.record_id ?? "—"}
+                        </td>
+                        <td style={S.td}>
+                          <JsonCell data={log.old_data} />
+                        </td>
+                        <td style={S.td}>
+                          <JsonCell data={log.new_data} />
+                        </td>
+                        <td style={{ ...S.td, ...S.muted, whiteSpace: "nowrap", fontSize: "12px" }}>
                           {fmtDate(log.changed_at)}
                         </td>
                       </tr>
