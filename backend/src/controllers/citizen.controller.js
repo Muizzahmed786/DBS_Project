@@ -337,10 +337,10 @@ const makePayment = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid password");
   }
 
-  const [updateResult] = await db.execute(
-    'UPDATE challan SET status=? WHERE challan_id=?',
-    ['paid', challan_id]
-  );
+  // const [updateResult] = await db.execute(
+  //   'UPDATE challan SET status=? WHERE challan_id=?',
+  //   ['paid', challan_id]
+  // ); // done using triggers
 
   if (updateResult.affectedRows === 0) {
     throw new ApiError(500, "Failed to update challan");

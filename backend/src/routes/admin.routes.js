@@ -1,6 +1,6 @@
 import {Router} from "express";
 import { verifyJWT } from "../middlewares/auth-middleware.js";
-import {getAllRegisteredVehicles,getAllVehicleOwnershipDetails,getAllCitizens,getAllOfficers,getAllAdmins,getRtoVehicleOwnershipDetails,getRtoRegisteredVehicles,getChallansByStatus,getAllChallans,getAllPayments,getPaymentsByStatus, getTotalChallansCount,getTotalRevenue,getChallanCountByStatus,getAllRtoOffices,addRtoOffice,addViolationType} from "../controllers/admin.controller.js";
+import {getAllRegisteredVehicles,getAllVehicleOwnershipDetails,getAllCitizens,getAllOfficers,getAllAdmins,getRtoVehicleOwnershipDetails,getRtoRegisteredVehicles,getChallansByStatus,getAllChallans,getAllPayments,getPaymentsByStatus, getTotalChallansCount,getTotalRevenue,getChallanCountByStatus,getAllRtoOffices,addRtoOffice,addViolationType,getAllAuditLogs,filterAuditLogs,deleteFilteredLogs,deleteOldestLogs,deleteLogsBetweenDates,countLogsBetweenDates} from "../controllers/admin.controller.js";
 import {getAllViolationTypes} from "../controllers/user.controller.js"
 const router=Router()
 router.route("/get-all-violation-types").get(verifyJWT,getAllViolationTypes);
@@ -30,4 +30,11 @@ router.route("/get-total-challan-count/:status").get(verifyJWT,getChallanCountBy
 router.route("/get-all-rto-offices").get(verifyJWT,getAllRtoOffices)
 router.route("/add-rto-office").post(verifyJWT,addRtoOffice)
 router.route("/add-violation-type").post(verifyJWT,addViolationType)
+
+router.route("/audit-logs").get(verifyJWT, getAllAuditLogs);
+router.route("/audit-logs/filter").get(verifyJWT, filterAuditLogs);
+router.route("/audit-logs/filter").delete(verifyJWT, deleteFilteredLogs);
+router.route("/audit-logs/oldest").delete(verifyJWT, deleteOldestLogs);
+router.route("/audit-logs/date-range").delete(verifyJWT, deleteLogsBetweenDates);
+router.route("/audit-logs/date-range/count").get(verifyJWT, countLogsBetweenDates);
 export default router

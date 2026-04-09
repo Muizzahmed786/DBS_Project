@@ -74,3 +74,30 @@ export const addRtoOffice = (form) => {
 export const addViolationType = (form) => {
   return API.post('/admin/add-violation-type', form);
 };
+
+
+// Audit Logs
+
+export const getAllAuditLogs = () => {
+    return API.get('/audit-logs');
+}
+
+export const filterAuditLogs = (data) => {
+    return API.get('/audit-logs/filter', { data });
+}
+
+export const deleteFilteredLogs = (data) => {
+    return API.delete('/audit-logs/filter', { data });
+}
+
+export const deleteOldestLogs = (data) => {
+    return API.delete('/audit-logs/oldest', { data });
+}
+
+export const deleteLogsBetweenDates = (data) => {
+    return API.delete('/audit-logs/date-range', { data });
+}
+
+export const countLogsBetweenDates = (params) => {
+    return API.get('/audit-logs/date-range/count', { params });
+}
