@@ -1,736 +1,534 @@
-import { useState, useEffect, useCallback } from "react";
-import toast, { Toaster } from "react-hot-toast";
-import {
-  getAllAuditLogs,
-  filterAuditLogs,
-  deleteFilteredLogs,
-  deleteOldestLogs,
-  deleteLogsBetweenDates,
-  countLogsBetweenDates,
-} from "../../api/admin.js"; // adjust path as needed
+import { useState, useEffect, useMemo } from "react";
+import { getAllAuditLogs, filterAuditLogs } from "../../api/admin.js";
 
-/* ─── constants ─── */
-const TABLES = [
-  "*",
-  "users",
-  "vehicles",
-  "payment",
-  "vehicle_ownership",
-  "driving_licence",
-  "documents",
-  "violation_types",
-  "rto",
-];
-const OPS = ["*", "INSERT", "UPDATE", "DELETE"];
+// ─── Constants ────────────────────────────────────────────────────────────────
 
-/* ─── styles ─── */
-const S = {
-  // layout
-  root: {
-    fontFamily: "var(--font-sans, system-ui, sans-serif)",
-    fontSize: "14px",
-    color: "var(--color-text-primary)",
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    padding: "1.25rem 1.5rem",
-    borderBottom: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
-  },
-  h1: {
-    fontSize: "15px",
-    fontWeight: 500,
-    margin: 0,
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-  },
-  h1Dollar: {
-    fontFamily: "var(--font-mono, monospace)",
-    color: "var(--color-text-secondary, #64748b)",
-  },
-  badge: {
-    fontSize: "10px",
-    fontWeight: 500,
-    letterSpacing: "0.06em",
-    padding: "2px 8px",
-    borderRadius: "6px",
-    background: "var(--color-background-secondary, #f8fafc)",
-    color: "var(--color-text-secondary, #64748b)",
-    border: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
-  },
-  rowCount: {
-    fontFamily: "var(--font-mono, monospace)",
-    fontSize: "12px",
-    color: "var(--color-text-secondary, #64748b)",
-    marginLeft: "auto",
-  },
-  layout: {
-    display: "grid",
-    gridTemplateColumns: "220px minmax(0, 1fr)",
-    minHeight: "500px",
-  },
-  // sidebar
-  sidebar: {
-    padding: "0 1rem 1.5rem 1.5rem",
-    borderRight: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
-    display: "flex",
-    flexDirection: "column",
-  },
-  section: {
-    padding: "1rem 0",
-    borderBottom: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-  sectionLast: {
-    padding: "1rem 0",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-  sectionTitle: {
-    fontSize: "11px",
-    fontWeight: 500,
-    color: "var(--color-text-secondary, #64748b)",
-    letterSpacing: "0.05em",
-    textTransform: "uppercase",
-    marginBottom: "2px",
-  },
-  label: {
-    fontSize: "12px",
-    color: "var(--color-text-secondary, #64748b)",
-    display: "block",
-    marginBottom: "3px",
-  },
-  select: {
-    width: "100%",
-    fontSize: "13px",
-    padding: "5px 8px",
-    boxSizing: "border-box",
-    border: "0.5px solid var(--color-border-secondary, #cbd5e1)",
-    borderRadius: "6px",
-    background: "var(--color-background-primary, #fff)",
-    color: "var(--color-text-primary)",
-    outline: "none",
-    appearance: "none",
-    WebkitAppearance: "none",
-  },
-  input: {
-    width: "100%",
-    fontSize: "13px",
-    padding: "5px 8px",
-    boxSizing: "border-box",
-    border: "0.5px solid var(--color-border-secondary, #cbd5e1)",
-    borderRadius: "6px",
-    background: "var(--color-background-primary, #fff)",
-    color: "var(--color-text-primary)",
-    outline: "none",
-  },
-  // buttons
-  btn: {
-    fontSize: "12px",
-    fontWeight: 500,
-    padding: "6px 10px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    border: "0.5px solid var(--color-border-secondary, #cbd5e1)",
-    background: "transparent",
-    color: "var(--color-text-primary)",
-    width: "100%",
-    textAlign: "center",
-  },
-  btnPrimary: {
-    fontSize: "12px",
-    fontWeight: 500,
-    padding: "6px 10px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    border: "0.5px solid var(--color-border-info, #93c5fd)",
-    background: "transparent",
-    color: "var(--color-text-info, #1d4ed8)",
-    width: "100%",
-    textAlign: "center",
-  },
-  btnDanger: {
-    fontSize: "12px",
-    fontWeight: 500,
-    padding: "6px 10px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    border: "0.5px solid var(--color-border-danger, #fca5a5)",
-    background: "transparent",
-    color: "var(--color-text-danger, #dc2626)",
-    width: "100%",
-    textAlign: "center",
-  },
-  btnToolbar: {
-    fontSize: "12px",
-    padding: "5px 10px",
-    borderRadius: "6px",
-    border: "0.5px solid var(--color-border-secondary, #cbd5e1)",
-    background: "transparent",
-    color: "var(--color-text-secondary, #64748b)",
-    cursor: "pointer",
-  },
-  countBadge: {
-    fontSize: "12px",
-    padding: "5px 8px",
-    borderRadius: "6px",
-    background: "var(--color-background-success, #f0fdf4)",
-    color: "var(--color-text-success, #16a34a)",
-    textAlign: "center",
-  },
-  // main
-  main: {
-    display: "flex",
-    flexDirection: "column",
-    overflow: "hidden",
-  },
-  toolbar: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "0.75rem 1.25rem",
-    borderBottom: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
-  },
-  tableWrap: {
-    overflowX: "auto",
-    flex: 1,
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    fontSize: "12.5px",
-  },
-  th: {
-    padding: "8px 12px",
-    fontSize: "11px",
-    fontWeight: 500,
-    color: "var(--color-text-secondary, #64748b)",
-    textAlign: "left",
-    letterSpacing: "0.04em",
-    whiteSpace: "nowrap",
-    background: "var(--color-background-secondary, #f8fafc)",
-    borderBottom: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
-  },
-  td: {
-    padding: "9px 12px",
-    borderBottom: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
-    verticalAlign: "top",
-  },
-  // modal
-  modalBg: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(0,0,0,0.35)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 100,
-    padding: "1rem",
-  },
-  modal: {
-    background: "var(--color-background-primary, #fff)",
-    border: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
-    borderRadius: "12px",
-    padding: "1.5rem",
-    maxWidth: "360px",
-    width: "100%",
-  },
-  modalTitle: {
-    fontSize: "15px",
-    fontWeight: 500,
-    margin: "0 0 6px",
-  },
-  modalMsg: {
-    fontSize: "13px",
-    color: "var(--color-text-secondary, #64748b)",
-    margin: "0 0 1.25rem",
-  },
-  modalActions: {
-    display: "flex",
-    gap: "8px",
-  },
-  modalCancel: {
-    flex: 1,
-    padding: "7px 12px",
-    borderRadius: "6px",
-    fontSize: "13px",
-    cursor: "pointer",
-    border: "0.5px solid var(--color-border-secondary, #cbd5e1)",
-    background: "transparent",
-    color: "var(--color-text-primary)",
-  },
-  modalConfirm: {
-    flex: 1,
-    padding: "7px 12px",
-    borderRadius: "6px",
-    fontSize: "13px",
-    cursor: "pointer",
-    border: "0.5px solid var(--color-border-danger, #fca5a5)",
-    background: "var(--color-background-danger, #fef2f2)",
-    color: "var(--color-text-danger, #dc2626)",
-  },
-  // misc
-  empty: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "8px",
-    padding: "4rem 2rem",
-    color: "var(--color-text-secondary, #64748b)",
-    fontSize: "13px",
-  },
-  muted: {
-    color: "var(--color-text-secondary, #64748b)",
-  },
-  mono: {
-    fontFamily: "var(--font-mono, monospace)",
-  },
+const TABLES = ["*", "users", "vehicles", "ownership", "rto", "documents"];
+const OPERATIONS = ["*", "INSERT", "UPDATE", "DELETE", "SELECT"];
+
+const OPERATION_COLORS = {
+  INSERT: "bg-green-100 text-green-700",
+  UPDATE: "bg-blue-100 text-blue-700",
+  DELETE: "bg-red-100 text-red-700",
+  SELECT: "bg-slate-100 text-slate-600",
 };
 
-/* ─── op pill ─── */
-const OP_STYLES = {
-  INSERT: {
-    background: "#eaf3de",
-    color: "#3b6d11",
-    border: "0.5px solid #c0dd97",
-  },
-  UPDATE: {
-    background: "#e6f1fb",
-    color: "#185fa5",
-    border: "0.5px solid #b5d4f4",
-  },
-  DELETE: {
-    background: "#fcebeb",
-    color: "#a32d2d",
-    border: "0.5px solid #f7c1c1",
-  },
+const OPERATION_ICONS = {
+  INSERT: "➕",
+  UPDATE: "✏️",
+  DELETE: "🗑️",
+  SELECT: "👁",
 };
 
-function OpPill({ op }) {
-  const style = OP_STYLES[op] ?? {
-    background: "#f1f5f9",
-    color: "#64748b",
-    border: "0.5px solid #e2e8f0",
-  };
+const fmtDate = (iso) => {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+};
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+const SkeletonRow = ({ cols }) => (
+  <tr className="border-b border-slate-100">
+    {Array.from({ length: cols }).map((_, i) => (
+      <td key={i} className="px-4 py-3.5">
+        <div
+          className="h-3 rounded-full bg-slate-100 animate-pulse"
+          style={{ width: `${[45, 55, 40, 50, 38, 42, 36][i % 7]}%` }}
+        />
+      </td>
+    ))}
+  </tr>
+);
+
+const EmptyState = () => (
+  <tr>
+    <td colSpan={20} className="py-20 text-center">
+      <div className="text-4xl mb-3">📭</div>
+      <p className="text-slate-500 font-medium">No audit logs found</p>
+      <p className="text-slate-400 text-sm mt-1">
+        Try a different filter combination.
+      </p>
+    </td>
+  </tr>
+);
+
+const OperationBadge = ({ operation }) => {
+  const cls =
+    OPERATION_COLORS[(operation || "").toUpperCase()] ||
+    "bg-slate-100 text-slate-600";
+  const icon = OPERATION_ICONS[(operation || "").toUpperCase()] || "•";
   return (
     <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        padding: "2px 7px",
-        borderRadius: "6px",
-        fontSize: "10px",
-        fontWeight: 500,
-        fontFamily: "var(--font-mono, monospace)",
-        letterSpacing: "0.04em",
-        ...style,
-      }}
+      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase ${cls}`}
     >
-      {op}
+      <span>{icon}</span>
+      {operation || "—"}
     </span>
   );
-}
+};
 
-/* ─── json cell ─── */
-function JsonCell({ data }) {
-  const [open, setOpen] = useState(false);
-  if (!data)
+const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
+  <th
+    onClick={() => !noSort && onSort(col)}
+    className={`px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap
+      ${!noSort ? "cursor-pointer hover:text-slate-800 select-none" : ""}`}
+  >
+    {label}
+    {!noSort && (
+      <span className="ml-1 text-xs">
+        {sortCol === col ? (
+          sortDir === "asc" ? (
+            "▲"
+          ) : (
+            "▼"
+          )
+        ) : (
+          <span className="text-slate-300">⇅</span>
+        )}
+      </span>
+    )}
+  </th>
+);
+
+const TableWrap = ({ children }) => (
+  <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">{children}</table>
+    </div>
+  </div>
+);
+
+const Toolbar = ({ search, setSearch, count, total }) => (
+  <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div className="relative">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+        🔍
+      </span>
+      <input
+        type="text"
+        placeholder="Search logs…"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 w-72
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+      />
+    </div>
+    <span className="text-xs text-slate-400 font-mono">
+      {count} / {total} records
+    </span>
+  </div>
+);
+
+// ─── Filter Bar ───────────────────────────────────────────────────────────────
+
+const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading, isFiltered }) => (
+  <div className="flex flex-wrap items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm mb-5">
+    {/* Table selector */}
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+        Table
+      </label>
+      <select
+        value={table}
+        onChange={(e) => setTable(e.target.value)}
+        className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition min-w-32"
+      >
+        {TABLES.map((t) => (
+          <option key={t} value={t}>
+            {t === "*" ? "All Tables" : t}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* Operation selector */}
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+        Operation
+      </label>
+      <select
+        value={operation}
+        onChange={(e) => setOperation(e.target.value)}
+        className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition min-w-36"
+      >
+        {OPERATIONS.map((op) => (
+          <option key={op} value={op}>
+            {op === "*" ? "All Operations" : op}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* Fetch button */}
+    <div className="flex flex-col gap-1">
+      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider opacity-0 select-none">
+        &nbsp;
+      </label>
+      <button
+        onClick={onFetch}
+        disabled={loading}
+        className="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg
+                   hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+      >
+        {loading ? "Loading…" : "Apply Filter"}
+      </button>
+    </div>
+
+    {/* Active filter indicator */}
+    {isFiltered && (
+      <div className="flex items-center gap-2 ml-2 self-end mb-0.5">
+        <span className="text-xs text-slate-500">Filtered by</span>
+        {table !== "*" && (
+          <span className="text-xs font-bold font-mono bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">
+            table: {table}
+          </span>
+        )}
+        {operation !== "*" && (
+          <span className="text-xs font-bold font-mono bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">
+            op: {operation}
+          </span>
+        )}
+      </div>
+    )}
+  </div>
+);
+
+// ─── Audit Logs Table ─────────────────────────────────────────────────────────
+
+const AuditLogsTable = ({ rows, loading }) => {
+  const [search, setSearch] = useState("");
+  const [sortCol, setSortCol] = useState("changed_at");
+  const [sortDir, setSortDir] = useState("desc");
+  const [expandedRow, setExpandedRow] = useState(null);
+
+  const handleSort = (col) => {
+    if (sortCol === col) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortCol(col);
+      setSortDir("asc");
+    }
+  };
+
+  const sorted = useMemo(() => {
+    const q = search.toLowerCase();
+    const filtered = rows.filter((r) =>
+      [
+        r.log_id,
+        r.table_name,
+        r.operation_type,
+        r.changed_by,
+        r.record_id,
+      ].some((v) => String(v || "").toLowerCase().includes(q))
+    );
+    return [...filtered].sort((a, b) => {
+      const av = a[sortCol] ?? "";
+      const bv = b[sortCol] ?? "";
+      return sortDir === "asc" ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+    });
+  }, [rows, search, sortCol, sortDir]);
+
+  const cols = [
+    { key: "log_id", label: "Log ID" },
+    { key: "table_name", label: "Table" },
+    { key: "operation_type", label: "Operation", noSort: true },
+    { key: "record_id", label: "Record ID" },
+    { key: "changed_by", label: "Changed By" },
+    { key: "changed_at", label: "Timestamp" },
+    { key: "old_data", label: "Old Data", noSort: true },
+    { key: "new_data", label: "New Data", noSort: true },
+  ];
+
+  const JsonCell = ({ value, rowKey, field }) => {
+    const id = `${rowKey}-${field}`;
+    const isExpanded = expandedRow === id;
+
+    // value may already be an object (parsed by axios) or a JSON string or null
+    let parsed = null;
+    if (value && typeof value === "object") {
+      parsed = value;
+    } else if (value && typeof value === "string") {
+      try { parsed = JSON.parse(value); } catch { /* raw string */ }
+    }
+
+    if (value === null || value === undefined || value === "" ||
+        value === "null" || value === "{}" || value === "[]") {
+      return <span className="text-slate-300 text-xs">—</span>;
+    }
+
+    if (parsed && typeof parsed === "object") {
+      return (
+        <div>
+          <button
+            onClick={() => setExpandedRow(isExpanded ? null : id)}
+            className="text-xs text-indigo-500 hover:text-indigo-700 font-mono underline underline-offset-2"
+          >
+            {isExpanded ? "▲ collapse" : "▼ expand"}
+          </button>
+          {isExpanded && (
+            <pre className="mt-2 text-xs bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-600 max-w-xs overflow-x-auto whitespace-pre-wrap">
+              {JSON.stringify(parsed, null, 2)}
+            </pre>
+          )}
+        </div>
+      );
+    }
+
     return (
-      <span style={{ ...S.mono, fontSize: "11px", fontStyle: "italic", ...S.muted }}>
-        null
+      <span className="text-xs font-mono text-slate-500 truncate max-w-[120px] block">
+        {String(value)}
       </span>
     );
-  const text = typeof data === "string" ? data : JSON.stringify(data, null, 2);
-  return (
-    <pre
-      onClick={() => setOpen((v) => !v)}
-      title={open ? "Click to collapse" : "Click to expand"}
-      style={{
-        fontSize: "11px",
-        fontFamily: "var(--font-mono, monospace)",
-        color: "var(--color-text-secondary, #64748b)",
-        background: "var(--color-background-secondary, #f8fafc)",
-        border: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
-        borderRadius: "6px",
-        padding: "6px 8px",
-        cursor: "pointer",
-        maxWidth: "260px",
-        overflow: open ? "auto" : "hidden",
-        maxHeight: open ? "320px" : "48px",
-        whiteSpace: "pre-wrap",
-        wordBreak: "break-all",
-        margin: 0,
-        transition: "max-height 0.2s",
-      }}
-    >
-      {text}
-    </pre>
-  );
-}
-
-/* ─── confirm modal ─── */
-function ConfirmModal({ message, onConfirm, onCancel }) {
-  return (
-    <div style={S.modalBg} onClick={onCancel}>
-      <div style={S.modal} onClick={(e) => e.stopPropagation()}>
-        <h3 style={S.modalTitle}>Confirm action</h3>
-        <p style={S.modalMsg}>{message}</p>
-        <div style={S.modalActions}>
-          <button style={S.modalCancel} onClick={onCancel}>
-            Cancel
-          </button>
-          <button style={S.modalConfirm} onClick={onConfirm}>
-            Confirm delete
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── spinner ─── */
-function Spinner() {
-  return (
-    <div
-      style={{
-        width: "20px",
-        height: "20px",
-        border: "2px solid var(--color-border-tertiary, #e2e8f0)",
-        borderTopColor: "var(--color-text-secondary, #64748b)",
-        borderRadius: "50%",
-        animation: "al-spin 0.7s linear infinite",
-      }}
-    />
-  );
-}
-
-/* ─── main component ─── */
-export default function AuditLogs() {
-  const [logs, setLogs]         = useState([]);
-  const [loading, setLoading]   = useState(false);
-  const [confirm, setConfirm]   = useState(null);
-  const [countResult, setCountResult] = useState(null);
-
-  // filter
-  const [filterTable, setFilterTable] = useState("*");
-  const [filterOp, setFilterOp]       = useState("*");
-
-  // delete filtered
-  const [delTable, setDelTable] = useState("*");
-  const [delOp, setDelOp]       = useState("*");
-
-  // delete oldest
-  const [oldestCount, setOldestCount] = useState("");
-
-  // date range
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate]     = useState("");
-
-  /* fetch all */
-  const fetchAll = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await getAllAuditLogs();
-      setLogs(res.data?.data ?? []);
-    } catch (e) {
-      toast.error(e?.response?.data?.message ?? "Failed to fetch logs");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { fetchAll(); }, [fetchAll]);
-
-  /* filter */
-  const handleFilter = async () => {
-    setLoading(true);
-    try {
-      const res = await filterAuditLogs(filterTable, filterOp);
-      const data = res.data?.data ?? [];
-      setLogs(data);
-      toast.success(`${data.length} log(s) loaded`);
-    } catch (e) {
-      toast.error(e?.response?.data?.message ?? "Filter failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /* confirm helper */
-  const withConfirm = (message, fn) =>
-    setConfirm({ message, onConfirm: () => { setConfirm(null); fn(); } });
-
-  /* delete filtered */
-  const handleDeleteFiltered = () =>
-    withConfirm(
-      `Delete all logs where table = "${delTable}" and operation = "${delOp}"?`,
-      async () => {
-        try {
-          await deleteFilteredLogs({ table: delTable, operation: delOp });
-          toast.success("Filtered logs deleted");
-          fetchAll();
-        } catch (e) {
-          toast.error(e?.response?.data?.message ?? "Delete failed");
-        }
-      }
-    );
-
-  /* delete oldest */
-  const handleDeleteOldest = () => {
-    const n = parseInt(oldestCount, 10);
-    if (!n || n <= 0) { toast.error("Enter a valid count"); return; }
-    withConfirm(
-      `Permanently delete the ${n} oldest log(s)?`,
-      async () => {
-        try {
-          await deleteOldestLogs({ count: n });
-          toast.success(`${n} oldest log(s) deleted`);
-          setOldestCount("");
-          fetchAll();
-        } catch (e) {
-          toast.error(e?.response?.data?.message ?? "Delete failed");
-        }
-      }
-    );
-  };
-
-  /* delete date range */
-  const handleDeleteDateRange = () => {
-    if (!startDate || !endDate) { toast.error("Both dates are required"); return; }
-    if (new Date(startDate) > new Date(endDate)) { toast.error("Start must be before end"); return; }
-    withConfirm(
-      `Delete all logs between ${startDate} and ${endDate}?`,
-      async () => {
-        try {
-          await deleteLogsBetweenDates({ startDate, endDate });
-          toast.success("Logs in date range deleted");
-          fetchAll();
-        } catch (e) {
-          toast.error(e?.response?.data?.message ?? "Delete failed");
-        }
-      }
-    );
-  };
-
-  /* count date range */
-  const handleCountDateRange = async () => {
-    if (!startDate || !endDate) { toast.error("Both dates are required"); return; }
-    if (new Date(startDate) > new Date(endDate)) { toast.error("Start must be before end"); return; }
-    try {
-      const res = await countLogsBetweenDates(startDate, endDate);
-      setCountResult(res.data?.data?.count ?? 0);
-    } catch (e) {
-      toast.error(e?.response?.data?.message ?? "Count failed");
-    }
-  };
-
-  const fmtDate = (ts) => {
-    if (!ts) return "—";
-    return new Date(ts).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
   };
 
   return (
     <>
-      {/* spinner keyframe injected once */}
-      <style>{`@keyframes al-spin { to { transform: rotate(360deg); } }`}</style>
-
-      <Toaster
-        position="bottom-right"
-        toastOptions={{
-          style: {
-            background: "var(--color-background-primary, #fff)",
-            color: "var(--color-text-primary, #0f172a)",
-            border: "0.5px solid var(--color-border-tertiary, #e2e8f0)",
-            fontSize: "13px",
-            borderRadius: "8px",
-            boxShadow: "none",
-          },
-          success: { iconTheme: { primary: "#16a34a", secondary: "#fff" } },
-          error:   { iconTheme: { primary: "#dc2626", secondary: "#fff" } },
-        }}
+      <Toolbar
+        search={search}
+        setSearch={setSearch}
+        count={sorted.length}
+        total={rows.length}
       />
+      <TableWrap>
+        <thead>
+          <tr className="border-b border-slate-100 bg-slate-50">
+            {cols.map((c) => (
+              <SortTh
+                key={c.key}
+                {...c}
+                col={c.key}
+                sortCol={sortCol}
+                sortDir={sortDir}
+                onSort={handleSort}
+              />
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {loading ? (
+            Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonRow key={i} cols={cols.length} />
+            ))
+          ) : sorted.length === 0 ? (
+            <EmptyState />
+          ) : (
+            sorted.map((r, i) => (
+              <tr
+                key={r.log_id || i}
+                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+              >
+                <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">
+                  #{r.log_id || "—"}
+                </td>
+                <td className="px-4 py-3 text-xs font-mono text-slate-700 whitespace-nowrap">
+                  <span className="px-2 py-0.5 bg-slate-100 rounded text-slate-600">
+                    {r.table_name || "—"}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <OperationBadge operation={r.operation_type} />
+                </td>
+                <td className="px-4 py-3 font-mono text-xs text-slate-500 whitespace-nowrap">
+                  {r.record_id || "—"}
+                </td>
+                <td className="px-4 py-3 text-sm text-slate-700 whitespace-nowrap">
+                  {r.changed_by || "—"}
+                </td>
+                <td className="px-4 py-3 text-xs font-mono text-slate-500 whitespace-nowrap">
+                  {fmtDate(r.changed_at)}
+                </td>
+                <td className="px-4 py-3 max-w-[160px]">
+                  <JsonCell
+                    value={r.old_data}
+                    rowKey={r.log_id || i}
+                    field="old"
+                  />
+                </td>
+                <td className="px-4 py-3 max-w-[160px]">
+                  <JsonCell
+                    value={r.new_data}
+                    rowKey={r.log_id || i}
+                    field="new"
+                  />
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </TableWrap>
+    </>
+  );
+};
 
-      {confirm && (
-        <ConfirmModal
-          message={confirm.message}
-          onConfirm={confirm.onConfirm}
-          onCancel={() => setConfirm(null)}
-        />
-      )}
+// ─── Main Component ───────────────────────────────────────────────────────────
 
-      <div style={S.root}>
-        {/* header */}
-        <div style={S.header}>
-          <h1 style={S.h1}>
-            <span style={S.h1Dollar}>$</span> audit_logs
-          </h1>
-          <span style={S.badge}>ADMIN</span>
-          <span style={S.rowCount}>{logs.length} row{logs.length !== 1 ? "s" : ""}</span>
+export default function AuditLogs() {
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [filterTable, setFilterTable] = useState("*");
+  const [filterOperation, setFilterOperation] = useState("*");
+  const [isFiltered, setIsFiltered] = useState(false);
+
+  // ── Stats derived from loaded logs ──
+  const stats = useMemo(() => {
+    const ops = ["INSERT", "UPDATE", "DELETE"];
+    return [
+      { label: "Total Logs", value: logs.length || "—" },
+      ...ops.map((op) => ({
+        label: `${op[0]}${op.slice(1).toLowerCase()}s`,
+        value: logs.filter(
+          (l) => (l.operation_type || "").toUpperCase() === op
+        ).length,
+        op,
+      })),
+    ];
+  }, [logs]);
+
+  const statColorMap = {
+    INSERT: { bg: "bg-green-50 border-green-200", val: "text-green-600" },
+    UPDATE: { bg: "bg-blue-50 border-blue-200", val: "text-blue-600" },
+    DELETE: { bg: "bg-red-50 border-red-200", val: "text-red-600" },
+  };
+
+  // ── Initial fetch ──
+  const fetchAll = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getAllAuditLogs();
+      setLogs(res.data?.data || res.data || []);
+      setIsFiltered(false);
+    } catch {
+      setError("Failed to load audit logs.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchFiltered = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await filterAuditLogs(filterTable, filterOperation);
+      setLogs(res.data?.data || res.data || []);
+      setIsFiltered(filterTable !== "*" || filterOperation !== "*");
+    } catch {
+      setError(
+        `Failed to load logs for table="${filterTable}", operation="${filterOperation}".`
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAll();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {/* ── Header ── */}
+      <div className="bg-white border-b border-slate-200 px-8 pt-8 pb-0">
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
+          <div>
+            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">
+              Admin Panel
+            </p>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+              Audit Logs
+            </h1>
+            <p className="text-sm text-slate-500 mt-1">
+              Track all database changes, operations, and system activity.
+            </p>
+          </div>
+
+          {/* Stats */}
+          <div className="flex flex-wrap gap-3 self-center">
+            {stats.map((s) => {
+              const colors = s.op ? statColorMap[s.op] : null;
+              return (
+                <div
+                  key={s.label}
+                  className={`px-4 py-2 rounded-lg border text-center min-w-25
+                  ${colors ? `${colors.bg}` : "bg-white border-slate-200"}`}
+                >
+                  <div
+                    className={`text-lg font-bold font-mono ${
+                      colors ? colors.val : "text-slate-800"
+                    }`}
+                  >
+                    {s.value}
+                  </div>
+                  <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        <div style={S.layout}>
-          {/* ── SIDEBAR ── */}
-          <aside style={S.sidebar}>
-
-            {/* filter */}
-            <div style={S.section}>
-              <div style={S.sectionTitle}>Filter &amp; view</div>
-              <div>
-                <label style={S.label}>Table</label>
-                <select style={S.select} value={filterTable} onChange={e => setFilterTable(e.target.value)}>
-                  {TABLES.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={S.label}>Operation</label>
-                <select style={S.select} value={filterOp} onChange={e => setFilterOp(e.target.value)}>
-                  {OPS.map(o => <option key={o} value={o}>{o}</option>)}
-                </select>
-              </div>
-              <button style={S.btnPrimary} onClick={handleFilter}>
-                Apply filter
-              </button>
-            </div>
-
-            {/* delete filtered */}
-            <div style={S.section}>
-              <div style={S.sectionTitle}>Delete by filter</div>
-              <div>
-                <label style={S.label}>Table</label>
-                <select style={S.select} value={delTable} onChange={e => setDelTable(e.target.value)}>
-                  {TABLES.map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={S.label}>Operation</label>
-                <select style={S.select} value={delOp} onChange={e => setDelOp(e.target.value)}>
-                  {OPS.map(o => <option key={o} value={o}>{o}</option>)}
-                </select>
-              </div>
-              <button style={S.btnDanger} onClick={handleDeleteFiltered}>
-                Delete matching
-              </button>
-            </div>
-
-            {/* delete oldest */}
-            <div style={S.section}>
-              <div style={S.sectionTitle}>Delete oldest N</div>
-              <div>
-                <label style={S.label}>Count</label>
-                <input
-                  style={S.input}
-                  type="number"
-                  min={1}
-                  placeholder="e.g. 50"
-                  value={oldestCount}
-                  onChange={e => setOldestCount(e.target.value)}
-                />
-              </div>
-              <button style={S.btnDanger} onClick={handleDeleteOldest}>
-                Delete oldest
-              </button>
-            </div>
-
-            {/* date range */}
-            <div style={S.sectionLast}>
-              <div style={S.sectionTitle}>Date range</div>
-              <div>
-                <label style={S.label}>Start date</label>
-                <input
-                  style={S.input}
-                  type="date"
-                  value={startDate}
-                  onChange={e => { setStartDate(e.target.value); setCountResult(null); }}
-                />
-              </div>
-              <div>
-                <label style={S.label}>End date</label>
-                <input
-                  style={S.input}
-                  type="date"
-                  value={endDate}
-                  onChange={e => { setEndDate(e.target.value); setCountResult(null); }}
-                />
-              </div>
-              {countResult !== null && (
-                <div style={S.countBadge}>{countResult} log(s) in range</div>
-              )}
-              <button style={S.btn} onClick={handleCountDateRange}>
-                Count in range
-              </button>
-              <button style={S.btnDanger} onClick={handleDeleteDateRange}>
-                Delete in range
-              </button>
-            </div>
-
-          </aside>
-
-          {/* ── MAIN TABLE ── */}
-          <main style={S.main}>
-            <div style={S.toolbar}>
-              <button
-                style={S.btnToolbar}
-                onClick={fetchAll}
-                disabled={loading}
-              >
-                ↺ Refresh
-              </button>
-            </div>
-
-            <div style={S.tableWrap}>
-              {loading ? (
-                <div style={S.empty}>
-                  <Spinner />
-                  Loading logs…
-                </div>
-              ) : logs.length === 0 ? (
-                <div style={S.empty}>No logs found.</div>
-              ) : (
-                <table style={S.table}>
-                  <thead>
-                    <tr>
-                      {["Log ID", "Table", "Operation", "Record ID", "Old data", "New data", "Changed at"].map(h => (
-                        <th key={h} style={S.th}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {logs.map(log => (
-                      <tr key={log.log_id}>
-                        <td style={{ ...S.td, ...S.muted, ...S.mono, fontSize: "11px" }}>
-                          #{log.log_id}
-                        </td>
-                        <td style={S.td}>{log.table_name}</td>
-                        <td style={S.td}>
-                          <OpPill op={log.operation_type} />
-                        </td>
-                        <td style={{ ...S.td, ...S.mono, fontSize: "12px" }}>
-                          {log.record_id ?? "—"}
-                        </td>
-                        <td style={S.td}>
-                          <JsonCell data={log.old_data} />
-                        </td>
-                        <td style={S.td}>
-                          <JsonCell data={log.new_data} />
-                        </td>
-                        <td style={{ ...S.td, ...S.muted, whiteSpace: "nowrap", fontSize: "12px" }}>
-                          {fmtDate(log.changed_at)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </main>
+        {/* Tab-like header strip */}
+        <div className="flex gap-1">
+          <div
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 
+            border-indigo-600 text-indigo-600 bg-slate-50 rounded-t-md"
+          >
+            <span>📋</span>
+            Audit Logs
+          </div>
+          <button
+            onClick={fetchAll}
+            disabled={loading}
+            className="ml-auto mb-1 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium
+              text-slate-500 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 
+              disabled:opacity-40 transition self-center"
+          >
+            🔄 {loading ? "Refreshing…" : "Refresh"}
+          </button>
         </div>
       </div>
-    </>
+
+      {/* ── Body ── */}
+      <div className="px-8 py-6">
+        {/* Error banner */}
+        {error && (
+          <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
+            ⚠ {error}
+          </div>
+        )}
+
+        {/* Filter bar */}
+        <FilterBar
+          table={filterTable}
+          setTable={setFilterTable}
+          operation={filterOperation}
+          setOperation={setFilterOperation}
+          onFetch={fetchFiltered}
+          loading={loading}
+          isFiltered={isFiltered}
+        />
+
+        {/* Table */}
+        <AuditLogsTable rows={logs} loading={loading} />
+
+        {/* Footer note */}
+        <div className="mt-3 flex items-center gap-4 text-xs text-slate-400">
+          <span>
+            💡 Click{" "}
+            <span className="font-semibold text-indigo-500">▼ expand</span> on
+            JSON values to inspect old / new record snapshots.
+          </span>
+        </div>
+      </div>
+    </div>
   );
 }

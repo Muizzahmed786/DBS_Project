@@ -28,6 +28,7 @@ import AddViolationType from "../components/admin/AddViolationType.jsx";
 import ChallanPayment from "../components/citizen/ChallanPayment.jsx";
 import DocumentManagement from "../components/officer/DocumentManagement.jsx"
 import AuditLogs from "../components/admin/AuditLogs.jsx"
+import DeleteAuditLogs from "../components/admin/DeleteAuditLogs.jsx";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -47,6 +48,7 @@ const AppRoutes = () => {
           <Route path="add-office" element={<AddRtoOffice />} />
           <Route path="add-violation-type" element={<AddViolationType />} />
           <Route path="logs" element={<AuditLogs />} />
+          <Route path="delete-logs" element={<DeleteAuditLogs />} />
         </Route>
       </Route>
 
