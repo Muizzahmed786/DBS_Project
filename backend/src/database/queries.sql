@@ -71,14 +71,27 @@ DELIMITER ;
 
 DELIMITER $$
 
+CREATE TRIGGER dl_before_insert
+BEFORE INSERT ON driving_licence
+FOR EACH ROW
+BEGIN
+    IF NEW.expiry_date < CURDATE() THEN
+        SET NEW.status = 'expired';
+    ELSE
+        SET NEW.status = 'valid';
+    END IF;
+END $$
+
+DELIMITER ;
+DELIMITER $$
 CREATE TRIGGER dl_before_update
 BEFORE UPDATE ON driving_licence
 FOR EACH ROW
 BEGIN
     IF NEW.expiry_date < CURDATE() THEN
-        SET NEW.status = 'EXPIRED';
+        SET NEW.status = 'expired';
     ELSE
-        SET NEW.status = 'ACTIVE';
+        SET NEW.status = 'valid';
     END IF;
 END $$
 
