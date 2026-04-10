@@ -191,7 +191,7 @@ const PaymentModal = ({ challan, onClose, onSuccess }) => {
 
 // ── Challan Card ──────────────────────────────────────────────────────────────
 const ChallanCard = ({ challan, onPayClick }) => {
-  const date = new Date(challan.violation_date).toLocaleDateString("en-IN", {
+  const date = new Date(challan.date).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
