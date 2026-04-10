@@ -266,27 +266,17 @@ const OwnershipTable = ({ rows, loading }) => {
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
-          <input
-            type="text"
-            placeholder="Search by name, reg. no., email, vehicle…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 w-80
-                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-          />
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-400 font-mono">{sorted.length} / {rows.length} records</span>
-          <button
-            onClick={() => setShowAadhaar((s) => !s)}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition"
-          >
-            {showAadhaar ? "🙈 Hide" : "👁 Show"} Aadhaar
-          </button>
-        </div>
+      <div className="flex items-center justify-end gap-3 mb-4">
+        <span className="text-xs text-slate-400 font-mono">
+          {sorted.length} / {rows.length} records
+        </span>
+
+        <button
+          onClick={() => setShowAadhaar((s) => !s)}
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition"
+        >
+          {showAadhaar ? "🙈 Hide" : "👁 Show"} Aadhaar
+        </button>
       </div>
       <TableWrap>
         <thead>
@@ -449,7 +439,7 @@ export default function VehicleManagement() {
           {/* Stats */}
           <div className="flex flex-wrap gap-3 self-center">
             {stats.map((s) => (
-              <div key={s.label} className={`px-4 py-2 rounded-lg border text-center min-w-[100px]
+              <div key={s.label} className={`px-4 py-2 rounded-lg border text-center min-w-25
                 ${s.warn ? "bg-red-50 border-red-200" : s.amber ? "bg-amber-50 border-amber-200" : "bg-white border-slate-200"}`}>
                 <div className={`text-lg font-bold font-mono ${s.warn ? "text-red-600" : s.amber ? "text-amber-600" : "text-slate-800"}`}>
                   {s.value}

@@ -35,3 +35,7 @@ export const getChallanStatusStats = () => {
 export const getTopViolations = () => {
     return API.get('/officers/get-top-violations');
 }
+
+export const getAllUploadedDocuments = () => {
+    return API.get('/officers/get-citizen-documets');
+}

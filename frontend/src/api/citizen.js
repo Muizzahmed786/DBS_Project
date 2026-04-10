@@ -20,18 +20,17 @@ export const getMyDocuments = () => {
     return API.get('/citizens/get-my-documents');
 }
 
-export const uploadDocuments = (formData) => {
-    return API.post('/citizens/upload-documents', formData, {
+export const uploadUserDocuments = (formData) =>
+    API.post('/citizens/upload-documents', formData, {
         withCredentials: true,
-        headers: {
-            "Content-Type": "multipart/form-data"
-        }
-    });
-};
+        headers: { "Content-Type": "multipart/form-data" },
+});
 
-export const uploadVehicleDocuments = (data, vehicleId) => {
-    return API.post(`/citizens/upload-documents/${vehicleId}`, data);
-}
+export const uploadVehicleDocuments = (formData, vehicleId) =>
+    API.post(`/citizens/upload-documents/${vehicleId}`, formData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+});
 
 export const insertVehicle = (data) => {
     return API.post('/citizens/insert-vehicle', data);

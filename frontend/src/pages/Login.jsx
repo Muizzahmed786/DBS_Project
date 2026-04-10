@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../api/auth.js';
 import { useAuth } from "../context/useAuth.js";
+import toast from 'react-hot-toast';
 
 const redirectByRole = (role, navigate) => {
     if (role === 'admin') navigate('/admin/dashboard');
@@ -12,30 +13,26 @@ const redirectByRole = (role, navigate) => {
 
 const Login = () => {
     const navigate = useNavigate();
-    const { user, loading, fetchUser } = useAuth();  // ← get user & loading from context
+    const { user, loading, fetchUser } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    // AuthProvider already calls fetchUser on mount (with refresh fallback)
-    // So just react to whatever it resolves to
     useEffect(() => {
         if (!loading && user) {
-            redirectByRole(user.role, navigate);  // already logged in → redirect
+            redirectByRole(user.role, navigate);
         }
     }, [user, loading]);
 
     const handleLogin = async () => {
         try {
-            await loginUser({ email, password });  // sets cookies
-            await fetchUser();                     // updates context state
-            // user state update triggers the useEffect above → auto redirects
+            await loginUser({ email, password });
+            await fetchUser();
         } catch (err) {
-            window.alert(err.response?.data?.message || err.message);
+            toast.error(err.response?.data?.message || err.message);
         }
     };
 
-    // Don't render form while auth check is in progress
     if (loading) return <div className="min-h-screen bg-slate-900" />;
 
     return (

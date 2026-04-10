@@ -148,7 +148,7 @@ const getAllViolationTypes=asyncHandler(async (req,res)=>{
   if(!(req.user[0].role=='admin' || req.user[0].role=='officer')){
     throw new ApiError(400,"Unauthorized request");
   }
-  const [violationTypes]=await db.execute(`select * from violation_types`);
+  const [violationTypes]=await db.execute(`SELECT * FROM view_violation_types`);
 
   if(violationTypes.length===0){
     throw new ApiError(400,"Something went wrong while fetching violation types");

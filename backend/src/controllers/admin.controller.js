@@ -66,7 +66,7 @@ const getRtoVehicleOwnershipDetails = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Unauthorized access");
   }
   const { rtoOwnershipCode } = req.body;
-  console.log(req.body);
+
   const [rtoOwnershipDetails] = await db.execute(`select 
     ownership_id,ownership_start_date,ownership_end_date,user_id,vehicle_id,registration_number,chassis_number,engine_number,vehicle_class,fuel_type,manufacturer,model,registration_date,registration_valid_till,insurance_valid_till,full_name,mobile_number,email,aadhaar_number from vehicle_ownership natural join users natural join vehicles natural join rto where rto_code=?`, [rtoOwnershipCode])
 
@@ -260,13 +260,12 @@ const getChallanCountByStatus = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Unauthorized access");
   }
   const { status } = req.params;
-  console.log(status)
+
   if (!['pending', 'paid'].includes(status)) {
     throw new ApiError(400, "Invalid challan status");
   }
   const [rows] = await db.execute(`select count(distinct challan_id) as total_challan_count from challan where status=?;`, [status])
 
-  console.log(rows);
   const totalAmount = rows[0]?.total_challan_count || 0;
 
   return res.status(200).json(new ApiResponse(200, totalAmount, "Total Challans fetched successfully"))
@@ -276,15 +275,15 @@ const getAllRtoOffices = asyncHandler(async (req, res) => {
   if (req.user[0]?.role !== 'admin') {
     throw new ApiError(404, "Unauthorized access");
   }
-  const [offices] = await db.execute(`select * from rto`);
-  console.log(offices);
+  const [offices] = await db.execute(`SELECT * FROM view_rto_offices`);
+
   return res.status(200).json(new ApiResponse(200, offices, "All Offices fetched"));
 })
 const addRtoOffice = asyncHandler(async (req, res) => {
   if (req.user[0]?.role !== "admin") {
     throw new ApiError(403, "Unauthorized access");
   }
-  console.log(req.body)
+
   const {
     rto_code,
     rto_name,
@@ -360,4 +359,130 @@ const addViolationType = asyncHandler(async (req, res) => {
     )
   );
 });
-export { getAllCitizens, getAllOfficers, getAllAdmins, getRtoVehicleOwnershipDetails, getRtoRegisteredVehicles, getAllRegisteredVehicles, getAllVehicleOwnershipDetails, getChallansByStatus, getAllChallans, getAllPayments, getPaymentsByStatus, getTotalChallansCount, getTotalRevenue, getChallanCountByStatus, getAllRtoOffices,addRtoOffice,addViolationType }
+
+const getAllAuditLogs = asyncHandler(async (req, res) => {
+  if (req.user[0]?.role !== "admin") {
+    throw new ApiError(403, "Unauthorized access");
+  }
+
+  const [logs] = await db.execute(`SELECT * FROM audit_logs`);
+  console.log(logs);
+  if (logs.length === 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, [], "No logs at present"));
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, logs, "All logs fetched successfully"));
+});
+
+const filterAuditLogs = asyncHandler(async (req, res) => {
+  if (req.user[0]?.role !== "admin") {
+    throw new ApiError(403, "Unauthorized access");
+  }
+
+  const { table = "*", operation = "*" } = req.params;
+
+  const [rows] = await db.execute(
+    `CALL filter_audit_logs(?, ?)`,
+    [table, operation]
+  );
+
+  const logs = rows[0];
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, logs, "Filtered logs fetched"));
+});
+
+const deleteFilteredLogs = asyncHandler(async (req, res) => {
+  if (req.user[0]?.role !== "admin") {
+    throw new ApiError(403, "Unauthorized access");
+  }
+
+  const { table = "*", operation = "*" } = req.body;
+
+  await db.execute(`CALL delete_filtered_logs(?, ?)`, [
+    table,
+    operation,
+  ]);
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, null, "Logs deleted successfully"));
+});
+
+const deleteOldestLogs = asyncHandler(async (req, res) => {
+  if (req.user[0]?.role !== "admin") {
+    throw new ApiError(403, "Unauthorized access");
+  }
+
+  const count = parseInt(req.body.count, 10);
+
+  if (!count || count <= 0) {
+    throw new ApiError(400, "Invalid count value");
+  }
+
+  await db.execute(`CALL delete_n_oldest_logs(?)`, [count]);
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, null, `${count} oldest logs deleted`));
+});
+
+const deleteLogsBetweenDates = asyncHandler(async (req, res) => {
+  if (req.user[0]?.role !== "admin") {
+    throw new ApiError(403, "Unauthorized access");
+  }
+
+  const { startDate, endDate } = req.body;
+
+  if (!startDate || !endDate) {
+    throw new ApiError(400, "Start and end dates are required");
+  }
+
+  if (new Date(startDate) > new Date(endDate)) {
+    throw new ApiError(400, "startDate must be before endDate");
+  }
+
+  await db.execute(`CALL delete_logs_between_dates(?, ?)`, [
+    startDate,
+    endDate,
+  ]);
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, null, "Logs deleted for given range"));
+});
+
+const countLogsBetweenDates = asyncHandler(async (req, res) => {
+  if (req.user[0]?.role !== "admin") {
+    throw new ApiError(403, "Unauthorized access");
+  }
+
+  const { startDate, endDate } = req.params;
+
+  if (!startDate || !endDate) {
+    throw new ApiError(400, "Start and end dates are required");
+  }
+
+  if (new Date(startDate) > new Date(endDate)) {
+    throw new ApiError(400, "startDate must be before endDate");
+  }
+
+  const [rows] = await db.execute(
+    `SELECT count_logs_between_dates(?, ?) AS total`,
+    [startDate, endDate]
+  );
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      { count: rows[0].total },
+      "Log count fetched"
+    )
+  );
+});
+export { getAllCitizens, getAllOfficers, getAllAdmins, getRtoVehicleOwnershipDetails, getRtoRegisteredVehicles, getAllRegisteredVehicles, getAllVehicleOwnershipDetails, getChallansByStatus, getAllChallans, getAllPayments, getPaymentsByStatus, getTotalChallansCount, getTotalRevenue, getChallanCountByStatus, getAllRtoOffices,addRtoOffice,addViolationType,getAllAuditLogs,filterAuditLogs,deleteFilteredLogs,deleteOldestLogs,deleteLogsBetweenDates,countLogsBetweenDates }

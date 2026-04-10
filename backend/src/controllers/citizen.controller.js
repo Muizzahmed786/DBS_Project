@@ -274,7 +274,7 @@ const getMyPaymentCount=asyncHandler(async (req,res)=>{
   }
   const [rows]=await db.execute(`select count(distinct payment_id) as total_payments from payment where user_id=?;`,[req.user[0].user_id]);
   
-  const myTotalPayments=rows[0]?.my_vehicle_count || 0;
+  const myTotalPayments=rows[0]?.total_payments || 0;
 
   return res.status(200).json(new ApiResponse(200,myTotalPayments,`My payment count fetched successfully`))
 })
@@ -337,14 +337,14 @@ const makePayment = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid password");
   }
 
-  const [updateResult] = await db.execute(
-    'UPDATE challan SET status=? WHERE challan_id=?',
-    ['paid', challan_id]
-  );
+  // const [updateResult] = await db.execute(
+  //   'UPDATE challan SET status=? WHERE challan_id=?',
+  //   ['paid', challan_id]
+  // ); // done using triggers
 
-  if (updateResult.affectedRows === 0) {
-    throw new ApiError(500, "Failed to update challan");
-  }
+  // if (updateResult.affectedRows === 0) {
+  //   throw new ApiError(500, "Failed to update challan");
+  // }
 
   const [paymentResult] = await db.execute(`
     INSERT INTO payment 

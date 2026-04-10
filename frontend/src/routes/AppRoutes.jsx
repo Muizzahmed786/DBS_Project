@@ -26,6 +26,9 @@ import AllRtoOffices from "../components/admin/AllRtoOffices.jsx";
 import AddRtoOffice from "../components/admin/AddRtoOffice.jsx";
 import AddViolationType from "../components/admin/AddViolationType.jsx";
 import ChallanPayment from "../components/citizen/ChallanPayment.jsx";
+import DocumentManagement from "../components/officer/DocumentManagement.jsx"
+import AuditLogs from "../components/admin/AuditLogs.jsx"
+import DeleteAuditLogs from "../components/admin/DeleteAuditLogs.jsx";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -44,6 +47,8 @@ const AppRoutes = () => {
           <Route path="offices" element={<AllRtoOffices />} />
           <Route path="add-office" element={<AddRtoOffice />} />
           <Route path="add-violation-type" element={<AddViolationType />} />
+          <Route path="logs" element={<AuditLogs />} />
+          <Route path="delete-logs" element={<DeleteAuditLogs />} />
         </Route>
       </Route>
 
@@ -68,6 +73,7 @@ const AppRoutes = () => {
           <Route path="violations" element={<ViolationTypesOfficer />} />
           <Route path="issue-challan" element={<IssueChallan/>} />
           <Route path="issue-licence" element={<IssueLicence />} />
+          <Route path="citizen-documents" element={<DocumentManagement />} />
         </Route>
       </Route>
     </Routes>

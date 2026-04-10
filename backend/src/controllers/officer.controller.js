@@ -260,4 +260,11 @@ const getTopViolations = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, rows, "Top violations"));
 });
-export { getMyIssuedChallans, getMyIssuedChallanCount, getIssuedDlCountByRto, issueChallan, issueDrivingLicence,getTotalFineCollected,getChallanStatusStats,getTopViolations}
+const getAllUploadedDocuments=asyncHandler(async (req,res)=>{
+  if(req.user[0].role!=='officer'){
+    throw new ApiError(403,"Unauthorized request");
+  }
+  const [documents]=await db.execute('select d.document_id,d.document_type,d.file_url,u.full_name,u.email,v.registration_number from documents d left join vehicles v on d.vehicle_id=v.vehicle_id left join users u on d.user_id=u.user_id');
+  return res.status(200).json(new ApiResponse(200,documents,"All documents fetched"));
+})
+export { getMyIssuedChallans, getMyIssuedChallanCount, getIssuedDlCountByRto, issueChallan, issueDrivingLicence,getTotalFineCollected,getChallanStatusStats,getTopViolations,getAllUploadedDocuments}
