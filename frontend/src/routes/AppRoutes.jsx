@@ -29,6 +29,7 @@ import ChallanPayment from "../components/citizen/ChallanPayment.jsx";
 import DocumentManagement from "../components/officer/DocumentManagement.jsx"
 import AuditLogs from "../components/admin/AuditLogs.jsx"
 import DeleteAuditLogs from "../components/admin/DeleteAuditLogs.jsx";
+import AddUsers from "../components/admin/AddUsers.jsx";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -49,6 +50,7 @@ const AppRoutes = () => {
           <Route path="add-violation-type" element={<AddViolationType />} />
           <Route path="logs" element={<AuditLogs />} />
           <Route path="delete-logs" element={<DeleteAuditLogs />} />
+          <Route path="add-users" element={<AddUsers />} />
         </Route>
       </Route>
 

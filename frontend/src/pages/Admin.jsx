@@ -3,12 +3,13 @@ import Sidebar from "../components/layout/Sidebar";
 import { useAuth } from "../context/useAuth"; // Import your auth hook
 import { 
   LayoutDashboard, Users, FileWarning, 
-  Car, CreditCard, Settings,Building,Building2,TriangleAlert,FolderSearch,Trash 
+  Car, CreditCard, Settings,Building,Building2,TriangleAlert,FolderSearch,Trash,UserPlus 
 } from "lucide-react";
 
 const adminNavItems = [
     { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/admin/users", label: "Users", icon: Users },
+    { to: "/admin/add-users", label: "Add Users", icon: UserPlus },
     { to: "/admin/challans", label: "Challans", icon: FileWarning },
     { to: "/admin/vehicles", label: "Vehicles", icon: Car },
     { to: "/admin/payments", label: "Payments", icon: CreditCard },

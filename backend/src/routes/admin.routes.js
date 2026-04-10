@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth-middleware.js";
-import { getAllRegisteredVehicles, getAllVehicleOwnershipDetails, getAllCitizens, getAllOfficers, getAllAdmins, getRtoVehicleOwnershipDetails, getRtoRegisteredVehicles, getChallansByStatus, getAllChallans, getAllPayments, getPaymentsByStatus, getTotalChallansCount, getTotalRevenue, getChallanCountByStatus, getAllRtoOffices, addRtoOffice, addViolationType, getAllAuditLogs, filterAuditLogs, deleteFilteredLogs, deleteOldestLogs, deleteLogsBetweenDates, countLogsBetweenDates } from "../controllers/admin.controller.js";
+import { getAllRegisteredVehicles, getAllVehicleOwnershipDetails, getAllCitizens, getAllOfficers, getAllAdmins, getRtoVehicleOwnershipDetails, getRtoRegisteredVehicles, getChallansByStatus, getAllChallans, getAllPayments, getPaymentsByStatus, getTotalChallansCount, getTotalRevenue, getChallanCountByStatus, getAllRtoOffices, addRtoOffice, addViolationType, getAllAuditLogs, filterAuditLogs, deleteFilteredLogs, deleteOldestLogs, deleteLogsBetweenDates, countLogsBetweenDates,addUsers } from "../controllers/admin.controller.js";
 import { getAllViolationTypes } from "../controllers/user.controller.js"
 const router = Router()
 router.route("/get-all-violation-types").get(verifyJWT, getAllViolationTypes);
@@ -45,5 +45,5 @@ router.route("/audit-logs/date-range").delete(verifyJWT, deleteLogsBetweenDates)
 
 router.route("/audit-logs/date-range/:startDate/:endDate").get(verifyJWT, countLogsBetweenDates);
 
-
+router.route("/add-users").post(verifyJWT, addUsers)
 export default router

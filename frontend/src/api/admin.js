@@ -96,3 +96,7 @@ export const deleteLogsBetweenDates = (data) => {
 export const countLogsBetweenDates = (startDate, endDate) => {
   return API.get(`/admin/audit-logs/date-range/${startDate}/${endDate}`);
 };
+
+export const addAdminOrOfficer = (form) => {
+  return API.post('/admin/add-users', form);
+};
