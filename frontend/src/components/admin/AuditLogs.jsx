@@ -3,7 +3,7 @@ import { getAllAuditLogs, filterAuditLogs } from "../../api/admin.js";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TABLES = ["*", "users", "vehicles", "ownership", "rto", "documents"];
+const TABLES = ["*", "users", "vehicles", "ownership", "rto", "documents","payment"];
 const OPERATIONS = ["*", "INSERT", "UPDATE", "DELETE", "SELECT"];
 
 const OPERATION_COLORS = {

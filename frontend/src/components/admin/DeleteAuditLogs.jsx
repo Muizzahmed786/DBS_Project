@@ -8,7 +8,7 @@ import {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TABLES = ["*", "users", "vehicles", "ownership", "rto", "documents", "payment", "violation_types", "vehicle_ownership"];
-const OPERATIONS = ["*", "INSERT", "UPDATE", "DELETE", "SELECT"];
+const OPERATIONS = ["*", "INSERT", "UPDATE", "DELETE"];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
