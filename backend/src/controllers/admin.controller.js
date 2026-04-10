@@ -2,7 +2,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { db } from '../database/index.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-
+import { hashPassword,isPasswordCorrect } from '../utils/auth.js';
 //To be shown in User Management page
 const getAllCitizens = asyncHandler(async (req, res) => {
   if (req.user[0]?.role !== 'admin') {
@@ -485,4 +485,55 @@ const countLogsBetweenDates = asyncHandler(async (req, res) => {
     )
   );
 });
-export { getAllCitizens, getAllOfficers, getAllAdmins, getRtoVehicleOwnershipDetails, getRtoRegisteredVehicles, getAllRegisteredVehicles, getAllVehicleOwnershipDetails, getChallansByStatus, getAllChallans, getAllPayments, getPaymentsByStatus, getTotalChallansCount, getTotalRevenue, getChallanCountByStatus, getAllRtoOffices,addRtoOffice,addViolationType,getAllAuditLogs,filterAuditLogs,deleteFilteredLogs,deleteOldestLogs,deleteLogsBetweenDates,countLogsBetweenDates }
+
+const addUsers=asyncHandler(async (req,res)=>{
+  if (req.user[0]?.role !== "admin") {
+    throw new ApiError(403, "Unauthorized access");
+  }
+  const { full_name, mobile_number, email, aadhaar_number, password, role } = req.body;
+  const userRole = role ?? "admin";
+  if(!(userRole==='admin' || userRole==='officer')){
+    throw new ApiError(403,"Not permitted to create the user kind");
+  }
+  const userDetails = [full_name, mobile_number, email, aadhaar_number, password, userRole];
+
+  userDetails.forEach((details) => {
+    if (!details || details.trim() === "") {
+      throw new ApiError(400, "All fields are required");
+    }
+  });
+
+  const [existedUser] = await db.execute(
+    `SELECT * FROM users WHERE email = ? OR aadhaar_number = ?`,
+    [email, aadhaar_number]
+  );
+
+  if (existedUser.length > 0) {
+    throw new ApiError(409, "User with email or aadhaar already exists");
+  }
+
+  const password_hash = await hashPassword(password)
+
+  const user = await db.execute(
+    `INSERT INTO users (full_name, mobile_number, email, aadhaar_number, password_hash, role) 
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [full_name, mobile_number, email, aadhaar_number, password_hash, userRole]
+  );
+
+  console.log(user);
+
+  const [createdUser] = await db.execute(
+    `SELECT user_id, full_name, mobile_number, email, aadhaar_number, role, created_at 
+     FROM users WHERE email = ?`,
+    [email]
+  );
+
+  if (createdUser.length == 0) {
+    throw new ApiError(500, "Something went wrong while registering the user")
+  }
+
+  res.status(201).json(
+    new ApiResponse(201, createdUser[0], "User registered successfully")
+  );
+})
+export { getAllCitizens, getAllOfficers, getAllAdmins, getRtoVehicleOwnershipDetails, getRtoRegisteredVehicles, getAllRegisteredVehicles, getAllVehicleOwnershipDetails, getChallansByStatus, getAllChallans, getAllPayments, getPaymentsByStatus, getTotalChallansCount, getTotalRevenue, getChallanCountByStatus, getAllRtoOffices,addRtoOffice,addViolationType,getAllAuditLogs,filterAuditLogs,deleteFilteredLogs,deleteOldestLogs,deleteLogsBetweenDates,countLogsBetweenDates,addUsers }
