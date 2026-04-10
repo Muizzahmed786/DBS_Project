@@ -15,10 +15,9 @@ export const logoutUser = () => {
     return API.post("/users/logout");
 };
 
-// Refresh Token
-// export const refreshToken = () => {
-//     return API.post("/users/refresh-token");
-// };
+export const refreshToken = () => {
+    return API.post("/users/refresh-token");
+};
 
 export const getCurrentUser = () =>{
     return API.get("/users/get-current-user");
