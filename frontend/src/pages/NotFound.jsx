@@ -1,26 +1,38 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 const NotFound = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error(
-      "404 Error: User attempted to access non-existent route:",
-      location.pathname
-    );
-  }, [location.pathname]);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-6">
+      <div className="max-w-xl text-center">
+        {/* 404 */}
+        <h1 className="text-[120px] sm:text-[170px] font-extrabold leading-none bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          404
+        </h1>
+
+        {/* Heading */}
+        <h2 className="mt-2 text-3xl sm:text-4xl font-bold text-slate-900">
+          Page Not Found
+        </h2>
+
+        {/* Description */}
+        <p className="mt-4 text-lg text-slate-600 leading-relaxed">
+          Sorry, the page you're looking for doesn't exist or may have been
+          moved.
+        </p>
+
+        {/* Button */}
+        <div className="mt-10">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white font-medium shadow-sm transition-colors duration-200 hover:bg-blue-700"
+          >
+            Go Home
+            <ArrowRight size={18} />
+          </Link>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

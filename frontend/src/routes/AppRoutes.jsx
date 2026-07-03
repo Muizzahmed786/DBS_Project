@@ -30,12 +30,14 @@ import DocumentManagement from "../components/officer/DocumentManagement.jsx"
 import AuditLogs from "../components/admin/AuditLogs.jsx"
 import DeleteAuditLogs from "../components/admin/DeleteAuditLogs.jsx";
 import AddUsers from "../components/admin/AddUsers.jsx";
+import NotFound from "../pages/NotFound.jsx";
 const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="*" element={<NotFound/>} />
 
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
         <Route path="/admin" element={<Admin />}>
