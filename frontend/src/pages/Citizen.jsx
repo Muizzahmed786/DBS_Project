@@ -34,7 +34,7 @@ const Citizen = () => {
     return <Navigate replace to="/login" />;
 
   return (
-    <div className="flex min-h-screen bg-slate-950">
+    <div className="flex max-h-screen bg-slate-950">
       <Sidebar
         navItems={citizenNavItems}
         roleName="Citizen"

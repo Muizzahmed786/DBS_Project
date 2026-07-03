@@ -39,7 +39,7 @@ const OfficerLayout = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-950">
+    <div className="flex max-h-screen bg-slate-950">
       
       {/* Sidebar */}
       <Sidebar

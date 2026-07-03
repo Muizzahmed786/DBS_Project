@@ -33,7 +33,7 @@ const AdminLayout = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-950">
+        <div className="flex max-h-screen bg-slate-950">
             {/* Sidebar gets the config and the specific Admin name if needed */}
             <Sidebar 
                 navItems={adminNavItems} 
