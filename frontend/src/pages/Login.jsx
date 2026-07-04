@@ -3,12 +3,14 @@ import { getCurrentUser, loginUser } from "../api/auth.js";
 import { useAuth } from "../context/useAuth.js";
 import toast from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
+import {Eye,EyeOff} from "lucide-react";
 const Login = () => {
   const navigate = useNavigate();
-  const { user,setUser,loading } = useAuth();
+  const { user, setUser, loading } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     try {
@@ -49,10 +51,10 @@ const Login = () => {
   }, [user, loading, navigate]);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl p-8">
-        <h1 className="text-3xl font-bold text-white tracking-tight mb-8">
-          Welcome back
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white border border-blue-100 rounded-2xl shadow-xl p-8">
+        <h1 className="text-3xl font-bold text-slate-800 text-center mb-6">
+          Welcome Back
         </h1>
 
         <div className="flex flex-col gap-4">
@@ -62,30 +64,45 @@ const Login = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full bg-slate-900/70 text-white placeholder-slate-500 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full bg-white text-slate-800 placeholder-slate-400 border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
 
-          <input
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-slate-900/70 text-white placeholder-slate-500 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-white text-slate-800 placeholder-slate-400 border border-slate-300 rounded-xl px-4 py-3 pr-12 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-400 hover:text-slate-300 transition-colors"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
 
           <button
             onClick={handleLogin}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl py-3 text-sm shadow-lg mt-2"
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl py-3 text-sm shadow-lg mt-2 transition duration-200"
           >
             Login
           </button>
         </div>
 
-        <p className="text-slate-400 text-sm text-center mt-6">
+        <p className="text-slate-500 text-sm text-center mt-6">
           Don't have an account?{" "}
           <span
             onClick={() => navigate("/register")}
-            className="text-indigo-400 hover:text-indigo-300 cursor-pointer font-medium"
+            className="text-blue-600 hover:text-blue-700 cursor-pointer font-medium"
           >
             Register
           </span>
