@@ -18,7 +18,7 @@ import {
 const StatCard = ({ icon: Icon, label, value, accent, loading }) => (
   <div
     style={{ borderColor: accent + "33", background: accent + "0d" }}
-    className="rounded-2xl border p-5 flex flex-col gap-3 transition-transform hover:-translate-y-1 duration-200"
+    className="rounded-2xl border p-5 flex flex-col gap-3 transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-black/20 duration-200"
   >
     <div className="flex items-center justify-between">
       <span className="text-slate-400 text-sm font-medium">{label}</span>

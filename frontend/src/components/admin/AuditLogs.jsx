@@ -7,10 +7,10 @@ const TABLES = ["*", "users", "vehicles", "ownership", "rto", "documents","payme
 const OPERATIONS = ["*", "INSERT", "UPDATE", "DELETE", "SELECT"];
 
 const OPERATION_COLORS = {
-  INSERT: "bg-green-100 text-green-700",
-  UPDATE: "bg-blue-100 text-blue-700",
-  DELETE: "bg-red-100 text-red-700",
-  SELECT: "bg-slate-100 text-slate-600",
+  INSERT: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25",
+  UPDATE: "bg-sky-500/15 text-sky-400 border border-sky-500/25",
+  DELETE: "bg-rose-500/15 text-rose-400 border border-rose-500/25",
+  SELECT: "bg-slate-700/60 text-slate-400 border border-slate-600/50",
 };
 
 const OPERATION_ICONS = {
@@ -35,11 +35,11 @@ const fmtDate = (iso) => {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const SkeletonRow = ({ cols }) => (
-  <tr className="border-b border-slate-100">
+  <tr className="border-b border-slate-700/40">
     {Array.from({ length: cols }).map((_, i) => (
       <td key={i} className="px-4 py-3.5">
         <div
-          className="h-3 rounded-full bg-slate-100 animate-pulse"
+          className="h-3 rounded-full bg-slate-700/60 animate-pulse"
           style={{ width: `${[45, 55, 40, 50, 38, 42, 36][i % 7]}%` }}
         />
       </td>
@@ -51,8 +51,8 @@ const EmptyState = () => (
   <tr>
     <td colSpan={20} className="py-20 text-center">
       <div className="text-4xl mb-3">📭</div>
-      <p className="text-slate-500 font-medium">No audit logs found</p>
-      <p className="text-slate-400 text-sm mt-1">
+      <p className="text-slate-400 font-medium">No audit logs found</p>
+      <p className="text-slate-500 text-sm mt-1">
         Try a different filter combination.
       </p>
     </td>
@@ -62,7 +62,7 @@ const EmptyState = () => (
 const OperationBadge = ({ operation }) => {
   const cls =
     OPERATION_COLORS[(operation || "").toUpperCase()] ||
-    "bg-slate-100 text-slate-600";
+    "bg-slate-700/60 text-slate-400 border border-slate-600/50";
   const icon = OPERATION_ICONS[(operation || "").toUpperCase()] || "•";
   return (
     <span
@@ -78,7 +78,7 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
   <th
     onClick={() => !noSort && onSort(col)}
     className={`px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap
-      ${!noSort ? "cursor-pointer hover:text-slate-800 select-none" : ""}`}
+      ${!noSort ? "cursor-pointer hover:text-slate-200 select-none" : ""}`}
   >
     {label}
     {!noSort && (
@@ -90,7 +90,7 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
             "▼"
           )
         ) : (
-          <span className="text-slate-300">⇅</span>
+          <span className="text-slate-600">⇅</span>
         )}
       </span>
     )}
@@ -98,7 +98,7 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
 );
 
 const TableWrap = ({ children }) => (
-  <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+  <div className="bg-slate-800/50 rounded-xl border border-slate-700/60 overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-sm">{children}</table>
     </div>
@@ -108,7 +108,7 @@ const TableWrap = ({ children }) => (
 const Toolbar = ({ search, setSearch, count, total }) => (
   <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">
         🔍
       </span>
       <input
@@ -116,11 +116,11 @@ const Toolbar = ({ search, setSearch, count, total }) => (
         placeholder="Search logs…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 w-72
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+        className="pl-9 pr-4 py-2 text-sm border border-slate-700/60 rounded-lg bg-slate-900/60 text-slate-100 w-72
+                   focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60 transition"
       />
     </div>
-    <span className="text-xs text-slate-400 font-mono">
+    <span className="text-xs text-slate-500 font-mono">
       {count} / {total} records
     </span>
   </div>
@@ -129,7 +129,7 @@ const Toolbar = ({ search, setSearch, count, total }) => (
 // ─── Filter Bar ───────────────────────────────────────────────────────────────
 
 const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading, isFiltered }) => (
-  <div className="flex flex-wrap items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm mb-5">
+  <div className="flex flex-wrap items-center gap-3 p-4 bg-slate-800/50 border border-slate-700/60 rounded-xl mb-5">
     {/* Table selector */}
     <div className="flex flex-col gap-1">
       <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -138,8 +138,8 @@ const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading,
       <select
         value={table}
         onChange={(e) => setTable(e.target.value)}
-        className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition min-w-32"
+        className="px-3 py-2 text-sm border border-slate-700/60 rounded-lg bg-slate-900/60 text-slate-100
+                   focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60 transition min-w-32"
       >
         {TABLES.map((t) => (
           <option key={t} value={t}>
@@ -157,8 +157,8 @@ const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading,
       <select
         value={operation}
         onChange={(e) => setOperation(e.target.value)}
-        className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition min-w-36"
+        className="px-3 py-2 text-sm border border-slate-700/60 rounded-lg bg-slate-900/60 text-slate-100
+                   focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60 transition min-w-36"
       >
         {OPERATIONS.map((op) => (
           <option key={op} value={op}>
@@ -176,8 +176,8 @@ const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading,
       <button
         onClick={onFetch}
         disabled={loading}
-        className="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg
-                   hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+        className="px-4 py-2 text-sm font-semibold bg-sky-500 text-white rounded-lg shadow-sm shadow-sky-500/30
+                   hover:bg-sky-400 disabled:opacity-40 disabled:cursor-not-allowed transition"
       >
         {loading ? "Loading…" : "Apply Filter"}
       </button>
@@ -188,12 +188,12 @@ const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading,
       <div className="flex items-center gap-2 ml-2 self-end mb-0.5">
         <span className="text-xs text-slate-500">Filtered by</span>
         {table !== "*" && (
-          <span className="text-xs font-bold font-mono bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">
+          <span className="text-xs font-bold font-mono bg-sky-500/15 text-sky-400 border border-sky-500/25 px-2.5 py-1 rounded-full">
             table: {table}
           </span>
         )}
         {operation !== "*" && (
-          <span className="text-xs font-bold font-mono bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">
+          <span className="text-xs font-bold font-mono bg-sky-500/15 text-sky-400 border border-sky-500/25 px-2.5 py-1 rounded-full">
             op: {operation}
           </span>
         )}
@@ -261,7 +261,7 @@ const AuditLogsTable = ({ rows, loading }) => {
 
     if (value === null || value === undefined || value === "" ||
         value === "null" || value === "{}" || value === "[]") {
-      return <span className="text-slate-300 text-xs">—</span>;
+      return <span className="text-slate-600 text-xs">—</span>;
     }
 
     if (parsed && typeof parsed === "object") {
@@ -269,12 +269,12 @@ const AuditLogsTable = ({ rows, loading }) => {
         <div>
           <button
             onClick={() => setExpandedRow(isExpanded ? null : id)}
-            className="text-xs text-indigo-500 hover:text-indigo-700 font-mono underline underline-offset-2"
+            className="text-xs text-sky-400 hover:text-sky-300 font-mono underline underline-offset-2"
           >
             {isExpanded ? "▲ collapse" : "▼ expand"}
           </button>
           {isExpanded && (
-            <pre className="mt-2 text-xs bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-600 max-w-xs overflow-x-auto whitespace-pre-wrap">
+            <pre className="mt-2 text-xs bg-slate-900/60 border border-slate-700/60 rounded-lg p-2 text-slate-300 max-w-xs overflow-x-auto whitespace-pre-wrap">
               {JSON.stringify(parsed, null, 2)}
             </pre>
           )}
@@ -283,7 +283,7 @@ const AuditLogsTable = ({ rows, loading }) => {
     }
 
     return (
-      <span className="text-xs font-mono text-slate-500 truncate max-w-[120px] block">
+      <span className="text-xs font-mono text-slate-400 truncate max-w-[120px] block">
         {String(value)}
       </span>
     );
@@ -299,7 +299,7 @@ const AuditLogsTable = ({ rows, loading }) => {
       />
       <TableWrap>
         <thead>
-          <tr className="border-b border-slate-100 bg-slate-50">
+          <tr className="border-b border-slate-700/60 bg-slate-900/60">
             {cols.map((c) => (
               <SortTh
                 key={c.key}
@@ -323,26 +323,26 @@ const AuditLogsTable = ({ rows, loading }) => {
             sorted.map((r, i) => (
               <tr
                 key={r.log_id || i}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                className="border-b border-slate-700/40 hover:bg-slate-700/30 transition-colors"
               >
-                <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">
+                <td className="px-4 py-3 font-mono text-xs font-bold text-sky-400 whitespace-nowrap">
                   #{r.log_id || "—"}
                 </td>
-                <td className="px-4 py-3 text-xs font-mono text-slate-700 whitespace-nowrap">
-                  <span className="px-2 py-0.5 bg-slate-100 rounded text-slate-600">
+                <td className="px-4 py-3 text-xs font-mono text-slate-300 whitespace-nowrap">
+                  <span className="px-2 py-0.5 bg-slate-700/60 rounded text-slate-300">
                     {r.table_name || "—"}
                   </span>
                 </td>
                 <td className="px-4 py-3">
                   <OperationBadge operation={r.operation_type} />
                 </td>
-                <td className="px-4 py-3 font-mono text-xs text-slate-500 whitespace-nowrap">
+                <td className="px-4 py-3 font-mono text-xs text-slate-400 whitespace-nowrap">
                   {r.record_id || "—"}
                 </td>
-                <td className="px-4 py-3 text-sm text-slate-700 whitespace-nowrap">
+                <td className="px-4 py-3 text-sm text-slate-300 whitespace-nowrap">
                   {r.changed_by || "—"}
                 </td>
-                <td className="px-4 py-3 text-xs font-mono text-slate-500 whitespace-nowrap">
+                <td className="px-4 py-3 text-xs font-mono text-slate-400 whitespace-nowrap">
                   {fmtDate(r.changed_at)}
                 </td>
                 <td className="px-4 py-3 max-w-[160px]">
@@ -395,9 +395,9 @@ export default function AuditLogs() {
   }, [logs]);
 
   const statColorMap = {
-    INSERT: { bg: "bg-green-50 border-green-200", val: "text-green-600" },
-    UPDATE: { bg: "bg-blue-50 border-blue-200", val: "text-blue-600" },
-    DELETE: { bg: "bg-red-50 border-red-200", val: "text-red-600" },
+    INSERT: { bg: "bg-emerald-500/15 border-emerald-500/25", val: "text-emerald-400" },
+    UPDATE: { bg: "bg-sky-500/15 border-sky-500/25", val: "text-sky-400" },
+    DELETE: { bg: "bg-rose-500/15 border-rose-500/25", val: "text-rose-400" },
   };
 
   // ── Initial fetch ──
@@ -436,18 +436,18 @@ export default function AuditLogs() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-950">
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-200 px-8 pt-8 pb-0">
+      <div className="bg-slate-900 border-b border-slate-800 px-8 pt-8 pb-0">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">
+            <p className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-1 font-mono">
               Admin Panel
             </p>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-2xl font-bold text-white tracking-tight">
               Audit Logs
             </h1>
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-400 mt-1">
               Track all database changes, operations, and system activity.
             </p>
           </div>
@@ -460,11 +460,11 @@ export default function AuditLogs() {
                 <div
                   key={s.label}
                   className={`px-4 py-2 rounded-lg border text-center min-w-25
-                  ${colors ? `${colors.bg}` : "bg-white border-slate-200"}`}
+                  ${colors ? `${colors.bg}` : "bg-slate-800/50 border-slate-700/60"}`}
                 >
                   <div
                     className={`text-lg font-bold font-mono ${
-                      colors ? colors.val : "text-slate-800"
+                      colors ? colors.val : "text-white"
                     }`}
                   >
                     {s.value}
@@ -480,7 +480,7 @@ export default function AuditLogs() {
         <div className="flex gap-1">
           <div
             className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 
-            border-indigo-600 text-indigo-600 bg-slate-50 rounded-t-md"
+            border-sky-500 text-sky-400 bg-slate-800/60 rounded-t-md"
           >
             <span>📋</span>
             Audit Logs
@@ -489,7 +489,7 @@ export default function AuditLogs() {
             onClick={fetchAll}
             disabled={loading}
             className="ml-auto mb-1 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium
-              text-slate-500 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 
+              text-slate-400 border border-slate-700/60 rounded-lg bg-slate-800/50 hover:bg-slate-700/40 
               disabled:opacity-40 transition self-center"
           >
             🔄 {loading ? "Refreshing…" : "Refresh"}
@@ -501,7 +501,7 @@ export default function AuditLogs() {
       <div className="px-8 py-6">
         {/* Error banner */}
         {error && (
-          <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
+          <div className="mb-4 px-4 py-3 rounded-lg bg-rose-500/15 border border-rose-500/25 text-rose-400 text-sm font-medium">
             ⚠ {error}
           </div>
         )}
@@ -521,10 +521,10 @@ export default function AuditLogs() {
         <AuditLogsTable rows={logs} loading={loading} />
 
         {/* Footer note */}
-        <div className="mt-3 flex items-center gap-4 text-xs text-slate-400">
+        <div className="mt-3 flex items-center gap-4 text-xs text-slate-500">
           <span>
             💡 Click{" "}
-            <span className="font-semibold text-indigo-500">▼ expand</span> on
+            <span className="font-semibold text-sky-400">▼ expand</span> on
             JSON values to inspect old / new record snapshots.
           </span>
         </div>
