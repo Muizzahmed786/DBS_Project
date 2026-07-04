@@ -60,17 +60,17 @@ export default function AddUsers() {
   const isFormValid = Object.values(form).every((v) => v.trim() !== "");
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-950">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-200 px-8 py-8">
-        <p className="text-xs font-semibold tracking-widest text-indigo-500 uppercase mb-1 font-mono">
+      <div className="bg-slate-900 border-b border-slate-800 px-8 py-8">
+        <p className="text-xs font-semibold tracking-widest text-sky-400 uppercase mb-1 font-mono">
           Admin Panel
         </p>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+        <h1 className="text-2xl font-bold text-white tracking-tight">
           Add Admin / Officer
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-sm text-slate-400 mt-1">
           Create a new admin or officer account
         </p>
       </div>
@@ -80,11 +80,11 @@ export default function AddUsers() {
 
         {/* Success Banner */}
         {success && (
-          <div className="mb-6 px-4 py-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm">
-            <p className="font-semibold mb-1">✓ User created successfully</p>
-            <p className="text-emerald-700">
+          <div className="mb-6 px-4 py-4 rounded-lg bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 text-sm">
+            <p className="font-semibold mb-1 text-emerald-400">✓ User created successfully</p>
+            <p className="text-emerald-300">
               <span className="font-medium">{success.full_name}</span> —{" "}
-              <span className="font-mono capitalize bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-xs">
+              <span className="font-mono capitalize bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded text-xs">
                 {success.role}
               </span>{" "}
               · {success.email}
@@ -94,13 +94,13 @@ export default function AddUsers() {
 
         {/* Error Banner */}
         {error && (
-          <div className="mb-6 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+          <div className="mb-6 px-4 py-3 rounded-lg bg-rose-500/15 border border-rose-500/25 text-rose-400 text-sm">
             ⚠ {error}
           </div>
         )}
 
         {/* Form Card */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm px-8 py-8">
+        <div className="bg-slate-800/50 rounded-2xl border border-slate-700/60 px-8 py-8">
           <form onSubmit={handleSubmit} className="space-y-5">
 
             {/* Text Fields */}
@@ -120,7 +120,7 @@ export default function AddUsers() {
                   onChange={handleChange}
                   placeholder={placeholder}
                   autoComplete="off"
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 transition"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-700/60 bg-slate-900/60 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60 transition"
                 />
               </div>
             ))}
@@ -138,8 +138,8 @@ export default function AddUsers() {
                     onClick={() => setForm((prev) => ({ ...prev, role: r }))}
                     className={`flex-1 py-2.5 rounded-lg border text-sm font-medium transition capitalize ${
                       form.role === r
-                        ? "bg-indigo-600 border-indigo-600 text-white shadow-sm"
-                        : "bg-slate-50 border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600"
+                        ? "bg-sky-500 border-sky-500 text-white shadow-sm shadow-sky-500/30"
+                        : "bg-slate-900/60 border-slate-700/60 text-slate-400 hover:border-sky-500/40 hover:text-sky-400"
                     }`}
                   >
                     {r}
@@ -149,13 +149,13 @@ export default function AddUsers() {
             </div>
 
             {/* Divider */}
-            <div className="border-t border-slate-100 pt-2" />
+            <div className="border-t border-slate-700/50 pt-2" />
 
             {/* Submit */}
             <button
               type="submit"
               disabled={loading || !isFormValid}
-              className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition"
+              className="w-full py-2.5 rounded-lg bg-sky-500 hover:bg-sky-400 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold shadow-sm shadow-sky-500/30 transition"
             >
               {loading ? "Creating..." : `Create ${form.role === "admin" ? "Admin" : "Officer"}`}
             </button>
