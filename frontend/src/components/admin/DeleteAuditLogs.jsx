@@ -4,6 +4,16 @@ import {
   deleteOldestLogs,
   deleteLogsBetweenDates,
 } from "../../api/admin.js";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  X,
+  Trash2,
+  Search,
+  Clock,
+  CalendarRange,
+  Loader2,
+} from "lucide-react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -27,15 +37,15 @@ const StatusBanner = ({ status, onDismiss }) => {
           : "bg-emerald-50 border-emerald-200 text-emerald-700"
         }`}
     >
-      <span>
-        {isError ? "⚠ " : "✅ "}
+      <span className="flex items-center gap-2">
+        {isError ? <AlertTriangle size={15} className="shrink-0" /> : <CheckCircle2 size={15} className="shrink-0" />}
         {status.message}
       </span>
       <button
         onClick={onDismiss}
-        className="text-xs opacity-50 hover:opacity-100 transition shrink-0 mt-0.5"
+        className="opacity-50 hover:opacity-100 transition shrink-0 mt-0.5"
       >
-        ✕
+        <X size={14} />
       </button>
     </div>
   );
@@ -49,8 +59,8 @@ const SelectField = ({ label, value, onChange, options, formatLabel }) => (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
-                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+      className="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-800
+                 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
     >
       {options.map((o) => (
         <option key={o} value={o}>
@@ -71,8 +81,12 @@ const ConfirmModal = ({ isOpen, onConfirm, onCancel, message, loading }) => {
         onClick={onCancel}
       />
       {/* Dialog */}
-      <div className="relative bg-white rounded-xl border border-slate-200 shadow-xl p-6 w-full max-w-sm mx-4">
-        <div className="text-3xl mb-3 text-center">🗑️</div>
+      <div className="relative bg-white rounded-xl border border-blue-100 shadow-xl p-6 w-full max-w-sm mx-4">
+        <div className="flex justify-center mb-3">
+          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+            <Trash2 size={22} className="text-red-500" />
+          </div>
+        </div>
         <h3 className="text-base font-bold text-slate-800 text-center mb-2">
           Confirm Deletion
         </h3>
@@ -81,7 +95,7 @@ const ConfirmModal = ({ isOpen, onConfirm, onCancel, message, loading }) => {
           <button
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 px-4 py-2 text-sm font-semibold text-slate-600 border border-slate-200
+            className="flex-1 px-4 py-2 text-sm font-semibold text-slate-600 border border-slate-300
                        rounded-lg bg-white hover:bg-slate-50 disabled:opacity-40 transition"
           >
             Cancel
@@ -102,35 +116,38 @@ const ConfirmModal = ({ isOpen, onConfirm, onCancel, message, loading }) => {
 
 // ─── Card wrapper ─────────────────────────────────────────────────────────────
 
-const DeleteCard = ({ icon, title, description, accent, children, onDelete, loading, disabled }) => {
+const DeleteCard = ({ icon: Icon, title, description, accent, children, onDelete, loading, disabled }) => {
   const accentMap = {
-    orange: {
-      border: "border-orange-200",
-      iconBg: "bg-orange-50",
-      btn: "bg-orange-600 hover:bg-orange-700",
-      tag: "bg-orange-100 text-orange-700",
-    },
-    red: {
-      border: "border-red-200",
-      iconBg: "bg-red-50",
-      btn: "bg-red-600 hover:bg-red-700",
-      tag: "bg-red-100 text-red-700",
+    blue: {
+      border: "border-blue-100",
+      iconBg: "bg-blue-50",
+      iconColor: "text-blue-600",
+      btn: "bg-blue-600 hover:bg-blue-700",
+      tag: "bg-blue-50 text-blue-700",
     },
     purple: {
-      border: "border-purple-200",
-      iconBg: "bg-purple-50",
-      btn: "bg-purple-600 hover:bg-purple-700",
-      tag: "bg-purple-100 text-purple-700",
+      border: "border-violet-100",
+      iconBg: "bg-violet-50",
+      iconColor: "text-violet-600",
+      btn: "bg-violet-600 hover:bg-violet-700",
+      tag: "bg-violet-50 text-violet-700",
+    },
+    green: {
+      border: "border-emerald-100",
+      iconBg: "bg-emerald-50",
+      iconColor: "text-emerald-600",
+      btn: "bg-emerald-600 hover:bg-emerald-700",
+      tag: "bg-emerald-50 text-emerald-700",
     },
   };
-  const c = accentMap[accent] || accentMap.red;
+  const c = accentMap[accent] || accentMap.blue;
 
   return (
     <div className={`bg-white rounded-xl border ${c.border} shadow-sm overflow-hidden flex flex-col`}>
       {/* Card header */}
       <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
-        <div className={`w-9 h-9 rounded-lg ${c.iconBg} flex items-center justify-center text-lg shrink-0`}>
-          {icon}
+        <div className={`w-9 h-9 rounded-lg ${c.iconBg} flex items-center justify-center shrink-0`}>
+          <Icon size={17} className={c.iconColor} />
         </div>
         <div>
           <h3 className="text-sm font-bold text-slate-800">{title}</h3>
@@ -144,7 +161,7 @@ const DeleteCard = ({ icon, title, description, accent, children, onDelete, load
       </div>
 
       {/* Card footer */}
-      <div className="px-5 py-4 border-t border-slate-100 bg-slate-50">
+      <div className="px-5 py-4 border-t border-slate-100 bg-blue-50/40">
         <button
           onClick={onDelete}
           disabled={loading || disabled}
@@ -153,11 +170,14 @@ const DeleteCard = ({ icon, title, description, accent, children, onDelete, load
         >
           {loading ? (
             <>
-              <span className="inline-block w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+              <Loader2 size={14} className="animate-spin" />
               Deleting…
             </>
           ) : (
-            <>🗑️ Delete Logs</>
+            <>
+              <Trash2 size={14} />
+              Delete Logs
+            </>
           )}
         </button>
       </div>
@@ -194,10 +214,10 @@ const FilteredDeleteCard = ({ onSuccess, onError }) => {
   return (
     <>
       <DeleteCard
-        icon="🔎"
+        icon={Search}
         title="Delete by Filter"
         description="Delete logs matching a specific table and/or operation type."
-        accent="orange"
+        accent="blue"
         onDelete={() => setConfirm(true)}
         loading={loading}
       >
@@ -216,9 +236,9 @@ const FilteredDeleteCard = ({ onSuccess, onError }) => {
           formatLabel={(op) => op === "*" ? "All Operations" : op}
         />
         {/* Preview */}
-        <div className="text-xs text-slate-400 bg-slate-50 rounded-lg px-3 py-2 font-mono border border-slate-100">
-          Will delete: table=<span className="text-orange-600 font-semibold">{table}</span>
-          {" "}op=<span className="text-orange-600 font-semibold">{operation}</span>
+        <div className="text-xs text-slate-500 bg-blue-50 rounded-lg px-3 py-2 border border-blue-100">
+          Will delete: table=<span className="text-blue-700 font-semibold">{table}</span>
+          {" "}op=<span className="text-blue-700 font-semibold">{operation}</span>
         </div>
       </DeleteCard>
 
@@ -259,10 +279,10 @@ const OldestDeleteCard = ({ onSuccess, onError }) => {
   return (
     <>
       <DeleteCard
-        icon="⏳"
+        icon={Clock}
         title="Delete Oldest N Logs"
         description="Purge a specific number of the oldest log entries."
-        accent="red"
+        accent="purple"
         onDelete={() => setConfirm(true)}
         loading={loading}
         disabled={!isValid}
@@ -277,8 +297,8 @@ const OldestDeleteCard = ({ onSuccess, onError }) => {
             placeholder="e.g. 100"
             value={count}
             onChange={(e) => setCount(e.target.value)}
-            className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
-                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-800
+                       focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-500 transition"
           />
           {count && !isValid && (
             <p className="text-xs text-red-500">Please enter a positive number.</p>
@@ -289,8 +309,8 @@ const OldestDeleteCard = ({ onSuccess, onError }) => {
         <div className="flex-1" />
 
         {isValid && (
-          <div className="text-xs text-slate-400 bg-slate-50 rounded-lg px-3 py-2 font-mono border border-slate-100">
-            Will delete: <span className="text-red-600 font-semibold">{count}</span> oldest record{parseInt(count, 10) > 1 ? "s" : ""}
+          <div className="text-xs text-slate-500 bg-violet-50 rounded-lg px-3 py-2 border border-violet-100">
+            Will delete: <span className="text-violet-700 font-semibold">{count}</span> oldest record{parseInt(count, 10) > 1 ? "s" : ""}
           </div>
         )}
       </DeleteCard>
@@ -339,10 +359,10 @@ const DateRangeDeleteCard = ({ onSuccess, onError }) => {
   return (
     <>
       <DeleteCard
-        icon="📅"
+        icon={CalendarRange}
         title="Delete by Date Range"
         description="Remove all logs created between two dates (inclusive)."
-        accent="purple"
+        accent="green"
         onDelete={() => setConfirm(true)}
         loading={loading}
         disabled={!isValid}
@@ -356,8 +376,8 @@ const DateRangeDeleteCard = ({ onSuccess, onError }) => {
             value={startDate}
             max={endDate || todayISO()}
             onChange={(e) => setStartDate(e.target.value)}
-            className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
-                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-800
+                       focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition"
           />
         </div>
 
@@ -371,8 +391,8 @@ const DateRangeDeleteCard = ({ onSuccess, onError }) => {
             min={startDate || undefined}
             max={todayISO()}
             onChange={(e) => setEndDate(e.target.value)}
-            className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
-                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+            className="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-800
+                       focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition"
           />
         </div>
 
@@ -381,10 +401,10 @@ const DateRangeDeleteCard = ({ onSuccess, onError }) => {
         )}
 
         {isValid && (
-          <div className="text-xs text-slate-400 bg-slate-50 rounded-lg px-3 py-2 font-mono border border-slate-100">
-            Range: <span className="text-purple-600 font-semibold">{startDate}</span>
+          <div className="text-xs text-slate-500 bg-emerald-50 rounded-lg px-3 py-2 border border-emerald-100">
+            Range: <span className="text-emerald-700 font-semibold">{startDate}</span>
             {" → "}
-            <span className="text-purple-600 font-semibold">{endDate}</span>
+            <span className="text-emerald-700 font-semibold">{endDate}</span>
           </div>
         )}
       </DeleteCard>
@@ -409,16 +429,16 @@ export default function DeleteAuditLogs() {
   const handleError = (message) => setStatus({ type: "error", message });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-blue-50/40">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-200 px-8 pt-8 pb-0">
+      <div className="bg-white border-b border-blue-100 px-6 pt-6 pb-0">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">
+            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1">
               Admin Panel
             </p>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
               Delete Audit Logs
             </h1>
             <p className="text-sm text-slate-500 mt-1">
@@ -428,7 +448,7 @@ export default function DeleteAuditLogs() {
 
           {/* Danger notice badge */}
           <div className="self-center px-4 py-2 rounded-lg border bg-red-50 border-red-200 flex items-center gap-2">
-            <span className="text-lg">⚠️</span>
+            <AlertTriangle size={18} className="text-red-500 shrink-0" />
             <div>
               <div className="text-xs font-bold text-red-700">Irreversible Action</div>
               <div className="text-xs text-red-500 mt-0.5">Deleted logs cannot be recovered.</div>
@@ -439,15 +459,15 @@ export default function DeleteAuditLogs() {
         {/* Tab-like header strip */}
         <div className="flex gap-1">
           <div className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2
-            border-indigo-600 text-indigo-600 bg-slate-50 rounded-t-md">
-            <span>🗑️</span>
+            border-blue-600 text-blue-600 bg-blue-50/60 rounded-t-md">
+            <Trash2 size={15} />
             Delete Logs
           </div>
         </div>
       </div>
 
       {/* ── Body ── */}
-      <div className="px-8 py-6 max-w-6xl">
+      <div className="px-6 py-6 max-w-6xl">
 
         {/* Status banner */}
         {status && (
@@ -464,8 +484,9 @@ export default function DeleteAuditLogs() {
         </div>
 
         {/* Footer note */}
-        <p className="mt-5 text-xs text-slate-400">
-          💡 Each delete action requires confirmation before execution. All operations call stored procedures on the server.
+        <p className="mt-5 flex items-center gap-1.5 text-xs text-slate-400">
+          <AlertTriangle size={12} className="shrink-0" />
+          Each delete action requires confirmation before execution. All operations call stored procedures on the server.
         </p>
       </div>
     </div>

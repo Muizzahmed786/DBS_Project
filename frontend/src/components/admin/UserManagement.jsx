@@ -1,10 +1,22 @@
 import { useState, useEffect, useMemo } from "react";
 import { getAllCitizens, getAllOfficers, getAllAdmins } from "../../api/admin.js";
+import {
+  User,
+  Shield,
+  Settings2,
+  Eye,
+  EyeOff,
+  AlertTriangle,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Inbox,
+} from "lucide-react";
 
 const TABS = [
-  { key: "citizen", label: "Citizens", icon: "👤", badge: "bg-blue-100 text-blue-700",   active: "border-blue-600 text-blue-600" },
-  { key: "officer", label: "Officers", icon: "🛡️", badge: "bg-cyan-100 text-cyan-700",   active: "border-cyan-600 text-cyan-600" },
-  { key: "admin",   label: "Admins",   icon: "⚙️", badge: "bg-violet-100 text-violet-700", active: "border-violet-600 text-violet-600" },
+  { key: "citizen", label: "Citizens", icon: User,     badge: "bg-blue-50 text-blue-700",     active: "border-blue-600 text-blue-600" },
+  { key: "officer", label: "Officers", icon: Shield,   badge: "bg-cyan-50 text-cyan-700",     active: "border-cyan-600 text-cyan-600" },
+  { key: "admin",   label: "Admins",   icon: Settings2, badge: "bg-violet-50 text-violet-700", active: "border-violet-600 text-violet-600" },
 ];
 
 const COLUMNS = [
@@ -56,14 +68,17 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const EmptyState = ({ tab }) => (
-  <tr>
-    <td colSpan={6} className="py-20 text-center">
-      <div className="text-4xl mb-3">{tab.icon}</div>
-      <p className="text-slate-500 font-medium">No {tab.label.toLowerCase()} found</p>
-    </td>
-  </tr>
-);
+const EmptyState = ({ tab }) => {
+  const Icon = tab.icon;
+  return (
+    <tr>
+      <td colSpan={6} className="py-20 text-center">
+        <Icon size={32} className="mx-auto mb-3 text-slate-300" />
+        <p className="text-slate-500 font-medium">No {tab.label.toLowerCase()} found</p>
+      </td>
+    </tr>
+  );
+};
 
 export default function UserManagement() {
   const [activeTab, setActiveTab]     = useState("citizen");
@@ -120,90 +135,100 @@ export default function UserManagement() {
   }, [rows, sortCol, sortDir]);
 
   const SortIcon = ({ col }) => {
-    if (sortCol !== col) return <span className="ml-1 text-slate-300 text-xs">⇅</span>;
-    return <span className="ml-1 text-xs">{sortDir === "asc" ? "▲" : "▼"}</span>;
+    if (sortCol !== col) return <ArrowUpDown size={12} className="ml-1 inline text-slate-300" />;
+    return sortDir === "asc"
+      ? <ArrowUp size={12} className="ml-1 inline text-slate-500" />
+      : <ArrowDown size={12} className="ml-1 inline text-slate-500" />;
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-blue-50/40">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-200 px-8 pt-8 pb-0">
+      <div className="bg-white border-b border-blue-100 px-6 pt-6 pb-0">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">
+            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1">
               Admin Panel
             </p>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">User Management</h1>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">User Management</h1>
             <p className="text-sm text-slate-500 mt-1">Manage citizens, officers, and admins.</p>
           </div>
 
           {/* Summary Badges — always populated because all tabs are pre-fetched */}
           <div className="flex flex-wrap gap-2 items-center self-center">
-            {TABS.map((t) => (
-              <span key={t.key} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${t.badge}`}>
-                {t.icon}
-                <span className="font-mono">{data[t.key].length || "—"}</span>
-                {t.label}
-              </span>
-            ))}
+            {TABS.map((t) => {
+              const Icon = t.icon;
+              return (
+                <span key={t.key} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${t.badge}`}>
+                  <Icon size={13} />
+                  <span>{data[t.key].length || "—"}</span>
+                  {t.label}
+                </span>
+              );
+            })}
           </div>
         </div>
 
         {/* ── Tabs ── */}
         <div className="flex gap-1">
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => handleTab(t.key)}
-              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-all rounded-t-md
-                ${activeTab === t.key
-                  ? `${t.active} bg-slate-50`
-                  : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
-                }`}
-            >
-              <span>{t.icon}</span>
-              {t.label}
-              {data[t.key].length > 0 && (
-                <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full ${activeTab === t.key ? t.badge : "bg-slate-100 text-slate-500"}`}>
-                  {data[t.key].length}
-                </span>
-              )}
-            </button>
-          ))}
+          {TABS.map((t) => {
+            const Icon = t.icon;
+            return (
+              <button
+                key={t.key}
+                onClick={() => handleTab(t.key)}
+                className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-all rounded-t-md
+                  ${activeTab === t.key
+                    ? `${t.active} bg-blue-50/60`
+                    : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-blue-50/40"
+                  }`}
+              >
+                <Icon size={15} />
+                {t.label}
+                {data[t.key].length > 0 && (
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === t.key ? t.badge : "bg-slate-100 text-slate-500"}`}>
+                    {data[t.key].length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* ── Body ── */}
-      <div className="px-8 py-6">
+      <div className="px-6 py-6">
 
         {/* Toolbar — only Aadhaar toggle + record count, no search */}
         <div className="flex items-center justify-between mb-4">
-          <span className="text-xs text-slate-400 font-mono">
+          <span className="text-xs text-slate-400">
             {sorted.length} record{sorted.length !== 1 ? "s" : ""}
           </span>
           <button
             onClick={() => setShowAadhaar((s) => !s)}
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600
-                       border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition"
+                       border border-blue-100 rounded-lg bg-white hover:bg-blue-50 transition"
           >
-            {showAadhaar ? "🙈 Hide" : "👁 Show"} Aadhaar
+            {showAadhaar ? <EyeOff size={14} /> : <Eye size={14} />}
+            {showAadhaar ? "Hide" : "Show"} Aadhaar
           </button>
         </div>
 
         {/* Error */}
         {error[activeTab] && (
-          <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
-            ⚠ {error[activeTab]}
+          <div className="flex items-center gap-2 mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
+            <AlertTriangle size={16} className="shrink-0" />
+            {error[activeTab]}
           </div>
         )}
 
         {/* Table */}
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+        <div className="bg-white rounded-xl border border-blue-100 overflow-hidden shadow-sm">
+          <div className="max-h-[420px] overflow-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50">
+                <tr className="border-b border-blue-100 bg-blue-50/50">
                   {COLUMNS.map((col) => (
                     <th
                       key={col.key}
@@ -223,7 +248,7 @@ export default function UserManagement() {
                   : sorted.length === 0
                   ? <EmptyState tab={tab} />
                   : sorted.map((row, i) => (
-                    <tr key={row.user_id || i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                    <tr key={row.user_id || i} className="border-b border-slate-50 hover:bg-blue-50/40 transition-colors">
 
                       {/* Name */}
                       <td className="px-4 py-3">
@@ -234,15 +259,15 @@ export default function UserManagement() {
                       </td>
 
                       {/* Email */}
-                      <td className="px-4 py-3 text-slate-600 font-mono text-xs">{row.email || "—"}</td>
+                      <td className="px-4 py-3 text-slate-600 text-xs">{row.email || "—"}</td>
 
                       {/* Mobile */}
-                      <td className="px-4 py-3 text-slate-600 font-mono text-xs whitespace-nowrap">
+                      <td className="px-4 py-3 text-slate-600 text-xs whitespace-nowrap">
                         {row.mobile_number || "—"}
                       </td>
 
                       {/* Aadhaar */}
-                      <td className="px-4 py-3 font-mono text-xs text-slate-600 whitespace-nowrap">
+                      <td className="px-4 py-3 text-xs text-slate-600 whitespace-nowrap">
                         {showAadhaar ? (row.aadhaar_number || "—") : maskAadhaar(row.aadhaar_number)}
                       </td>
 
@@ -253,7 +278,7 @@ export default function UserManagement() {
 
                       {/* User ID */}
                       <td className="px-4 py-3">
-                        <span className="font-mono text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded">
+                        <span className="text-xs text-slate-500 bg-blue-50 px-2 py-1 rounded">
                           {row.user_id || "—"}
                         </span>
                       </td>
@@ -266,15 +291,15 @@ export default function UserManagement() {
 
           {/* Table Footer */}
           {!loading[activeTab] && sorted.length > 0 && (
-            <div className="px-4 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+            <div className="px-4 py-3 border-t border-blue-100 bg-blue-50/50 flex items-center justify-between">
               <span className="text-xs text-slate-400">
                 Showing{" "}
                 <span className="font-semibold text-slate-600">{sorted.length}</span> of{" "}
                 <span className="font-semibold text-slate-600">{rows.length}</span>{" "}
                 {tab.label.toLowerCase()}
               </span>
-              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${tab.badge}`}>
-                {tab.icon} {tab.label}
+              <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${tab.badge}`}>
+                <tab.icon size={13} /> {tab.label}
               </span>
             </div>
           )}

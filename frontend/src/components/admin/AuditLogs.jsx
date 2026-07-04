@@ -1,5 +1,22 @@
 import { useState, useEffect, useMemo } from "react";
 import { getAllAuditLogs, filterAuditLogs } from "../../api/admin.js";
+import {
+  Inbox,
+  Search,
+  PlusCircle,
+  Pencil,
+  Trash2,
+  Eye,
+  AlertTriangle,
+  ClipboardList,
+  RefreshCw,
+  ChevronUp,
+  ChevronDown,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+  Lightbulb,
+} from "lucide-react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -14,10 +31,10 @@ const OPERATION_COLORS = {
 };
 
 const OPERATION_ICONS = {
-  INSERT: "➕",
-  UPDATE: "✏️",
-  DELETE: "🗑️",
-  SELECT: "👁",
+  INSERT: PlusCircle,
+  UPDATE: Pencil,
+  DELETE: Trash2,
+  SELECT: Eye,
 };
 
 const fmtDate = (iso) => {
@@ -50,7 +67,7 @@ const SkeletonRow = ({ cols }) => (
 const EmptyState = () => (
   <tr>
     <td colSpan={20} className="py-20 text-center">
-      <div className="text-4xl mb-3">📭</div>
+      <Inbox size={32} className="mx-auto mb-3 text-slate-300" />
       <p className="text-slate-500 font-medium">No audit logs found</p>
       <p className="text-slate-400 text-sm mt-1">
         Try a different filter combination.
@@ -60,15 +77,14 @@ const EmptyState = () => (
 );
 
 const OperationBadge = ({ operation }) => {
-  const cls =
-    OPERATION_COLORS[(operation || "").toUpperCase()] ||
-    "bg-slate-100 text-slate-600";
-  const icon = OPERATION_ICONS[(operation || "").toUpperCase()] || "•";
+  const key = (operation || "").toUpperCase();
+  const cls = OPERATION_COLORS[key] || "bg-slate-100 text-slate-600";
+  const Icon = OPERATION_ICONS[key];
   return (
     <span
       className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase ${cls}`}
     >
-      <span>{icon}</span>
+      {Icon ? <Icon size={11} /> : "•"}
       {operation || "—"}
     </span>
   );
@@ -82,15 +98,15 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
   >
     {label}
     {!noSort && (
-      <span className="ml-1 text-xs">
+      <span className="ml-1 inline-flex align-middle">
         {sortCol === col ? (
           sortDir === "asc" ? (
-            "▲"
+            <ArrowUp size={12} className="text-slate-500" />
           ) : (
-            "▼"
+            <ArrowDown size={12} className="text-slate-500" />
           )
         ) : (
-          <span className="text-slate-300">⇅</span>
+          <ArrowUpDown size={12} className="text-slate-300" />
         )}
       </span>
     )}
@@ -98,8 +114,8 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
 );
 
 const TableWrap = ({ children }) => (
-  <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-    <div className="overflow-x-auto">
+  <div className="bg-white rounded-xl border border-blue-100 overflow-hidden shadow-sm">
+    <div className="max-h-[330px] overflow-auto">
       <table className="w-full text-sm">{children}</table>
     </div>
   </div>
@@ -108,19 +124,17 @@ const TableWrap = ({ children }) => (
 const Toolbar = ({ search, setSearch, count, total }) => (
   <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
-        🔍
-      </span>
+      <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
       <input
         type="text"
         placeholder="Search logs…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 w-72
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+        className="pl-9 pr-4 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-800 w-72
+                   focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
       />
     </div>
-    <span className="text-xs text-slate-400 font-mono">
+    <span className="text-xs text-slate-400">
       {count} / {total} records
     </span>
   </div>
@@ -129,7 +143,7 @@ const Toolbar = ({ search, setSearch, count, total }) => (
 // ─── Filter Bar ───────────────────────────────────────────────────────────────
 
 const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading, isFiltered }) => (
-  <div className="flex flex-wrap items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm mb-5">
+  <div className="flex flex-wrap items-center gap-3 p-4 bg-white border border-blue-100 rounded-xl shadow-sm mb-5">
     {/* Table selector */}
     <div className="flex flex-col gap-1">
       <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -138,8 +152,8 @@ const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading,
       <select
         value={table}
         onChange={(e) => setTable(e.target.value)}
-        className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition min-w-32"
+        className="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-800
+                   focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition min-w-32"
       >
         {TABLES.map((t) => (
           <option key={t} value={t}>
@@ -157,8 +171,8 @@ const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading,
       <select
         value={operation}
         onChange={(e) => setOperation(e.target.value)}
-        className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition min-w-36"
+        className="px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-800
+                   focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition min-w-36"
       >
         {OPERATIONS.map((op) => (
           <option key={op} value={op}>
@@ -176,8 +190,8 @@ const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading,
       <button
         onClick={onFetch}
         disabled={loading}
-        className="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg
-                   hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+        className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg
+                   hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
       >
         {loading ? "Loading…" : "Apply Filter"}
       </button>
@@ -188,12 +202,12 @@ const FilterBar = ({ table, setTable, operation, setOperation, onFetch, loading,
       <div className="flex items-center gap-2 ml-2 self-end mb-0.5">
         <span className="text-xs text-slate-500">Filtered by</span>
         {table !== "*" && (
-          <span className="text-xs font-bold font-mono bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">
+          <span className="text-xs font-bold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">
             table: {table}
           </span>
         )}
         {operation !== "*" && (
-          <span className="text-xs font-bold font-mono bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">
+          <span className="text-xs font-bold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">
             op: {operation}
           </span>
         )}
@@ -269,12 +283,13 @@ const AuditLogsTable = ({ rows, loading }) => {
         <div>
           <button
             onClick={() => setExpandedRow(isExpanded ? null : id)}
-            className="text-xs text-indigo-500 hover:text-indigo-700 font-mono underline underline-offset-2"
+            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 underline underline-offset-2"
           >
-            {isExpanded ? "▲ collapse" : "▼ expand"}
+            {isExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            {isExpanded ? "collapse" : "expand"}
           </button>
           {isExpanded && (
-            <pre className="mt-2 text-xs bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-600 max-w-xs overflow-x-auto whitespace-pre-wrap">
+            <pre className="mt-2 text-xs bg-blue-50 border border-blue-100 rounded-lg p-2 text-slate-600 max-w-xs overflow-x-auto whitespace-pre-wrap">
               {JSON.stringify(parsed, null, 2)}
             </pre>
           )}
@@ -283,7 +298,7 @@ const AuditLogsTable = ({ rows, loading }) => {
     }
 
     return (
-      <span className="text-xs font-mono text-slate-500 truncate max-w-[120px] block">
+      <span className="text-xs text-slate-500 truncate max-w-[120px] block">
         {String(value)}
       </span>
     );
@@ -299,7 +314,7 @@ const AuditLogsTable = ({ rows, loading }) => {
       />
       <TableWrap>
         <thead>
-          <tr className="border-b border-slate-100 bg-slate-50">
+          <tr className="border-b border-blue-100 bg-blue-50/50">
             {cols.map((c) => (
               <SortTh
                 key={c.key}
@@ -323,26 +338,26 @@ const AuditLogsTable = ({ rows, loading }) => {
             sorted.map((r, i) => (
               <tr
                 key={r.log_id || i}
-                className="border-b border-slate-50 hover:bg-slate-50 transition-colors"
+                className="border-b border-slate-50 hover:bg-blue-50/40 transition-colors"
               >
-                <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">
+                <td className="px-4 py-3 text-xs font-bold text-blue-700 whitespace-nowrap">
                   #{r.log_id || "—"}
                 </td>
-                <td className="px-4 py-3 text-xs font-mono text-slate-700 whitespace-nowrap">
-                  <span className="px-2 py-0.5 bg-slate-100 rounded text-slate-600">
+                <td className="px-4 py-3 text-xs text-slate-700 whitespace-nowrap">
+                  <span className="px-2 py-0.5 bg-blue-50 rounded text-slate-600">
                     {r.table_name || "—"}
                   </span>
                 </td>
                 <td className="px-4 py-3">
                   <OperationBadge operation={r.operation_type} />
                 </td>
-                <td className="px-4 py-3 font-mono text-xs text-slate-500 whitespace-nowrap">
+                <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
                   {r.record_id || "—"}
                 </td>
                 <td className="px-4 py-3 text-sm text-slate-700 whitespace-nowrap">
                   {r.changed_by || "—"}
                 </td>
-                <td className="px-4 py-3 text-xs font-mono text-slate-500 whitespace-nowrap">
+                <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
                   {fmtDate(r.changed_at)}
                 </td>
                 <td className="px-4 py-3 max-w-[160px]">
@@ -436,15 +451,15 @@ export default function AuditLogs() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-blue-50/40">
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-200 px-8 pt-8 pb-0">
+      <div className="bg-white border-b border-blue-100 px-6 pt-6 pb-0">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">
+            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1">
               Admin Panel
             </p>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
               Audit Logs
             </h1>
             <p className="text-sm text-slate-500 mt-1">
@@ -460,10 +475,10 @@ export default function AuditLogs() {
                 <div
                   key={s.label}
                   className={`px-4 py-2 rounded-lg border text-center min-w-25
-                  ${colors ? `${colors.bg}` : "bg-white border-slate-200"}`}
+                  ${colors ? `${colors.bg}` : "bg-white border-blue-100"}`}
                 >
                   <div
-                    className={`text-lg font-bold font-mono ${
+                    className={`text-lg font-bold ${
                       colors ? colors.val : "text-slate-800"
                     }`}
                   >
@@ -480,29 +495,31 @@ export default function AuditLogs() {
         <div className="flex gap-1">
           <div
             className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 
-            border-indigo-600 text-indigo-600 bg-slate-50 rounded-t-md"
+            border-blue-600 text-blue-600 bg-blue-50/60 rounded-t-md"
           >
-            <span>📋</span>
+            <ClipboardList size={15} />
             Audit Logs
           </div>
           <button
             onClick={fetchAll}
             disabled={loading}
             className="ml-auto mb-1 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium
-              text-slate-500 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 
+              text-slate-500 border border-blue-100 rounded-lg bg-white hover:bg-blue-50 
               disabled:opacity-40 transition self-center"
           >
-            🔄 {loading ? "Refreshing…" : "Refresh"}
+            <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+            {loading ? "Refreshing…" : "Refresh"}
           </button>
         </div>
       </div>
 
       {/* ── Body ── */}
-      <div className="px-8 py-6">
+      <div className="px-6 py-6">
         {/* Error banner */}
         {error && (
-          <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
-            ⚠ {error}
+          <div className="flex items-center gap-2 mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
+            <AlertTriangle size={16} className="shrink-0" />
+            {error}
           </div>
         )}
 
@@ -521,10 +538,11 @@ export default function AuditLogs() {
         <AuditLogsTable rows={logs} loading={loading} />
 
         {/* Footer note */}
-        <div className="mt-3 flex items-center gap-4 text-xs text-slate-400">
+        <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
+          <Lightbulb size={13} className="shrink-0" />
           <span>
-            💡 Click{" "}
-            <span className="font-semibold text-indigo-500">▼ expand</span> on
+            Click{" "}
+            <span className="font-semibold text-blue-600">expand</span> on
             JSON values to inspect old / new record snapshots.
           </span>
         </div>

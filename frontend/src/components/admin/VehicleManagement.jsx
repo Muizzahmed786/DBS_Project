@@ -5,14 +5,28 @@ import {
   getAllVehicleOwnershipDetails,
   getRtoVehicleOwnershipDetails,
 } from "../../api/admin.js";
+import {
+  Car,
+  Building2,
+  ClipboardList,
+  MapPin,
+  Search,
+  Eye,
+  EyeOff,
+  X,
+  AlertTriangle,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+} from "lucide-react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { key: "all-vehicles", label: "All Vehicles", icon: "🚗" },
-  { key: "rto-vehicles", label: "RTO Vehicles", icon: "🏢" },
-  { key: "all-ownership", label: "All Ownership", icon: "📋" },
-  { key: "rto-ownership", label: "RTO Ownership", icon: "📍" },
+  { key: "all-vehicles", label: "All Vehicles", icon: Car },
+  { key: "rto-vehicles", label: "RTO Vehicles", icon: Building2 },
+  { key: "all-ownership", label: "All Ownership", icon: ClipboardList },
+  { key: "rto-ownership", label: "RTO Ownership", icon: MapPin },
 ];
 
 const FUEL_COLORS = {
@@ -51,10 +65,10 @@ const SkeletonRow = ({ cols }) => (
   </tr>
 );
 
-const EmptyState = ({ icon, label }) => (
+const EmptyState = ({ icon: Icon, label }) => (
   <tr>
     <td colSpan={20} className="py-20 text-center">
-      <div className="text-4xl mb-3">{icon}</div>
+      <Icon size={32} className="mx-auto mb-3 text-slate-300" />
       <p className="text-slate-500 font-medium">No {label} found</p>
       <p className="text-slate-400 text-sm mt-1">Try a different search or RTO code.</p>
     </td>
@@ -74,10 +88,10 @@ const DateCell = ({ value }) => {
   const expired = isExpired(value);
   const soon = isExpiringSoon(value);
   return (
-    <span className={`text-xs font-mono whitespace-nowrap ${expired ? "text-red-500" : soon ? "text-amber-500" : "text-slate-600"}`}>
+    <span className={`inline-flex items-center gap-1 text-xs whitespace-nowrap ${expired ? "text-red-500" : soon ? "text-amber-500" : "text-slate-600"}`}>
       {fmtDate(value)}
-      {expired && <span className="ml-1 text-red-400">✕</span>}
-      {soon && !expired && <span className="ml-1 text-amber-400">⚠</span>}
+      {expired && <X size={11} className="text-red-400" />}
+      {soon && !expired && <AlertTriangle size={11} className="text-amber-400" />}
     </span>
   );
 };
@@ -90,8 +104,10 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
   >
     {label}
     {!noSort && (
-      <span className="ml-1 text-xs">
-        {sortCol === col ? (sortDir === "asc" ? "▲" : "▼") : <span className="text-slate-300">⇅</span>}
+      <span className="ml-1 inline-flex align-middle">
+        {sortCol === col
+          ? sortDir === "asc" ? <ArrowUp size={12} className="text-slate-500" /> : <ArrowDown size={12} className="text-slate-500" />
+          : <ArrowUpDown size={12} className="text-slate-300" />}
       </span>
     )}
   </th>
@@ -100,22 +116,22 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
 const RtoInput = ({ value, onChange, onFetch, loading }) => (
   <div className="flex items-center gap-2">
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🏢</span>
+      <Building2 size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
       <input
         type="text"
         placeholder="Enter RTO code (e.g. KA01)"
         value={value}
         onChange={(e) => onChange(e.target.value.toUpperCase())}
         onKeyDown={(e) => e.key === "Enter" && onFetch()}
-        className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 w-60
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition uppercase"
+        className="pl-9 pr-4 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-800 w-60
+                   focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition uppercase"
       />
     </div>
     <button
       onClick={onFetch}
       disabled={!value.trim() || loading}
-      className="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg
-                 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+      className="px-4 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg
+                 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
     >
       {loading ? "Loading…" : "Fetch"}
     </button>
@@ -127,23 +143,23 @@ const RtoInput = ({ value, onChange, onFetch, loading }) => (
 const Toolbar = ({ search, setSearch, count, total, label }) => (
   <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+      <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
       <input
         type="text"
         placeholder={`Search ${label}…`}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 w-72
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+        className="pl-9 pr-4 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-800 w-72
+                   focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
       />
     </div>
-    <span className="text-xs text-slate-400 font-mono">{count} / {total} records</span>
+    <span className="text-xs text-slate-400">{count} / {total} records</span>
   </div>
 );
 
 const TableWrap = ({ children }) => (
-  <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-    <div className="overflow-x-auto">
+  <div className="bg-white rounded-xl border border-blue-100 overflow-hidden shadow-sm">
+    <div className="max-h-[420px] overflow-auto">
       <table className="w-full text-sm">{children}</table>
     </div>
   </div>
@@ -151,8 +167,8 @@ const TableWrap = ({ children }) => (
 
 const Legend = () => (
   <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
-    <span className="flex items-center gap-1"><span className="text-red-400">✕</span> Expired</span>
-    <span className="flex items-center gap-1"><span className="text-amber-400">⚠</span> Expiring within 30 days</span>
+    <span className="flex items-center gap-1"><X size={12} className="text-red-400" /> Expired</span>
+    <span className="flex items-center gap-1"><AlertTriangle size={12} className="text-amber-400" /> Expiring within 30 days</span>
   </div>
 );
 
@@ -197,7 +213,7 @@ const VehiclesTable = ({ rows, loading }) => {
       <Toolbar search={search} setSearch={setSearch} count={sorted.length} total={rows.length} label="vehicles" />
       <TableWrap>
         <thead>
-          <tr className="border-b border-slate-100 bg-slate-50">
+          <tr className="border-b border-blue-100 bg-blue-50/50">
             {cols.map((c) => <SortTh key={c.key} {...c} col={c.key} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} />)}
           </tr>
         </thead>
@@ -205,18 +221,18 @@ const VehiclesTable = ({ rows, loading }) => {
           {loading
             ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} cols={cols.length} />)
             : sorted.length === 0
-              ? <EmptyState icon="🚗" label="vehicles" />
+              ? <EmptyState icon={Car} label="vehicles" />
               : sorted.map((r, i) => (
-                <tr key={r.vehicle_id || i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">{r.registration_number || "—"}</td>
+                <tr key={r.vehicle_id || i} className="border-b border-slate-50 hover:bg-blue-50/40 transition-colors">
+                  <td className="px-4 py-3 text-xs font-bold text-blue-700 whitespace-nowrap">{r.registration_number || "—"}</td>
                   <td className="px-4 py-3 text-sm font-medium text-slate-800">{r.manufacturer || "—"}</td>
                   <td className="px-4 py-3 text-sm text-slate-600">{r.model || "—"}</td>
                   <td className="px-4 py-3 text-xs text-slate-600 capitalize">{r.vehicle_class || "—"}</td>
                   <td className="px-4 py-3"><FuelBadge fuel={r.fuel_type} /></td>
-                  <td className="px-4 py-3 text-xs font-mono text-slate-500">{fmtDate(r.registration_date)}</td>
+                  <td className="px-4 py-3 text-xs text-slate-500">{fmtDate(r.registration_date)}</td>
                   <td className="px-4 py-3"><DateCell value={r.registration_valid_till} /></td>
                   <td className="px-4 py-3"><DateCell value={r.insurance_valid_till} /></td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-400">{r.chassis_number || "—"}</td>
+                  <td className="px-4 py-3 text-xs text-slate-400">{r.chassis_number || "—"}</td>
                 </tr>
               ))}
         </tbody>
@@ -267,20 +283,21 @@ const OwnershipTable = ({ rows, loading }) => {
   return (
     <>
       <div className="flex items-center justify-end gap-3 mb-4">
-        <span className="text-xs text-slate-400 font-mono">
+        <span className="text-xs text-slate-400">
           {sorted.length} / {rows.length} records
         </span>
 
         <button
           onClick={() => setShowAadhaar((s) => !s)}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition"
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600 border border-blue-100 rounded-lg bg-white hover:bg-blue-50 transition"
         >
-          {showAadhaar ? "🙈 Hide" : "👁 Show"} Aadhaar
+          {showAadhaar ? <EyeOff size={14} /> : <Eye size={14} />}
+          {showAadhaar ? "Hide" : "Show"} Aadhaar
         </button>
       </div>
       <TableWrap>
         <thead>
-          <tr className="border-b border-slate-100 bg-slate-50">
+          <tr className="border-b border-blue-100 bg-blue-50/50">
             {cols.map((c) => <SortTh key={c.key} {...c} col={c.key} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} />)}
           </tr>
         </thead>
@@ -288,30 +305,30 @@ const OwnershipTable = ({ rows, loading }) => {
           {loading
             ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} cols={cols.length} />)
             : sorted.length === 0
-              ? <EmptyState icon="📋" label="ownership records" />
+              ? <EmptyState icon={ClipboardList} label="ownership records" />
               : sorted.map((r, i) => (
-                <tr key={r.ownership_id || i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">{r.registration_number || "—"}</td>
+                <tr key={r.ownership_id || i} className="border-b border-slate-50 hover:bg-blue-50/40 transition-colors">
+                  <td className="px-4 py-3 text-xs font-bold text-blue-700 whitespace-nowrap">{r.registration_number || "—"}</td>
                   <td className="px-4 py-3">
                     <div className="text-sm font-medium text-slate-800 whitespace-nowrap">{r.full_name || "—"}</div>
-                    <div className="text-xs text-slate-400 font-mono mt-0.5">{r.email || ""}</div>
+                    <div className="text-xs text-slate-400 mt-0.5">{r.email || ""}</div>
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-600 whitespace-nowrap">{r.mobile_number || "—"}</td>
+                  <td className="px-4 py-3 text-xs text-slate-600 whitespace-nowrap">{r.mobile_number || "—"}</td>
                   <td className="px-4 py-3">
                     <div className="text-sm font-medium text-slate-800">{r.manufacturer} {r.model}</div>
-                    <div className="text-xs text-slate-400 font-mono mt-0.5">{r.engine_number || ""}</div>
+                    <div className="text-xs text-slate-400 mt-0.5">{r.engine_number || ""}</div>
                   </td>
                   <td className="px-4 py-3"><FuelBadge fuel={r.fuel_type} /></td>
                   <td className="px-4 py-3 text-xs text-slate-600 capitalize">{r.vehicle_class || "—"}</td>
-                  <td className="px-4 py-3 text-xs font-mono text-slate-500">{fmtDate(r.ownership_start_date)}</td>
-                  <td className="px-4 py-3 text-xs font-mono text-slate-500">
+                  <td className="px-4 py-3 text-xs text-slate-500">{fmtDate(r.ownership_start_date)}</td>
+                  <td className="px-4 py-3 text-xs text-slate-500">
                     {r.ownership_end_date
                       ? fmtDate(r.ownership_end_date)
                       : <span className="text-emerald-600 font-semibold">Current</span>}
                   </td>
                   <td className="px-4 py-3"><DateCell value={r.registration_valid_till} /></td>
                   <td className="px-4 py-3"><DateCell value={r.insurance_valid_till} /></td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-500">
+                  <td className="px-4 py-3 text-xs text-slate-500">
                     {showAadhaar
                       ? (r.aadhaar_number || "—")
                       : `•••• •••• ${String(r.aadhaar_number || "").slice(-4) || "????"}`}
@@ -425,14 +442,14 @@ export default function VehicleManagement() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-blue-50/40">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-200 px-8 pt-8 pb-0">
+      <div className="bg-white border-b border-blue-100 px-6 pt-6 pb-0">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">Admin Panel</p>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Vehicle Management</h1>
+            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1">Admin Panel</p>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Vehicle Management</h1>
             <p className="text-sm text-slate-500 mt-1">Monitor registered vehicles, ownership records, and RTO data.</p>
           </div>
 
@@ -440,8 +457,8 @@ export default function VehicleManagement() {
           <div className="flex flex-wrap gap-3 self-center">
             {stats.map((s) => (
               <div key={s.label} className={`px-4 py-2 rounded-lg border text-center min-w-25
-                ${s.warn ? "bg-red-50 border-red-200" : s.amber ? "bg-amber-50 border-amber-200" : "bg-white border-slate-200"}`}>
-                <div className={`text-lg font-bold font-mono ${s.warn ? "text-red-600" : s.amber ? "text-amber-600" : "text-slate-800"}`}>
+                ${s.warn ? "bg-red-50 border-red-200" : s.amber ? "bg-amber-50 border-amber-200" : "bg-white border-blue-100"}`}>
+                <div className={`text-lg font-bold ${s.warn ? "text-red-600" : s.amber ? "text-amber-600" : "text-slate-800"}`}>
                   {s.value}
                 </div>
                 <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
@@ -452,30 +469,34 @@ export default function VehicleManagement() {
 
         {/* Tabs */}
         <div className="flex gap-1">
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => handleTab(t.key)}
-              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-all rounded-t-md
-                ${activeTab === t.key
-                  ? "border-indigo-600 text-indigo-600 bg-slate-50"
-                  : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
-                }`}
-            >
-              <span>{t.icon}</span>
-              {t.label}
-            </button>
-          ))}
+          {TABS.map((t) => {
+            const Icon = t.icon;
+            return (
+              <button
+                key={t.key}
+                onClick={() => handleTab(t.key)}
+                className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-all rounded-t-md
+                  ${activeTab === t.key
+                    ? "border-blue-600 text-blue-600 bg-blue-50/60"
+                    : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-blue-50/40"
+                  }`}
+              >
+                <Icon size={15} />
+                {t.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* ── Body ── */}
-      <div className="px-8 py-6">
+      <div className="px-6 py-6">
 
         {/* Error banner */}
         {error[activeTab] && (
-          <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
-            ⚠ {error[activeTab]}
+          <div className="flex items-center gap-2 mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
+            <AlertTriangle size={16} className="shrink-0" />
+            {error[activeTab]}
           </div>
         )}
 
@@ -506,7 +527,7 @@ export default function VehicleManagement() {
             {fetchedRtoVehicle && (
               <div className="mb-4 flex items-center gap-2">
                 <span className="text-xs text-slate-500">Showing results for</span>
-                <span className="text-xs font-bold font-mono bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">{fetchedRtoVehicle}</span>
+                <span className="text-xs font-bold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">{fetchedRtoVehicle}</span>
               </div>
             )}
 
@@ -519,8 +540,8 @@ export default function VehicleManagement() {
 
             {!loading["rto-vehicles"] && rtoVehicles.length === 0 && fetchedRtoVehicle && (
               <div className="text-center py-16 text-slate-400">
-                <div className="text-4xl mb-3">🏢</div>
-                <p className="font-medium text-slate-500">No vehicles found for RTO <span className="font-mono font-bold">{fetchedRtoVehicle}</span></p>
+                <Building2 size={32} className="mx-auto mb-3 text-slate-300" />
+                <p className="font-medium text-slate-500">No vehicles found for RTO <span className="font-bold">{fetchedRtoVehicle}</span></p>
               </div>
             )}
           </>
@@ -553,7 +574,7 @@ export default function VehicleManagement() {
             {fetchedRtoOwnership && (
               <div className="mb-4 flex items-center gap-2">
                 <span className="text-xs text-slate-500">Showing results for</span>
-                <span className="text-xs font-bold font-mono bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">{fetchedRtoOwnership}</span>
+                <span className="text-xs font-bold bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">{fetchedRtoOwnership}</span>
               </div>
             )}
 
@@ -566,8 +587,8 @@ export default function VehicleManagement() {
 
             {!loading["rto-ownership"] && rtoOwnership.length === 0 && fetchedRtoOwnership && (
               <div className="text-center py-16 text-slate-400">
-                <div className="text-4xl mb-3">📍</div>
-                <p className="font-medium text-slate-500">No ownership records for RTO <span className="font-mono font-bold">{fetchedRtoOwnership}</span></p>
+                <MapPin size={32} className="mx-auto mb-3 text-slate-300" />
+                <p className="font-medium text-slate-500">No ownership records for RTO <span className="font-bold">{fetchedRtoOwnership}</span></p>
               </div>
             )}
           </>

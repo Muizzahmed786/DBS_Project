@@ -1,20 +1,33 @@
 import { useState, useEffect, useMemo } from "react";
 import { getAllPayments, getPaymentsByStatus } from "../../api/admin.js";
+import {
+  CreditCard,
+  CheckCircle2,
+  XCircle,
+  Smartphone,
+  Landmark,
+  Banknote,
+  Wallet,
+  AlertTriangle,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
+} from "lucide-react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STATUS_TABS = [
-  { key: "all",     label: "All Payments", icon: "💳", color: "border-slate-600 text-slate-700",   badge: "bg-slate-100 text-slate-700" },
-  { key: "success", label: "Success",      icon: "✅", color: "border-emerald-500 text-emerald-600", badge: "bg-emerald-100 text-emerald-700" },
-  { key: "failed",  label: "Failed",       icon: "❌", color: "border-red-500 text-red-600",         badge: "bg-red-100 text-red-700" },
+  { key: "all",     label: "All Payments", icon: CreditCard,  color: "border-slate-600 text-slate-700",     badge: "bg-slate-100 text-slate-700" },
+  { key: "success", label: "Success",      icon: CheckCircle2, color: "border-emerald-500 text-emerald-600", badge: "bg-emerald-100 text-emerald-700" },
+  { key: "failed",  label: "Failed",       icon: XCircle,      color: "border-red-500 text-red-600",         badge: "bg-red-100 text-red-700" },
 ];
 
 const MODE_ICONS = {
-  upi:        "📱",
-  card:       "💳",
-  netbanking: "🏦",
-  cash:       "💵",
-  wallet:     "👛",
+  upi:        Smartphone,
+  card:       CreditCard,
+  netbanking: Landmark,
+  cash:       Banknote,
+  wallet:     Wallet,
 };
 
 const fmtAmount = (n) =>
@@ -35,10 +48,11 @@ const PaymentStatusBadge = ({ status }) => {
     success: "bg-emerald-100 text-emerald-700 border border-emerald-200",
     failed:  "bg-red-100 text-red-600 border border-red-200",
   };
-  const icons = { success: "✅", failed: "❌" };
+  const icons = { success: CheckCircle2, failed: XCircle };
+  const Icon = icons[status];
   return (
     <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${styles[status] || "bg-slate-100 text-slate-600"}`}>
-      {icons[status] || "•"} {status || "—"}
+      {Icon ? <Icon size={11} /> : "•"} {status || "—"}
     </span>
   );
 };
@@ -57,9 +71,10 @@ const ChallanStatusBadge = ({ status }) => {
 
 const ModeChip = ({ mode }) => {
   const m = (mode || "").toLowerCase();
+  const Icon = MODE_ICONS[m] || CreditCard;
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium capitalize">
-      <span>{MODE_ICONS[m] || "💳"}</span>
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-blue-50 text-slate-600 text-xs font-medium capitalize">
+      <Icon size={12} />
       {mode || "—"}
     </span>
   );
@@ -75,10 +90,10 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const EmptyState = ({ icon }) => (
+const EmptyState = ({ icon: Icon }) => (
   <tr>
     <td colSpan={9} className="py-20 text-center">
-      <div className="text-4xl mb-3">{icon}</div>
+      <Icon size={32} className="mx-auto mb-3 text-slate-300" />
       <p className="text-slate-500 font-medium">No payments found</p>
       <p className="text-slate-400 text-sm mt-1">Try adjusting your search or filter.</p>
     </td>
@@ -93,10 +108,10 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
   >
     {label}
     {!noSort && (
-      <span className="ml-1 text-xs">
+      <span className="ml-1 inline-flex align-middle">
         {sortCol === col
-          ? sortDir === "asc" ? "▲" : "▼"
-          : <span className="text-slate-300">⇅</span>}
+          ? sortDir === "asc" ? <ArrowUp size={12} className="text-slate-500" /> : <ArrowDown size={12} className="text-slate-500" />
+          : <ArrowUpDown size={12} className="text-slate-300" />}
       </span>
     )}
   </th>
@@ -110,17 +125,17 @@ const StatsBar = ({ all, success, failed }) => {
   const successRate     = all.length ? Math.round((success.length / all.length) * 100) : 0;
 
   const stats = [
-    { label: "Total Payments",  value: all.length     || "—", sub: fmtAmount(all.reduce((s,p) => s + Number(p.amount||0), 0)),   color: "text-slate-800",   bg: "bg-white border-slate-200" },
+    { label: "Total Payments",  value: all.length     || "—", sub: fmtAmount(all.reduce((s,p) => s + Number(p.amount||0), 0)),   color: "text-slate-800",   bg: "bg-white border-blue-100" },
     { label: "Successful",      value: success.length || "—", sub: fmtAmount(totalCollected),  color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
     { label: "Failed",          value: failed.length  || "—", sub: fmtAmount(totalFailed),     color: "text-red-600",     bg: "bg-red-50 border-red-200" },
-    { label: "Success Rate",    value: all.length ? `${successRate}%` : "—", sub: "of all transactions", color: "text-indigo-600", bg: "bg-indigo-50 border-indigo-200" },
+    { label: "Success Rate",    value: all.length ? `${successRate}%` : "—", sub: "of all transactions", color: "text-blue-600", bg: "bg-blue-50 border-blue-200" },
   ];
 
   return (
     <div className="flex flex-wrap gap-3 self-center">
       {stats.map((s) => (
         <div key={s.label} className={`px-4 py-2.5 rounded-lg border text-center min-w-[110px] ${s.bg}`}>
-          <div className={`text-xl font-bold font-mono ${s.color}`}>{s.value}</div>
+          <div className={`text-xl font-bold ${s.color}`}>{s.value}</div>
           <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
           {s.sub && <div className={`text-xs font-semibold mt-0.5 ${s.color}`}>{s.sub}</div>}
         </div>
@@ -215,14 +230,14 @@ export default function PaymentManagement() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-blue-50/40">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-200 px-8 pt-8 pb-0">
+      <div className="bg-white border-b border-blue-100 px-6 pt-6 pb-0">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">Admin Panel</p>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Payment Management</h1>
+            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1">Admin Panel</p>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Payment Management</h1>
             <p className="text-sm text-slate-500 mt-1">Track all payment transactions linked to challans.</p>
           </div>
           <StatsBar all={data.all} success={data.success} failed={data.failed} />
@@ -230,31 +245,34 @@ export default function PaymentManagement() {
 
         {/* Tabs */}
         <div className="flex gap-1">
-          {STATUS_TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => handleTab(t.key)}
-              className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-all rounded-t-md
-                ${activeTab === t.key
-                  ? `${t.color} bg-slate-50`
-                  : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
-                }`}
-            >
-              <span>{t.icon}</span>
-              {t.label}
-              {/* Show badge as soon as we have a count, regardless of active tab */}
-              {data[t.key].length > 0 && (
-                <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full ${activeTab === t.key ? t.badge : "bg-slate-100 text-slate-500"}`}>
-                  {data[t.key].length}
-                </span>
-              )}
-            </button>
-          ))}
+          {STATUS_TABS.map((t) => {
+            const Icon = t.icon;
+            return (
+              <button
+                key={t.key}
+                onClick={() => handleTab(t.key)}
+                className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-all rounded-t-md
+                  ${activeTab === t.key
+                    ? `${t.color} bg-blue-50/60`
+                    : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-blue-50/40"
+                  }`}
+              >
+                <Icon size={15} />
+                {t.label}
+                {/* Show badge as soon as we have a count, regardless of active tab */}
+                {data[t.key].length > 0 && (
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === t.key ? t.badge : "bg-slate-100 text-slate-500"}`}>
+                    {data[t.key].length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* ── Body ── */}
-      <div className="px-8 py-6">
+      <div className="px-6 py-6">
 
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
@@ -270,11 +288,11 @@ export default function PaymentManagement() {
             /> */}
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400 font-mono">
+            <span className="text-xs text-slate-400">
               {sorted.length} / {rows.length} records
             </span>
             {sorted.length > 0 && (
-              <span className="text-xs font-semibold text-emerald-600 font-mono">
+              <span className="text-xs font-semibold text-emerald-600">
                 {fmtAmount(sorted.reduce((s, p) => s + Number(p.amount || 0), 0))} shown
               </span>
             )}
@@ -283,17 +301,18 @@ export default function PaymentManagement() {
 
         {/* Error */}
         {error[activeTab] && (
-          <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
-            ⚠ {error[activeTab]}
+          <div className="flex items-center gap-2 mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
+            <AlertTriangle size={16} className="shrink-0" />
+            {error[activeTab]}
           </div>
         )}
 
         {/* Table */}
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+        <div className="bg-white rounded-xl border border-blue-100 overflow-hidden shadow-sm">
+          <div className="max-h-[430px] overflow-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50">
+                <tr className="border-b border-blue-100 bg-blue-50/50">
                   {COLS.map((c) => (
                     <SortTh
                       key={c.key}
@@ -312,26 +331,26 @@ export default function PaymentManagement() {
                   : sorted.length === 0
                   ? <EmptyState icon={tab.icon} />
                   : sorted.map((r, i) => (
-                    <tr key={r.payment_id || i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                    <tr key={r.payment_id || i} className="border-b border-slate-50 hover:bg-blue-50/40 transition-colors">
 
                       {/* Date & Time */}
-                      <td className="px-4 py-3 text-xs font-mono text-slate-500 whitespace-nowrap">
+                      <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
                         {fmtDate(r.payment_date)}
                       </td>
 
                       {/* Payer */}
                       <td className="px-4 py-3">
                         <div className="text-sm font-medium text-slate-800 whitespace-nowrap">{r.full_name || "—"}</div>
-                        <div className="text-xs text-slate-400 font-mono mt-0.5">{r.mobile_number || r.email || ""}</div>
+                        <div className="text-xs text-slate-400 mt-0.5">{r.mobile_number || r.email || ""}</div>
                       </td>
 
                       {/* Challan No. */}
-                      <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">
+                      <td className="px-4 py-3 text-xs font-bold text-blue-700 whitespace-nowrap">
                         {r.challan_number || "—"}
                       </td>
 
                       {/* Txn Reference */}
-                      <td className="px-4 py-3 font-mono text-xs text-slate-500 whitespace-nowrap">
+                      <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
                         {r.transaction_reference || "—"}
                       </td>
 
@@ -341,7 +360,7 @@ export default function PaymentManagement() {
                       </td>
 
                       {/* Amount Paid */}
-                      <td className="px-4 py-3 text-sm font-bold font-mono text-slate-800 whitespace-nowrap">
+                      <td className="px-4 py-3 text-sm font-bold text-slate-800 whitespace-nowrap">
                         {fmtAmount(r.amount)}
                       </td>
 
@@ -362,12 +381,12 @@ export default function PaymentManagement() {
 
           {/* Footer */}
           {!loading[activeTab] && sorted.length > 0 && (
-            <div className="px-4 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between flex-wrap gap-2">
+            <div className="px-4 py-3 border-t border-blue-100 bg-blue-50/50 flex items-center justify-between flex-wrap gap-2">
               <span className="text-xs text-slate-400">
                 Showing <span className="font-semibold text-slate-600">{sorted.length}</span> of{" "}
                 <span className="font-semibold text-slate-600">{rows.length}</span> payments
               </span>
-              <div className="flex items-center gap-4 text-xs font-mono">
+              <div className="flex items-center gap-4 text-xs">
                 <span className="text-emerald-600 font-semibold">
                   Collected: {fmtAmount(sorted.filter(p => p.payment_status === "success").reduce((s, p) => s + Number(p.amount || 0), 0))}
                 </span>
