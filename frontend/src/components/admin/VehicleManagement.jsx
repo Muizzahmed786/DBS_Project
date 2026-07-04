@@ -16,11 +16,11 @@ const TABS = [
 ];
 
 const FUEL_COLORS = {
-  petrol: "bg-orange-500/15 text-orange-400",
-  diesel: "bg-yellow-500/15 text-yellow-400",
-  electric: "bg-emerald-500/15 text-emerald-400",
-  cng: "bg-sky-500/15 text-sky-400",
-  hybrid: "bg-teal-500/15 text-teal-400",
+  petrol: "bg-orange-100 text-orange-700",
+  diesel: "bg-yellow-100 text-yellow-700",
+  electric: "bg-green-100 text-green-700",
+  cng: "bg-blue-100 text-blue-700",
+  hybrid: "bg-teal-100 text-teal-700",
 };
 
 const fmtDate = (iso) => {
@@ -42,10 +42,10 @@ const isExpiringSoon = (dateStr) => {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const SkeletonRow = ({ cols }) => (
-  <tr className="border-b border-slate-700/40">
+  <tr className="border-b border-slate-100">
     {Array.from({ length: cols }).map((_, i) => (
       <td key={i} className="px-4 py-3.5">
-        <div className="h-3 rounded-full bg-slate-700/60 animate-pulse" style={{ width: `${[45, 55, 40, 50, 38, 42, 36][i % 7]}%` }} />
+        <div className="h-3 rounded-full bg-slate-100 animate-pulse" style={{ width: `${[45, 55, 40, 50, 38, 42, 36][i % 7]}%` }} />
       </td>
     ))}
   </tr>
@@ -55,14 +55,14 @@ const EmptyState = ({ icon, label }) => (
   <tr>
     <td colSpan={20} className="py-20 text-center">
       <div className="text-4xl mb-3">{icon}</div>
-      <p className="text-slate-400 font-medium">No {label} found</p>
-      <p className="text-slate-500 text-sm mt-1">Try a different search or RTO code.</p>
+      <p className="text-slate-500 font-medium">No {label} found</p>
+      <p className="text-slate-400 text-sm mt-1">Try a different search or RTO code.</p>
     </td>
   </tr>
 );
 
 const FuelBadge = ({ fuel }) => {
-  const cls = FUEL_COLORS[(fuel || "").toLowerCase()] || "bg-slate-700/60 text-slate-400";
+  const cls = FUEL_COLORS[(fuel || "").toLowerCase()] || "bg-slate-100 text-slate-600";
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${cls}`}>
       {fuel || "—"}
@@ -74,9 +74,9 @@ const DateCell = ({ value }) => {
   const expired = isExpired(value);
   const soon = isExpiringSoon(value);
   return (
-    <span className={`text-xs font-mono whitespace-nowrap ${expired ? "text-rose-400" : soon ? "text-amber-400" : "text-slate-400"}`}>
+    <span className={`text-xs font-mono whitespace-nowrap ${expired ? "text-red-500" : soon ? "text-amber-500" : "text-slate-600"}`}>
       {fmtDate(value)}
-      {expired && <span className="ml-1 text-rose-400">✕</span>}
+      {expired && <span className="ml-1 text-red-400">✕</span>}
       {soon && !expired && <span className="ml-1 text-amber-400">⚠</span>}
     </span>
   );
@@ -86,12 +86,12 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
   <th
     onClick={() => !noSort && onSort(col)}
     className={`px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider whitespace-nowrap
-      ${!noSort ? "cursor-pointer hover:text-slate-200 select-none" : ""}`}
+      ${!noSort ? "cursor-pointer hover:text-slate-800 select-none" : ""}`}
   >
     {label}
     {!noSort && (
       <span className="ml-1 text-xs">
-        {sortCol === col ? (sortDir === "asc" ? "▲" : "▼") : <span className="text-slate-600">⇅</span>}
+        {sortCol === col ? (sortDir === "asc" ? "▲" : "▼") : <span className="text-slate-300">⇅</span>}
       </span>
     )}
   </th>
@@ -100,22 +100,22 @@ const SortTh = ({ label, col, sortCol, sortDir, onSort, noSort }) => (
 const RtoInput = ({ value, onChange, onFetch, loading }) => (
   <div className="flex items-center gap-2">
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">🏢</span>
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🏢</span>
       <input
         type="text"
         placeholder="Enter RTO code (e.g. KA01)"
         value={value}
         onChange={(e) => onChange(e.target.value.toUpperCase())}
         onKeyDown={(e) => e.key === "Enter" && onFetch()}
-        className="pl-9 pr-4 py-2 text-sm border border-slate-700/60 rounded-lg bg-slate-900/60 text-slate-100 w-60
-                   focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60 transition uppercase"
+        className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 w-60
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition uppercase"
       />
     </div>
     <button
       onClick={onFetch}
       disabled={!value.trim() || loading}
-      className="px-4 py-2 text-sm font-semibold bg-sky-500 text-white rounded-lg shadow-sm shadow-sky-500/30
-                 hover:bg-sky-400 disabled:opacity-40 disabled:cursor-not-allowed transition"
+      className="px-4 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-lg
+                 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
     >
       {loading ? "Loading…" : "Fetch"}
     </button>
@@ -127,22 +127,22 @@ const RtoInput = ({ value, onChange, onFetch, loading }) => (
 const Toolbar = ({ search, setSearch, count, total, label }) => (
   <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
     <div className="relative">
-      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">🔍</span>
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
       <input
         type="text"
         placeholder={`Search ${label}…`}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="pl-9 pr-4 py-2 text-sm border border-slate-700/60 rounded-lg bg-slate-900/60 text-slate-100 w-72
-                   focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60 transition"
+        className="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800 w-72
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
       />
     </div>
-    <span className="text-xs text-slate-500 font-mono">{count} / {total} records</span>
+    <span className="text-xs text-slate-400 font-mono">{count} / {total} records</span>
   </div>
 );
 
 const TableWrap = ({ children }) => (
-  <div className="bg-slate-800/50 rounded-xl border border-slate-700/60 overflow-hidden">
+  <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
     <div className="overflow-x-auto">
       <table className="w-full text-sm">{children}</table>
     </div>
@@ -151,7 +151,7 @@ const TableWrap = ({ children }) => (
 
 const Legend = () => (
   <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
-    <span className="flex items-center gap-1"><span className="text-rose-400">✕</span> Expired</span>
+    <span className="flex items-center gap-1"><span className="text-red-400">✕</span> Expired</span>
     <span className="flex items-center gap-1"><span className="text-amber-400">⚠</span> Expiring within 30 days</span>
   </div>
 );
@@ -197,7 +197,7 @@ const VehiclesTable = ({ rows, loading }) => {
       <Toolbar search={search} setSearch={setSearch} count={sorted.length} total={rows.length} label="vehicles" />
       <TableWrap>
         <thead>
-          <tr className="border-b border-slate-700/60 bg-slate-900/60">
+          <tr className="border-b border-slate-100 bg-slate-50">
             {cols.map((c) => <SortTh key={c.key} {...c} col={c.key} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} />)}
           </tr>
         </thead>
@@ -207,16 +207,16 @@ const VehiclesTable = ({ rows, loading }) => {
             : sorted.length === 0
               ? <EmptyState icon="🚗" label="vehicles" />
               : sorted.map((r, i) => (
-                <tr key={r.vehicle_id || i} className="border-b border-slate-700/40 hover:bg-slate-700/30 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs font-bold text-sky-400 whitespace-nowrap">{r.registration_number || "—"}</td>
-                  <td className="px-4 py-3 text-sm font-medium text-slate-200">{r.manufacturer || "—"}</td>
-                  <td className="px-4 py-3 text-sm text-slate-400">{r.model || "—"}</td>
-                  <td className="px-4 py-3 text-xs text-slate-400 capitalize">{r.vehicle_class || "—"}</td>
+                <tr key={r.vehicle_id || i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">{r.registration_number || "—"}</td>
+                  <td className="px-4 py-3 text-sm font-medium text-slate-800">{r.manufacturer || "—"}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{r.model || "—"}</td>
+                  <td className="px-4 py-3 text-xs text-slate-600 capitalize">{r.vehicle_class || "—"}</td>
                   <td className="px-4 py-3"><FuelBadge fuel={r.fuel_type} /></td>
                   <td className="px-4 py-3 text-xs font-mono text-slate-500">{fmtDate(r.registration_date)}</td>
                   <td className="px-4 py-3"><DateCell value={r.registration_valid_till} /></td>
                   <td className="px-4 py-3"><DateCell value={r.insurance_valid_till} /></td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-500">{r.chassis_number || "—"}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-slate-400">{r.chassis_number || "—"}</td>
                 </tr>
               ))}
         </tbody>
@@ -267,20 +267,20 @@ const OwnershipTable = ({ rows, loading }) => {
   return (
     <>
       <div className="flex items-center justify-end gap-3 mb-4">
-        <span className="text-xs text-slate-500 font-mono">
+        <span className="text-xs text-slate-400 font-mono">
           {sorted.length} / {rows.length} records
         </span>
 
         <button
           onClick={() => setShowAadhaar((s) => !s)}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-300 border border-slate-700/60 rounded-lg bg-slate-800/50 hover:bg-slate-700/40 transition"
+          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition"
         >
           {showAadhaar ? "🙈 Hide" : "👁 Show"} Aadhaar
         </button>
       </div>
       <TableWrap>
         <thead>
-          <tr className="border-b border-slate-700/60 bg-slate-900/60">
+          <tr className="border-b border-slate-100 bg-slate-50">
             {cols.map((c) => <SortTh key={c.key} {...c} col={c.key} sortCol={sortCol} sortDir={sortDir} onSort={handleSort} />)}
           </tr>
         </thead>
@@ -290,24 +290,24 @@ const OwnershipTable = ({ rows, loading }) => {
             : sorted.length === 0
               ? <EmptyState icon="📋" label="ownership records" />
               : sorted.map((r, i) => (
-                <tr key={r.ownership_id || i} className="border-b border-slate-700/40 hover:bg-slate-700/30 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs font-bold text-sky-400 whitespace-nowrap">{r.registration_number || "—"}</td>
+                <tr key={r.ownership_id || i} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                  <td className="px-4 py-3 font-mono text-xs font-bold text-indigo-700 whitespace-nowrap">{r.registration_number || "—"}</td>
                   <td className="px-4 py-3">
-                    <div className="text-sm font-medium text-slate-200 whitespace-nowrap">{r.full_name || "—"}</div>
-                    <div className="text-xs text-slate-500 font-mono mt-0.5">{r.email || ""}</div>
+                    <div className="text-sm font-medium text-slate-800 whitespace-nowrap">{r.full_name || "—"}</div>
+                    <div className="text-xs text-slate-400 font-mono mt-0.5">{r.email || ""}</div>
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-400 whitespace-nowrap">{r.mobile_number || "—"}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-slate-600 whitespace-nowrap">{r.mobile_number || "—"}</td>
                   <td className="px-4 py-3">
-                    <div className="text-sm font-medium text-slate-200">{r.manufacturer} {r.model}</div>
-                    <div className="text-xs text-slate-500 font-mono mt-0.5">{r.engine_number || ""}</div>
+                    <div className="text-sm font-medium text-slate-800">{r.manufacturer} {r.model}</div>
+                    <div className="text-xs text-slate-400 font-mono mt-0.5">{r.engine_number || ""}</div>
                   </td>
                   <td className="px-4 py-3"><FuelBadge fuel={r.fuel_type} /></td>
-                  <td className="px-4 py-3 text-xs text-slate-400 capitalize">{r.vehicle_class || "—"}</td>
+                  <td className="px-4 py-3 text-xs text-slate-600 capitalize">{r.vehicle_class || "—"}</td>
                   <td className="px-4 py-3 text-xs font-mono text-slate-500">{fmtDate(r.ownership_start_date)}</td>
                   <td className="px-4 py-3 text-xs font-mono text-slate-500">
                     {r.ownership_end_date
                       ? fmtDate(r.ownership_end_date)
-                      : <span className="text-emerald-400 font-semibold">Current</span>}
+                      : <span className="text-emerald-600 font-semibold">Current</span>}
                   </td>
                   <td className="px-4 py-3"><DateCell value={r.registration_valid_till} /></td>
                   <td className="px-4 py-3"><DateCell value={r.insurance_valid_till} /></td>
@@ -425,23 +425,23 @@ export default function VehicleManagement() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-slate-900 border-b border-slate-800 px-8 pt-8 pb-0">
+      <div className="bg-white border-b border-slate-200 px-8 pt-8 pb-0">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-1 font-mono">Admin Panel</p>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Vehicle Management</h1>
-            <p className="text-sm text-slate-400 mt-1">Monitor registered vehicles, ownership records, and RTO data.</p>
+            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">Admin Panel</p>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Vehicle Management</h1>
+            <p className="text-sm text-slate-500 mt-1">Monitor registered vehicles, ownership records, and RTO data.</p>
           </div>
 
           {/* Stats */}
           <div className="flex flex-wrap gap-3 self-center">
             {stats.map((s) => (
               <div key={s.label} className={`px-4 py-2 rounded-lg border text-center min-w-25
-                ${s.warn ? "bg-rose-500/10 border-rose-500/25" : s.amber ? "bg-amber-500/10 border-amber-500/25" : "bg-slate-800/50 border-slate-700/60"}`}>
-                <div className={`text-lg font-bold font-mono ${s.warn ? "text-rose-400" : s.amber ? "text-amber-400" : "text-white"}`}>
+                ${s.warn ? "bg-red-50 border-red-200" : s.amber ? "bg-amber-50 border-amber-200" : "bg-white border-slate-200"}`}>
+                <div className={`text-lg font-bold font-mono ${s.warn ? "text-red-600" : s.amber ? "text-amber-600" : "text-slate-800"}`}>
                   {s.value}
                 </div>
                 <div className="text-xs text-slate-500 mt-0.5">{s.label}</div>
@@ -458,8 +458,8 @@ export default function VehicleManagement() {
               onClick={() => handleTab(t.key)}
               className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-all rounded-t-md
                 ${activeTab === t.key
-                  ? "border-sky-500 text-sky-400 bg-slate-800/60"
-                  : "border-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-800/40"
+                  ? "border-indigo-600 text-indigo-600 bg-slate-50"
+                  : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
                 }`}
             >
               <span>{t.icon}</span>
@@ -474,7 +474,7 @@ export default function VehicleManagement() {
 
         {/* Error banner */}
         {error[activeTab] && (
-          <div className="mb-4 px-4 py-3 rounded-lg bg-rose-500/15 border border-rose-500/25 text-rose-400 text-sm font-medium">
+          <div className="mb-4 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
             ⚠ {error[activeTab]}
           </div>
         )}
@@ -492,8 +492,8 @@ export default function VehicleManagement() {
           <>
             <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
               <div>
-                <p className="text-sm font-semibold text-slate-300">Filter by RTO Code</p>
-                <p className="text-xs text-slate-500 mt-0.5">Enter a valid RTO code to fetch vehicles under that office.</p>
+                <p className="text-sm font-semibold text-slate-700">Filter by RTO Code</p>
+                <p className="text-xs text-slate-400 mt-0.5">Enter a valid RTO code to fetch vehicles under that office.</p>
               </div>
               <RtoInput
                 value={rtoVehicleCode}
@@ -506,7 +506,7 @@ export default function VehicleManagement() {
             {fetchedRtoVehicle && (
               <div className="mb-4 flex items-center gap-2">
                 <span className="text-xs text-slate-500">Showing results for</span>
-                <span className="text-xs font-bold font-mono bg-sky-500/15 text-sky-400 border border-sky-500/25 px-2.5 py-1 rounded-full">{fetchedRtoVehicle}</span>
+                <span className="text-xs font-bold font-mono bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">{fetchedRtoVehicle}</span>
               </div>
             )}
 
@@ -518,9 +518,9 @@ export default function VehicleManagement() {
             )}
 
             {!loading["rto-vehicles"] && rtoVehicles.length === 0 && fetchedRtoVehicle && (
-              <div className="text-center py-16 text-slate-500">
+              <div className="text-center py-16 text-slate-400">
                 <div className="text-4xl mb-3">🏢</div>
-                <p className="font-medium text-slate-400">No vehicles found for RTO <span className="font-mono font-bold text-slate-300">{fetchedRtoVehicle}</span></p>
+                <p className="font-medium text-slate-500">No vehicles found for RTO <span className="font-mono font-bold">{fetchedRtoVehicle}</span></p>
               </div>
             )}
           </>
@@ -539,8 +539,8 @@ export default function VehicleManagement() {
           <>
             <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
               <div>
-                <p className="text-sm font-semibold text-slate-300">Filter by RTO Code</p>
-                <p className="text-xs text-slate-500 mt-0.5">Fetch complete ownership records under a specific RTO office.</p>
+                <p className="text-sm font-semibold text-slate-700">Filter by RTO Code</p>
+                <p className="text-xs text-slate-400 mt-0.5">Fetch complete ownership records under a specific RTO office.</p>
               </div>
               <RtoInput
                 value={rtoOwnershipCode}
@@ -553,7 +553,7 @@ export default function VehicleManagement() {
             {fetchedRtoOwnership && (
               <div className="mb-4 flex items-center gap-2">
                 <span className="text-xs text-slate-500">Showing results for</span>
-                <span className="text-xs font-bold font-mono bg-sky-500/15 text-sky-400 border border-sky-500/25 px-2.5 py-1 rounded-full">{fetchedRtoOwnership}</span>
+                <span className="text-xs font-bold font-mono bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">{fetchedRtoOwnership}</span>
               </div>
             )}
 
@@ -565,9 +565,9 @@ export default function VehicleManagement() {
             )}
 
             {!loading["rto-ownership"] && rtoOwnership.length === 0 && fetchedRtoOwnership && (
-              <div className="text-center py-16 text-slate-500">
+              <div className="text-center py-16 text-slate-400">
                 <div className="text-4xl mb-3">📍</div>
-                <p className="font-medium text-slate-400">No ownership records for RTO <span className="font-mono font-bold text-slate-300">{fetchedRtoOwnership}</span></p>
+                <p className="font-medium text-slate-500">No ownership records for RTO <span className="font-mono font-bold">{fetchedRtoOwnership}</span></p>
               </div>
             )}
           </>

@@ -23,8 +23,8 @@ const StatusBanner = ({ status, onDismiss }) => {
     <div
       className={`flex items-start justify-between gap-3 px-4 py-3 rounded-lg border text-sm font-medium
         ${isError
-          ? "bg-rose-500/15 border-rose-500/25 text-rose-400"
-          : "bg-emerald-500/15 border-emerald-500/25 text-emerald-400"
+          ? "bg-red-50 border-red-200 text-red-700"
+          : "bg-emerald-50 border-emerald-200 text-emerald-700"
         }`}
     >
       <span>
@@ -49,8 +49,8 @@ const SelectField = ({ label, value, onChange, options, formatLabel }) => (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="px-3 py-2 text-sm border border-slate-700/60 rounded-lg bg-slate-900/60 text-slate-100
-                 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60 transition"
+      className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
     >
       {options.map((o) => (
         <option key={o} value={o}>
@@ -67,30 +67,30 @@ const ConfirmModal = ({ isOpen, onConfirm, onCancel, message, loading }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
         onClick={onCancel}
       />
       {/* Dialog */}
-      <div className="relative bg-slate-800 rounded-xl border border-slate-700/60 shadow-xl p-6 w-full max-w-sm mx-4">
+      <div className="relative bg-white rounded-xl border border-slate-200 shadow-xl p-6 w-full max-w-sm mx-4">
         <div className="text-3xl mb-3 text-center">🗑️</div>
-        <h3 className="text-base font-bold text-white text-center mb-2">
+        <h3 className="text-base font-bold text-slate-800 text-center mb-2">
           Confirm Deletion
         </h3>
-        <p className="text-sm text-slate-400 text-center mb-6">{message}</p>
+        <p className="text-sm text-slate-500 text-center mb-6">{message}</p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 px-4 py-2 text-sm font-semibold text-slate-300 border border-slate-700/60
-                       rounded-lg bg-slate-900/60 hover:bg-slate-700/40 disabled:opacity-40 transition"
+            className="flex-1 px-4 py-2 text-sm font-semibold text-slate-600 border border-slate-200
+                       rounded-lg bg-white hover:bg-slate-50 disabled:opacity-40 transition"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="flex-1 px-4 py-2 text-sm font-semibold bg-rose-500 text-white rounded-lg
-                       hover:bg-rose-400 disabled:opacity-40 disabled:cursor-not-allowed transition"
+            className="flex-1 px-4 py-2 text-sm font-semibold bg-red-600 text-white rounded-lg
+                       hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
           >
             {loading ? "Deleting…" : "Yes, Delete"}
           </button>
@@ -105,36 +105,36 @@ const ConfirmModal = ({ isOpen, onConfirm, onCancel, message, loading }) => {
 const DeleteCard = ({ icon, title, description, accent, children, onDelete, loading, disabled }) => {
   const accentMap = {
     orange: {
-      border: "border-amber-500/25",
-      iconBg: "bg-amber-500/15",
-      btn: "bg-amber-500 hover:bg-amber-400",
-      tag: "bg-amber-500/15 text-amber-400",
+      border: "border-orange-200",
+      iconBg: "bg-orange-50",
+      btn: "bg-orange-600 hover:bg-orange-700",
+      tag: "bg-orange-100 text-orange-700",
     },
     red: {
-      border: "border-rose-500/25",
-      iconBg: "bg-rose-500/15",
-      btn: "bg-rose-500 hover:bg-rose-400",
-      tag: "bg-rose-500/15 text-rose-400",
+      border: "border-red-200",
+      iconBg: "bg-red-50",
+      btn: "bg-red-600 hover:bg-red-700",
+      tag: "bg-red-100 text-red-700",
     },
     purple: {
-      border: "border-purple-500/25",
-      iconBg: "bg-purple-500/15",
-      btn: "bg-purple-500 hover:bg-purple-400",
-      tag: "bg-purple-500/15 text-purple-400",
+      border: "border-purple-200",
+      iconBg: "bg-purple-50",
+      btn: "bg-purple-600 hover:bg-purple-700",
+      tag: "bg-purple-100 text-purple-700",
     },
   };
   const c = accentMap[accent] || accentMap.red;
 
   return (
-    <div className={`bg-slate-800/50 rounded-xl border ${c.border} overflow-hidden flex flex-col`}>
+    <div className={`bg-white rounded-xl border ${c.border} shadow-sm overflow-hidden flex flex-col`}>
       {/* Card header */}
-      <div className="px-5 py-4 border-b border-slate-700/60 flex items-center gap-3">
+      <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-3">
         <div className={`w-9 h-9 rounded-lg ${c.iconBg} flex items-center justify-center text-lg shrink-0`}>
           {icon}
         </div>
         <div>
-          <h3 className="text-sm font-bold text-white">{title}</h3>
-          <p className="text-xs text-slate-500 mt-0.5">{description}</p>
+          <h3 className="text-sm font-bold text-slate-800">{title}</h3>
+          <p className="text-xs text-slate-400 mt-0.5">{description}</p>
         </div>
       </div>
 
@@ -144,7 +144,7 @@ const DeleteCard = ({ icon, title, description, accent, children, onDelete, load
       </div>
 
       {/* Card footer */}
-      <div className="px-5 py-4 border-t border-slate-700/60 bg-slate-900/40">
+      <div className="px-5 py-4 border-t border-slate-100 bg-slate-50">
         <button
           onClick={onDelete}
           disabled={loading || disabled}
@@ -216,9 +216,9 @@ const FilteredDeleteCard = ({ onSuccess, onError }) => {
           formatLabel={(op) => op === "*" ? "All Operations" : op}
         />
         {/* Preview */}
-        <div className="text-xs text-slate-500 bg-slate-900/60 rounded-lg px-3 py-2 font-mono border border-slate-700/60">
-          Will delete: table=<span className="text-amber-400 font-semibold">{table}</span>
-          {" "}op=<span className="text-amber-400 font-semibold">{operation}</span>
+        <div className="text-xs text-slate-400 bg-slate-50 rounded-lg px-3 py-2 font-mono border border-slate-100">
+          Will delete: table=<span className="text-orange-600 font-semibold">{table}</span>
+          {" "}op=<span className="text-orange-600 font-semibold">{operation}</span>
         </div>
       </DeleteCard>
 
@@ -277,11 +277,11 @@ const OldestDeleteCard = ({ onSuccess, onError }) => {
             placeholder="e.g. 100"
             value={count}
             onChange={(e) => setCount(e.target.value)}
-            className="px-3 py-2 text-sm border border-slate-700/60 rounded-lg bg-slate-900/60 text-slate-100
-                       focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60 transition"
+            className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           />
           {count && !isValid && (
-            <p className="text-xs text-rose-400">Please enter a positive number.</p>
+            <p className="text-xs text-red-500">Please enter a positive number.</p>
           )}
         </div>
 
@@ -289,8 +289,8 @@ const OldestDeleteCard = ({ onSuccess, onError }) => {
         <div className="flex-1" />
 
         {isValid && (
-          <div className="text-xs text-slate-500 bg-slate-900/60 rounded-lg px-3 py-2 font-mono border border-slate-700/60">
-            Will delete: <span className="text-rose-400 font-semibold">{count}</span> oldest record{parseInt(count, 10) > 1 ? "s" : ""}
+          <div className="text-xs text-slate-400 bg-slate-50 rounded-lg px-3 py-2 font-mono border border-slate-100">
+            Will delete: <span className="text-red-600 font-semibold">{count}</span> oldest record{parseInt(count, 10) > 1 ? "s" : ""}
           </div>
         )}
       </DeleteCard>
@@ -356,8 +356,8 @@ const DateRangeDeleteCard = ({ onSuccess, onError }) => {
             value={startDate}
             max={endDate || todayISO()}
             onChange={(e) => setStartDate(e.target.value)}
-            className="px-3 py-2 text-sm border border-slate-700/60 rounded-lg bg-slate-900/60 text-slate-100
-                       focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60 transition"
+            className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           />
         </div>
 
@@ -371,20 +371,20 @@ const DateRangeDeleteCard = ({ onSuccess, onError }) => {
             min={startDate || undefined}
             max={todayISO()}
             onChange={(e) => setEndDate(e.target.value)}
-            className="px-3 py-2 text-sm border border-slate-700/60 rounded-lg bg-slate-900/60 text-slate-100
-                       focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60 transition"
+            className="px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white text-slate-800
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
           />
         </div>
 
         {rangeError && (
-          <p className="text-xs text-rose-400">{rangeError}</p>
+          <p className="text-xs text-red-500">{rangeError}</p>
         )}
 
         {isValid && (
-          <div className="text-xs text-slate-500 bg-slate-900/60 rounded-lg px-3 py-2 font-mono border border-slate-700/60">
-            Range: <span className="text-purple-400 font-semibold">{startDate}</span>
+          <div className="text-xs text-slate-400 bg-slate-50 rounded-lg px-3 py-2 font-mono border border-slate-100">
+            Range: <span className="text-purple-600 font-semibold">{startDate}</span>
             {" → "}
-            <span className="text-purple-400 font-semibold">{endDate}</span>
+            <span className="text-purple-600 font-semibold">{endDate}</span>
           </div>
         )}
       </DeleteCard>
@@ -409,29 +409,29 @@ export default function DeleteAuditLogs() {
   const handleError = (message) => setStatus({ type: "error", message });
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-slate-900 border-b border-slate-800 px-8 pt-8 pb-0">
+      <div className="bg-white border-b border-slate-200 px-8 pt-8 pb-0">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-1 font-mono">
+            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">
               Admin Panel
             </p>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
               Delete Audit Logs
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-slate-500 mt-1">
               Permanently remove log entries by filter, count, or date range.
             </p>
           </div>
 
           {/* Danger notice badge */}
-          <div className="self-center px-4 py-2 rounded-lg border bg-rose-500/15 border-rose-500/25 flex items-center gap-2">
+          <div className="self-center px-4 py-2 rounded-lg border bg-red-50 border-red-200 flex items-center gap-2">
             <span className="text-lg">⚠️</span>
             <div>
-              <div className="text-xs font-bold text-rose-400">Irreversible Action</div>
-              <div className="text-xs text-rose-400/80 mt-0.5">Deleted logs cannot be recovered.</div>
+              <div className="text-xs font-bold text-red-700">Irreversible Action</div>
+              <div className="text-xs text-red-500 mt-0.5">Deleted logs cannot be recovered.</div>
             </div>
           </div>
         </div>
@@ -439,7 +439,7 @@ export default function DeleteAuditLogs() {
         {/* Tab-like header strip */}
         <div className="flex gap-1">
           <div className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2
-            border-sky-500 text-sky-400 bg-slate-800/60 rounded-t-md">
+            border-indigo-600 text-indigo-600 bg-slate-50 rounded-t-md">
             <span>🗑️</span>
             Delete Logs
           </div>
@@ -464,7 +464,7 @@ export default function DeleteAuditLogs() {
         </div>
 
         {/* Footer note */}
-        <p className="mt-5 text-xs text-slate-500">
+        <p className="mt-5 text-xs text-slate-400">
           💡 Each delete action requires confirmation before execution. All operations call stored procedures on the server.
         </p>
       </div>

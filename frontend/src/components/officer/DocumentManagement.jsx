@@ -8,13 +8,13 @@ const TABS = [
     key: "user",
     label: "User Documents",
     icon: User,
-    active: "border-sky-500 text-sky-400",
+    active: "border-blue-600 text-blue-600",
   },
   {
     key: "vehicle",
     label: "Vehicle Documents",
     icon: Car,
-    active: "border-emerald-500 text-emerald-400",
+    active: "border-emerald-600 text-emerald-600",
   },
 ];
 
@@ -37,7 +37,7 @@ const SkeletonRow = ({ cols }) => (
   <tr>
     {Array.from({ length: cols }).map((_, i) => (
       <td key={i} className="px-4 py-3">
-        <div className="h-3 w-3/4 bg-slate-700/60 rounded animate-pulse" />
+        <div className="h-3 w-3/4 bg-slate-100 rounded animate-pulse" />
       </td>
     ))}
   </tr>
@@ -49,7 +49,7 @@ const EmptyState = ({ tab }) => {
   return (
     <tr>
       <td colSpan={5} className="py-20 text-center">
-        <div className="flex justify-center mb-3 text-slate-600">
+        <div className="flex justify-center mb-3 text-slate-400">
           <Icon size={32} />
         </div>
         <p className="text-slate-500 font-medium">
@@ -108,9 +108,9 @@ export default function DocumentManagement() {
 
   const SortIcon = ({ col }) => {
     if (sortCol !== col)
-      return <span className="ml-1 text-slate-600 text-xs">⇅</span>;
+      return <span className="ml-1 text-slate-300 text-xs">⇅</span>;
     return (
-      <span className="ml-1 text-xs text-sky-400">
+      <span className="ml-1 text-xs">
         {sortDir === "asc" ? "▲" : "▼"}
       </span>
     );
@@ -119,25 +119,25 @@ export default function DocumentManagement() {
   const getDocColor = (type) => {
     switch (type) {
       case "RC":
-        return "bg-sky-500/15 text-sky-400 border border-sky-500/25";
+        return "bg-blue-100 text-blue-700";
       case "INSURANCE":
-        return "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25";
+        return "bg-emerald-100 text-emerald-700";
       case "DL":
-        return "bg-purple-500/15 text-purple-400 border border-purple-500/25";
+        return "bg-violet-100 text-violet-700";
       case "AADHAAR":
-        return "bg-amber-500/15 text-amber-400 border border-amber-500/25";
+        return "bg-orange-100 text-orange-700";
       default:
-        return "bg-slate-700/60 text-slate-400 border border-slate-600/50";
+        return "bg-slate-100 text-slate-600";
     }
   };
 
   const tab = TABS.find((t) => t.key === activeTab);
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="bg-slate-900 border-b border-slate-800 px-8 pt-8">
-        <h1 className="text-2xl font-bold text-white mb-4">
+      <div className="bg-white border-b border-slate-100 px-8 pt-8">
+        <h1 className="text-2xl font-bold text-slate-900 mb-4">
           Document Management
         </h1>
 
@@ -152,8 +152,8 @@ export default function DocumentManagement() {
                 onClick={() => setActiveTab(t.key)}
                 className={`flex items-center gap-2 px-4 py-2 border-b-2 rounded-t-md text-sm
         ${activeTab === t.key
-                    ? `${t.active} bg-slate-800/60`
-                    : "border-transparent text-slate-500 hover:text-slate-300"
+                    ? `${t.active} bg-slate-50`
+                    : "border-transparent text-slate-400 hover:text-slate-600"
                   }`}
               >
                 <Icon size={16} />  {/* ✅ render properly */}
@@ -166,14 +166,14 @@ export default function DocumentManagement() {
 
       {/* Body */}
       <div className="px-8 py-6">
-        <div className="text-xs text-slate-500 mb-4 font-mono">
+        <div className="text-xs text-slate-400 mb-4 font-mono">
           {sorted.length} record{sorted.length !== 1 ? "s" : ""}
         </div>
 
         {/* Table */}
-        <div className="bg-slate-800/50 rounded-2xl border border-slate-700/60 overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm">
           <table className="w-full text-sm">
-            <thead className="bg-slate-900/60 border-b border-slate-700/60">
+            <thead className="bg-slate-50 border-b border-slate-100">
               <tr>
                 {COLUMNS[activeTab].map((col) => (
                   <th
@@ -181,7 +181,7 @@ export default function DocumentManagement() {
                     onClick={() => !col.noSort && handleSort(col.key)}
                     className={`px-4 py-3 text-left text-xs font-semibold uppercase text-slate-500
                       ${!col.noSort
-                        ? "cursor-pointer hover:text-slate-200"
+                        ? "cursor-pointer hover:text-slate-800"
                         : ""
                       }`}
                   >
@@ -202,7 +202,7 @@ export default function DocumentManagement() {
                   : sorted.map((doc, i) => (
                     <tr
                       key={i}
-                      className="border-b border-slate-700/40 hover:bg-slate-700/30 transition"
+                      className="border-b border-slate-50 hover:bg-slate-50 transition"
                     >
                       {COLUMNS[activeTab].map((col) => {
                         if (col.key === "file_url") {
@@ -212,7 +212,7 @@ export default function DocumentManagement() {
                                 href={doc.file_url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-sky-400 text-xs hover:underline"
+                                className="text-blue-600 text-xs hover:underline"
                               >
                                 View
                               </a>
@@ -237,7 +237,7 @@ export default function DocumentManagement() {
                         return (
                           <td
                             key={col.key}
-                            className="px-4 py-3 text-xs text-slate-300"
+                            className="px-4 py-3 text-xs text-slate-600"
                           >
                             {doc[col.key] || "—"}
                           </td>
