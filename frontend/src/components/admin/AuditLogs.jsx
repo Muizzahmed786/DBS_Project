@@ -456,9 +456,9 @@ export default function AuditLogs() {
       <div className="bg-white border-b border-blue-100 px-6 pt-6 pb-0">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1">
-              Admin Panel
-            </p>
+            <p className="text-xs font-semibold tracking-widest text-indigo-500 uppercase mb-1">
+          Admin Panel
+        </p>
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
               Audit Logs
             </h1>

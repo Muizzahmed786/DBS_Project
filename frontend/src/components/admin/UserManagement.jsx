@@ -1,5 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import { getAllCitizens, getAllOfficers, getAllAdmins } from "../../api/admin.js";
+import {
+  getAllCitizens,
+  getAllOfficers,
+  getAllAdmins,
+} from "../../api/admin.js";
 import {
   User,
   Shield,
@@ -14,18 +18,36 @@ import {
 } from "lucide-react";
 
 const TABS = [
-  { key: "citizen", label: "Citizens", icon: User,     badge: "bg-blue-50 text-blue-700",     active: "border-blue-600 text-blue-600" },
-  { key: "officer", label: "Officers", icon: Shield,   badge: "bg-cyan-50 text-cyan-700",     active: "border-cyan-600 text-cyan-600" },
-  { key: "admin",   label: "Admins",   icon: Settings2, badge: "bg-violet-50 text-violet-700", active: "border-violet-600 text-violet-600" },
+  {
+    key: "citizen",
+    label: "Citizens",
+    icon: User,
+    badge: "bg-blue-50 text-blue-700",
+    active: "border-blue-600 text-blue-600",
+  },
+  {
+    key: "officer",
+    label: "Officers",
+    icon: Shield,
+    badge: "bg-cyan-50 text-cyan-700",
+    active: "border-cyan-600 text-cyan-600",
+  },
+  {
+    key: "admin",
+    label: "Admins",
+    icon: Settings2,
+    badge: "bg-violet-50 text-violet-700",
+    active: "border-violet-600 text-violet-600",
+  },
 ];
 
 const COLUMNS = [
-  { key: "full_name",      label: "Name" },
-  { key: "email",          label: "Email" },
-  { key: "mobile_number",  label: "Mobile" },
+  { key: "full_name", label: "Name" },
+  { key: "email", label: "Email" },
+  { key: "mobile_number", label: "Mobile" },
   { key: "aadhaar_number", label: "Aadhaar", noSort: true },
-  { key: "created_at",     label: "Joined" },
-  { key: "user_id",        label: "User ID", noSort: true },
+  { key: "created_at", label: "Joined" },
+  { key: "user_id", label: "User ID", noSort: true },
 ];
 
 const AVATAR_COLORS = [
@@ -40,7 +62,9 @@ const AVATAR_COLORS = [
 const fmtDate = (iso) => {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("en-IN", {
-    day: "2-digit", month: "short", year: "numeric",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   });
 };
 
@@ -50,10 +74,17 @@ const maskAadhaar = (num) => {
 };
 
 const getInitials = (name = "") =>
-  name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
+  name
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase() || "?";
 
 const Avatar = ({ name, index }) => (
-  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${AVATAR_COLORS[index % AVATAR_COLORS.length]}`}>
+  <div
+    className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${AVATAR_COLORS[index % AVATAR_COLORS.length]}`}
+  >
     {getInitials(name)}
   </div>
 );
@@ -62,7 +93,10 @@ const SkeletonRow = () => (
   <tr className="border-b border-slate-100">
     {[40, 55, 45, 50, 40, 30].map((w, i) => (
       <td key={i} className="px-4 py-3.5">
-        <div className="h-3 rounded-full bg-slate-100 animate-pulse" style={{ width: `${w}%` }} />
+        <div
+          className="h-3 rounded-full bg-slate-100 animate-pulse"
+          style={{ width: `${w}%` }}
+        />
       </td>
     ))}
   </tr>
@@ -74,22 +108,36 @@ const EmptyState = ({ tab }) => {
     <tr>
       <td colSpan={6} className="py-20 text-center">
         <Icon size={32} className="mx-auto mb-3 text-slate-300" />
-        <p className="text-slate-500 font-medium">No {tab.label.toLowerCase()} found</p>
+        <p className="text-slate-500 font-medium">
+          No {tab.label.toLowerCase()} found
+        </p>
       </td>
     </tr>
   );
 };
 
 export default function UserManagement() {
-  const [activeTab, setActiveTab]     = useState("citizen");
-  const [data, setData]               = useState({ citizen: [], officer: [], admin: [] });
-  const [loading, setLoading]         = useState({ citizen: false, officer: false, admin: false });
-  const [error, setError]             = useState({ citizen: null,  officer: null,  admin: null });
-  const [sortCol, setSortCol]         = useState("created_at");
-  const [sortDir, setSortDir]         = useState("desc");
+  const [activeTab, setActiveTab] = useState("citizen");
+  const [data, setData] = useState({ citizen: [], officer: [], admin: [] });
+  const [loading, setLoading] = useState({
+    citizen: false,
+    officer: false,
+    admin: false,
+  });
+  const [error, setError] = useState({
+    citizen: null,
+    officer: null,
+    admin: null,
+  });
+  const [sortCol, setSortCol] = useState("created_at");
+  const [sortDir, setSortDir] = useState("desc");
   const [showAadhaar, setShowAadhaar] = useState(false);
 
-  const fetchers = { citizen: getAllCitizens, officer: getAllOfficers, admin: getAllAdmins };
+  const fetchers = {
+    citizen: getAllCitizens,
+    officer: getAllOfficers,
+    admin: getAllAdmins,
+  };
 
   const fetchTab = async (tab) => {
     if (data[tab].length > 0) return;
@@ -120,39 +168,48 @@ export default function UserManagement() {
 
   const handleSort = (col) => {
     if (sortCol === col) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    else { setSortCol(col); setSortDir("asc"); }
+    else {
+      setSortCol(col);
+      setSortDir("asc");
+    }
   };
 
-  const tab  = TABS.find((t) => t.key === activeTab);
+  const tab = TABS.find((t) => t.key === activeTab);
   const rows = data[activeTab];
 
   const sorted = useMemo(() => {
     return [...rows].sort((a, b) => {
       const av = a[sortCol] ?? "";
       const bv = b[sortCol] ?? "";
-      return sortDir === "asc" ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+      return sortDir === "asc" ? (av > bv ? 1 : -1) : av < bv ? 1 : -1;
     });
   }, [rows, sortCol, sortDir]);
 
   const SortIcon = ({ col }) => {
-    if (sortCol !== col) return <ArrowUpDown size={12} className="ml-1 inline text-slate-300" />;
-    return sortDir === "asc"
-      ? <ArrowUp size={12} className="ml-1 inline text-slate-500" />
-      : <ArrowDown size={12} className="ml-1 inline text-slate-500" />;
+    if (sortCol !== col)
+      return <ArrowUpDown size={12} className="ml-1 inline text-slate-300" />;
+    return sortDir === "asc" ? (
+      <ArrowUp size={12} className="ml-1 inline text-slate-500" />
+    ) : (
+      <ArrowDown size={12} className="ml-1 inline text-slate-500" />
+    );
   };
 
   return (
     <div className="min-h-screen bg-blue-50/40">
-
       {/* ── Header ── */}
       <div className="bg-white border-b border-blue-100 px-6 pt-6 pb-0">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1">
+            <p className="text-xs font-semibold tracking-widest text-indigo-500 uppercase mb-1">
               Admin Panel
             </p>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">User Management</h1>
-            <p className="text-sm text-slate-500 mt-1">Manage citizens, officers, and admins.</p>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+              User Management
+            </h1>
+            <p className="text-sm text-slate-500 mt-1">
+              Manage citizens, officers, and admins.
+            </p>
           </div>
 
           {/* Summary Badges — always populated because all tabs are pre-fetched */}
@@ -160,7 +217,10 @@ export default function UserManagement() {
             {TABS.map((t) => {
               const Icon = t.icon;
               return (
-                <span key={t.key} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${t.badge}`}>
+                <span
+                  key={t.key}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${t.badge}`}
+                >
                   <Icon size={13} />
                   <span>{data[t.key].length || "—"}</span>
                   {t.label}
@@ -179,15 +239,18 @@ export default function UserManagement() {
                 key={t.key}
                 onClick={() => handleTab(t.key)}
                 className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-all rounded-t-md
-                  ${activeTab === t.key
-                    ? `${t.active} bg-blue-50/60`
-                    : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-blue-50/40"
+                  ${
+                    activeTab === t.key
+                      ? `${t.active} bg-blue-50/60`
+                      : "border-transparent text-slate-400 hover:text-slate-600 hover:bg-blue-50/40"
                   }`}
               >
                 <Icon size={15} />
                 {t.label}
                 {data[t.key].length > 0 && (
-                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === t.key ? t.badge : "bg-slate-100 text-slate-500"}`}>
+                  <span
+                    className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === t.key ? t.badge : "bg-slate-100 text-slate-500"}`}
+                  >
                     {data[t.key].length}
                   </span>
                 )}
@@ -199,7 +262,6 @@ export default function UserManagement() {
 
       {/* ── Body ── */}
       <div className="px-6 py-6">
-
         {/* Toolbar — only Aadhaar toggle + record count, no search */}
         <div className="flex items-center justify-between mb-4">
           <span className="text-xs text-slate-400">
@@ -243,23 +305,32 @@ export default function UserManagement() {
                 </tr>
               </thead>
               <tbody>
-                {loading[activeTab]
-                  ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />)
-                  : sorted.length === 0
-                  ? <EmptyState tab={tab} />
-                  : sorted.map((row, i) => (
-                    <tr key={row.user_id || i} className="border-b border-slate-50 hover:bg-blue-50/40 transition-colors">
-
+                {loading[activeTab] ? (
+                  Array.from({ length: 6 }).map((_, i) => (
+                    <SkeletonRow key={i} />
+                  ))
+                ) : sorted.length === 0 ? (
+                  <EmptyState tab={tab} />
+                ) : (
+                  sorted.map((row, i) => (
+                    <tr
+                      key={row.user_id || i}
+                      className="border-b border-slate-50 hover:bg-blue-50/40 transition-colors"
+                    >
                       {/* Name */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <Avatar name={row.full_name} index={i} />
-                          <span className="font-medium text-slate-800 whitespace-nowrap">{row.full_name || "—"}</span>
+                          <span className="font-medium text-slate-800 whitespace-nowrap">
+                            {row.full_name || "—"}
+                          </span>
                         </div>
                       </td>
 
                       {/* Email */}
-                      <td className="px-4 py-3 text-slate-600 text-xs">{row.email || "—"}</td>
+                      <td className="px-4 py-3 text-slate-600 text-xs">
+                        {row.email || "—"}
+                      </td>
 
                       {/* Mobile */}
                       <td className="px-4 py-3 text-slate-600 text-xs whitespace-nowrap">
@@ -268,7 +339,9 @@ export default function UserManagement() {
 
                       {/* Aadhaar */}
                       <td className="px-4 py-3 text-xs text-slate-600 whitespace-nowrap">
-                        {showAadhaar ? (row.aadhaar_number || "—") : maskAadhaar(row.aadhaar_number)}
+                        {showAadhaar
+                          ? row.aadhaar_number || "—"
+                          : maskAadhaar(row.aadhaar_number)}
                       </td>
 
                       {/* Joined */}
@@ -284,7 +357,7 @@ export default function UserManagement() {
                       </td>
                     </tr>
                   ))
-                }
+                )}
               </tbody>
             </table>
           </div>
@@ -294,11 +367,18 @@ export default function UserManagement() {
             <div className="px-4 py-3 border-t border-blue-100 bg-blue-50/50 flex items-center justify-between">
               <span className="text-xs text-slate-400">
                 Showing{" "}
-                <span className="font-semibold text-slate-600">{sorted.length}</span> of{" "}
-                <span className="font-semibold text-slate-600">{rows.length}</span>{" "}
+                <span className="font-semibold text-slate-600">
+                  {sorted.length}
+                </span>{" "}
+                of{" "}
+                <span className="font-semibold text-slate-600">
+                  {rows.length}
+                </span>{" "}
                 {tab.label.toLowerCase()}
               </span>
-              <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${tab.badge}`}>
+              <span
+                className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${tab.badge}`}
+              >
                 <tab.icon size={13} /> {tab.label}
               </span>
             </div>

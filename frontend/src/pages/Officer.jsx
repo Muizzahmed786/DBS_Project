@@ -18,43 +18,41 @@ const officerNavItems = [
   { to: "/officer/issue-licence", label: "Issue Licence", icon: CreditCard },
   { to: "/officer/challans", label: "My Challans", icon: FileWarning },
   { to: "/officer/violations", label: "Violation Types", icon: Settings },
-  { to: "/officer/citizen-documents", label: "Document Management", icon: File },
+  {
+    to: "/officer/citizen-documents",
+    label: "Document Management",
+    icon: File,
+  },
 ];
 
 const OfficerLayout = () => {
   const { user, loading } = useAuth();
 
-  // 🔹 Loading state
-  if (loading) {
+  // 1. Handle Loading State (Prevents flicker on refresh)
+  if (loading)
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-950 text-white">
+      <div className="flex h-screen items-center justify-center bg-blue-50 text-slate-500">
         Loading...
       </div>
     );
-  }
 
-  // 🔹 Security check
+  // 2. Security: Redirect if not logged in or not an admin
   if (!user || user.role !== "officer") {
     return <Navigate replace to="/login" />;
   }
 
   return (
-    <div className="flex max-h-screen bg-slate-950">
-      
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-blue-50/40">
+      {/* Sidebar gets the config and the specific Admin name if needed */}
       <Sidebar
         navItems={officerNavItems}
         roleName="Officer"
-        userName={user.full_name} // adjust if your field is different
+        userName={user.name}
       />
 
-      {/* Main Content */}
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto">
-        <div className="max-w-7xl mx-auto">
-          <Outlet />
-        </div>
+      <main className="flex-1 overflow-y-auto">
+        <Outlet />
       </main>
-
     </div>
   );
 };

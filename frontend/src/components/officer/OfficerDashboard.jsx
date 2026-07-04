@@ -17,10 +17,10 @@ const fmtCount = (n) =>
 // ─── Skeleton ──────────────────────────────────────────────
 
 const StatSkeleton = () => (
-  <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-3 shadow-sm">
-    <div className="h-3 w-24 rounded-full bg-slate-100 animate-pulse" />
-    <div className="h-8 w-32 rounded-full bg-slate-100 animate-pulse" />
-    <div className="h-3 w-20 rounded-full bg-slate-100 animate-pulse" />
+  <div className="bg-white rounded-2xl border border-blue-100 p-6 flex flex-col gap-3 shadow-sm">
+    <div className="h-3 w-24 rounded-full bg-blue-50 animate-pulse" />
+    <div className="h-8 w-32 rounded-full bg-blue-50 animate-pulse" />
+    <div className="h-3 w-20 rounded-full bg-blue-50 animate-pulse" />
   </div>
 );
 
@@ -30,24 +30,22 @@ const StatCard = ({
   label,
   value,
   sub,
-  icon,
+  accent,
   iconBg,
   valueColor = "text-slate-900",
 }) => (
-  <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col gap-1 hover:shadow-md transition-shadow">
+  <div className="bg-white rounded-2xl border border-blue-100 p-6 shadow-sm flex flex-col gap-1 hover:shadow-md hover:border-blue-200 transition-all">
     <div className="flex items-start justify-between mb-2">
       <span
-        className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${iconBg}`}
+        className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg}`}
       >
-        {icon}
+        <span className={`w-3 h-3 rounded-full ${accent}`} />
       </span>
     </div>
     <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
       {label}
     </p>
-    <p
-      className={`text-3xl font-bold font-mono tracking-tight ${valueColor}`}
-    >
+    <p className={`text-3xl font-bold tracking-tight ${valueColor}`}>
       {value}
     </p>
     {sub && <p className="text-xs text-slate-400 mt-1">{sub}</p>}
@@ -71,14 +69,14 @@ const DonutChart = ({ paid, pending, total }) => {
   return (
     <div className="flex items-center gap-8">
       <svg width="140" height="140" viewBox="0 0 140 140">
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#f1f5f9" strokeWidth="18" />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#eff6ff" strokeWidth="18" />
 
         <circle
           cx={cx}
           cy={cy}
           r={r}
           fill="none"
-          stroke="#fbbf24"
+          stroke="#bae6fd"
           strokeWidth="18"
           strokeDasharray={`${pendingDash} ${circ - pendingDash}`}
           strokeDashoffset={-paidDash}
@@ -90,7 +88,7 @@ const DonutChart = ({ paid, pending, total }) => {
           cy={cy}
           r={r}
           fill="none"
-          stroke="#10b981"
+          stroke="#0ea5e9"
           strokeWidth="18"
           strokeDasharray={`${paidDash} ${circ - paidDash}`}
           strokeDashoffset={circ * 0.25}
@@ -104,7 +102,6 @@ const DonutChart = ({ paid, pending, total }) => {
           fontSize="18"
           fontWeight="700"
           fill="#0f172a"
-          fontFamily="monospace"
         >
           {total}
         </text>
@@ -121,10 +118,10 @@ const DonutChart = ({ paid, pending, total }) => {
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-emerald-400" />
+          <span className="w-3 h-3 rounded-full bg-sky-500" />
           <div>
             <p className="text-xs text-slate-500">Paid</p>
-            <p className="text-lg font-bold font-mono text-emerald-600">
+            <p className="text-lg font-bold text-sky-600">
               {fmtCount(paid)}
             </p>
             <p className="text-xs text-slate-400">
@@ -134,10 +131,10 @@ const DonutChart = ({ paid, pending, total }) => {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-amber-400" />
+          <span className="w-3 h-3 rounded-full bg-sky-200" />
           <div>
             <p className="text-xs text-slate-500">Pending</p>
-            <p className="text-lg font-bold font-mono text-amber-600">
+            <p className="text-lg font-bold text-sky-400">
               {fmtCount(pending)}
             </p>
             <p className="text-xs text-slate-400">
@@ -159,11 +156,11 @@ const ProgressBar = ({ label, value, max, color }) => {
     <div className="flex flex-col gap-1.5">
       <div className="flex justify-between items-center">
         <span className="text-xs font-medium text-slate-600">{label}</span>
-        <span className="text-xs font-mono font-bold text-slate-700">
+        <span className="text-xs font-bold text-slate-700">
           {pct}%
         </span>
       </div>
-      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+      <div className="h-2 bg-blue-50 rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full ${color}`}
           style={{ width: `${pct}%` }}
@@ -233,13 +230,13 @@ export default function OfficerDashboard() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-sky-50/40">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-200 px-8 py-8">
+      <div className="bg-white border-b border-blue-100 px-8 py-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-1 font-mono">
+            <p className="text-xs font-semibold tracking-widest text-sky-500 uppercase mb-1">
               Officer Panel
             </p>
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
@@ -250,7 +247,7 @@ export default function OfficerDashboard() {
             </p>
           </div>
 
-          <div className="text-xs font-mono text-slate-400 bg-slate-100 px-3 py-1.5 rounded-lg">
+          <div className="text-xs text-sky-600 bg-sky-50 border border-sky-100 px-3 py-1.5 rounded-lg">
             Last updated:{" "}
             {new Date().toLocaleTimeString("en-IN", {
               hour: "2-digit",
@@ -279,32 +276,32 @@ export default function OfficerDashboard() {
                   label="Total Challans"
                   value={fmtCount(totalCount)}
                   sub="Issued by you"
-                  icon="📋"
+                  accent="bg-slate-400"
                   iconBg="bg-slate-100"
                 />
                 <StatCard
                   label="Paid Challans"
                   value={fmtCount(paidCount)}
                   sub={`${collectionRate}% collection rate`}
-                  icon="✅"
-                  iconBg="bg-emerald-50"
-                  valueColor="text-emerald-600"
+                  accent="bg-sky-500"
+                  iconBg="bg-sky-50"
+                  valueColor="text-sky-600"
                 />
                 <StatCard
                   label="Pending Challans"
                   value={fmtCount(pendingCount)}
                   sub="Awaiting payment"
-                  icon="⏳"
-                  iconBg="bg-amber-50"
-                  valueColor="text-amber-600"
+                  accent="bg-sky-300"
+                  iconBg="bg-sky-50"
+                  valueColor="text-sky-500"
                 />
                 <StatCard
                   label="Revenue"
                   value={fmtAmount(totalRevenue)}
                   sub="Total fine collected"
-                  icon="💰"
-                  iconBg="bg-indigo-50"
-                  valueColor="text-indigo-600"
+                  accent="bg-blue-500"
+                  iconBg="bg-blue-50"
+                  valueColor="text-blue-600"
                 />
               </>
             )}
@@ -315,7 +312,7 @@ export default function OfficerDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* Donut */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-blue-100 shadow-sm p-6">
             <div className="mb-5">
               <h2 className="text-sm font-bold text-slate-800">
                 Challan Breakdown
@@ -335,7 +332,7 @@ export default function OfficerDashboard() {
           </div>
 
           {/* Progress */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-blue-100 shadow-sm p-6">
             <div className="mb-5">
               <h2 className="text-sm font-bold text-slate-800">
                 Collection Progress
@@ -348,21 +345,21 @@ export default function OfficerDashboard() {
                   label="Paid Challans"
                   value={paidCount}
                   max={totalCount}
-                  color="bg-emerald-400"
+                  color="bg-sky-500"
                 />
                 <ProgressBar
                   label="Pending Challans"
                   value={pendingCount}
                   max={totalCount}
-                  color="bg-amber-400"
+                  color="bg-sky-300"
                 />
 
-                <div className="mt-2 pt-4 border-t border-slate-100">
-                  <div className="bg-slate-50 rounded-xl p-3 text-center">
+                <div className="mt-2 pt-4 border-t border-blue-50">
+                  <div className="bg-sky-50 rounded-xl p-3 text-center">
                     <p className="text-xs text-slate-400 mb-1">
                       Collection Rate
                     </p>
-                    <p className="text-2xl font-bold font-mono text-indigo-600">
+                    <p className="text-2xl font-bold text-sky-600">
                       {collectionRate}%
                     </p>
                   </div>
@@ -373,7 +370,7 @@ export default function OfficerDashboard() {
         </div>
 
         {/* Top Violations */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-blue-100 shadow-sm p-6">
           <div className="mb-5">
             <h2 className="text-sm font-bold text-slate-800">
               Top Violations
@@ -388,12 +385,12 @@ export default function OfficerDashboard() {
               {topViolations.map((v, i) => (
                 <div
                   key={i}
-                  className="flex justify-between items-center bg-slate-50 rounded-xl px-4 py-2"
+                  className="flex justify-between items-center bg-sky-50/60 rounded-xl px-4 py-2"
                 >
                   <span className="text-sm text-slate-700">
                     {v.description}
                   </span>
-                  <span className="font-mono font-bold text-slate-900">
+                  <span className="font-bold text-slate-900">
                     {fmtCount(v.count)}
                   </span>
                 </div>
