@@ -77,7 +77,7 @@ const Sidebar = ({ navItems = [], roleName = "User" }) => {
     return (
         <>
             {/* Desktop */}
-            <aside className="hidden md:flex flex-col w-64 min-h-screen bg-white border-r border-blue-100 shrink-0">
+            <aside className="hidden z-50 h-full md:flex flex-col w-64 max-h-screen bg-white border-r border-blue-100 shrink-0 overflow-auto">
                 <SidebarContent />
             </aside>
 
