@@ -44,17 +44,17 @@ export default function AddViolationType() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-50">
 
       {/* ── Header ── */}
-      <div className="bg-slate-900 border-b border-slate-800 px-8 py-8">
-        <p className="text-xs font-semibold tracking-widest text-sky-400 uppercase mb-1 font-mono">
+      <div className="bg-white border-b border-slate-200 px-8 py-8">
+        <p className="text-xs font-semibold tracking-widest text-indigo-500 uppercase mb-1 font-mono">
           Admin Panel
         </p>
-        <h1 className="text-2xl font-bold text-white tracking-tight">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
           Add Violation Type
         </h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-sm text-slate-500 mt-1">
           Create a new violation entry
         </p>
       </div>
@@ -63,18 +63,18 @@ export default function AddViolationType() {
       <div className="px-8 py-8 flex justify-center">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-2xl bg-slate-800/50 border border-slate-700/60 rounded-2xl p-8 flex flex-col gap-6"
+          className="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-sm p-8 flex flex-col gap-6"
         >
 
           {/* Messages */}
           {error && (
-            <div className="px-4 py-3 rounded-lg bg-rose-500/15 border border-rose-500/25 text-rose-400 text-sm">
+            <div className="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
               ⚠ {error}
             </div>
           )}
 
           {message && (
-            <div className="px-4 py-3 rounded-lg bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 text-sm">
+            <div className="px-4 py-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
               {message}
             </div>
           )}
@@ -109,7 +109,7 @@ export default function AddViolationType() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 rounded-lg bg-sky-500 text-white text-sm font-semibold shadow-sm shadow-sky-500/30 hover:bg-sky-400 transition disabled:opacity-50"
+              className="px-6 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
             >
               {loading ? "Adding..." : "Add Violation"}
             </button>
@@ -126,7 +126,7 @@ export default function AddViolationType() {
 function Input({ label, name, value, onChange, placeholder }) {
   return (
     <div>
-      <label className="text-sm font-medium text-slate-300 mb-1 block">
+      <label className="text-sm font-medium text-slate-700 mb-1 block">
         {label}
       </label>
       <input
@@ -135,7 +135,7 @@ function Input({ label, name, value, onChange, placeholder }) {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full px-4 py-2 rounded-lg border border-slate-700/60 bg-slate-900/60 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500/60"
+        className="w-full px-4 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400"
       />
     </div>
   );

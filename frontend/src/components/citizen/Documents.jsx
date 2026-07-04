@@ -84,7 +84,7 @@ const DropZone = ({ name, label, accept, files, dragging, onFileChange, onDragOv
             className={`relative flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-6 cursor-pointer transition-all duration-200 group
                 ${isActive  ? "border-sky-400 bg-sky-500/[0.06]"
                 : picked    ? "border-sky-500/40 bg-sky-500/[0.04]"
-                            : "border-slate-700 hover:border-slate-600 hover:bg-slate-800/40"}`}
+                            : "border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.02]"}`}
             onDragOver={e => { e.preventDefault(); onDragOver(name); }}
             onDragLeave={onDragLeave}
             onDrop={e => onDrop(e, name)}
@@ -94,7 +94,7 @@ const DropZone = ({ name, label, accept, files, dragging, onFileChange, onDragOv
                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
             />
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors
-                ${picked ? "bg-sky-500/15" : "bg-slate-700/60 group-hover:bg-slate-700"}`}>
+                ${picked ? "bg-sky-500/15" : "bg-white/[0.04] group-hover:bg-white/[0.07]"}`}>
                 {picked
                     ? <File size={15} className="text-sky-400" />
                     : <CloudUpload size={15} className="text-slate-500 group-hover:text-slate-400" />}
@@ -122,11 +122,11 @@ const UploadButton = ({ onClick, disabled, uploading, label }) => (
         disabled={disabled || uploading}
         className={`w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold tracking-wide transition-all duration-200
             ${!disabled && !uploading
-                ? "bg-sky-500 hover:bg-sky-400 text-white shadow-lg shadow-sky-500/20 hover:-translate-y-px active:translate-y-0"
-                : "bg-slate-700/40 text-slate-600 cursor-not-allowed"}`}
+                ? "bg-sky-500 hover:bg-sky-400 text-[#080a0f] shadow-lg shadow-sky-500/20 hover:-translate-y-px active:translate-y-0"
+                : "bg-white/[0.04] text-slate-600 cursor-not-allowed"}`}
     >
         {uploading
-            ? <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+            ? <div className="w-4 h-4 rounded-full border-2 border-[#080a0f]/30 border-t-[#080a0f] animate-spin" />
             : <Upload size={14} />}
         {uploading ? "Uploading…" : label}
     </button>
@@ -233,8 +233,8 @@ const Documents = () => {
     const hasVehicleFiles = !!(vehicleFiles.vehicleRc || vehicleFiles.insurance);
 
     return (
-        <div className="text-slate-100">
-            <div className="max-w-3xl mx-auto px-4 py-8 md:px-8">
+        <div className="min-h-screen text-slate-100">
+            <div className="max-w-3xl mx-auto px-5 py-10">
 
                 {/* ── Header ── */}
                 <div className="mb-9">
@@ -252,7 +252,7 @@ const Documents = () => {
                 </div>
 
                 {/* ── Personal Documents Panel ── */}
-                <div className="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-5 mb-4">
+                <div className="bg-[#0d1017] border border-white/[0.06] rounded-2xl p-5 mb-4">
                     <SectionLabel>Personal Documents</SectionLabel>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                         {USER_FIELDS.map(f => (
@@ -276,7 +276,7 @@ const Documents = () => {
                 </div>
 
                 {/* ── Vehicle Documents Panel ── */}
-                <div className="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-5 mb-7">
+                <div className="bg-[#0d1017] border border-white/[0.06] rounded-2xl p-5 mb-7">
                     <SectionLabel>Vehicle Documents</SectionLabel>
 
                     {/* Vehicle selector */}
@@ -289,7 +289,7 @@ const Documents = () => {
                                     ? "border-sky-500/50 bg-sky-500/[0.04]"
                                     : selectedVehicle
                                         ? "border-sky-500/30 bg-sky-500/[0.04]"
-                                        : "border-slate-700 hover:border-slate-600 bg-slate-900/60"}`}
+                                        : "border-white/[0.08] hover:border-white/[0.14] bg-white/[0.02]"}`}
                         >
                             <span className="flex items-center gap-2.5">
                                 <Car size={14} className={selectedVehicle ? "text-sky-400" : "text-slate-500"} />
@@ -313,7 +313,7 @@ const Documents = () => {
                         </button>
 
                         {vehicleDropdown && (
-                            <div className="absolute z-20 top-full mt-1.5 w-full bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-2xl shadow-black/60">
+                            <div className="absolute z-20 top-full mt-1.5 w-full bg-[#12151d] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl shadow-black/60">
                                 {vehicles.length === 0 ? (
                                     <p className="px-4 py-3 text-[13px] text-slate-600">No vehicles registered</p>
                                 ) : (
@@ -325,7 +325,7 @@ const Documents = () => {
                                                 type="button"
                                                 onClick={() => { setSelectedVehicle(v); setVehicleDropdown(false); }}
                                                 className={`w-full flex items-center justify-between px-4 py-3 text-sm transition-colors
-                                                    ${isSelected ? "bg-sky-500/10 text-sky-300" : "text-slate-300 hover:bg-slate-700/40"}`}
+                                                    ${isSelected ? "bg-sky-500/10 text-sky-300" : "text-slate-300 hover:bg-white/[0.04]"}`}
                                             >
                                                 <span className="flex items-center gap-2.5">
                                                     <Car size={13} className={isSelected ? "text-sky-400" : "text-slate-500"} />
@@ -388,7 +388,7 @@ const Documents = () => {
                 {/* ── Empty State ── */}
                 {!loading && docs.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
-                        <div className="w-14 h-14 rounded-2xl bg-slate-800/50 border border-slate-700/60 flex items-center justify-center text-slate-700">
+                        <div className="w-14 h-14 rounded-2xl bg-[#0d1017] border border-white/[0.06] flex items-center justify-center text-slate-700">
                             <FolderOpen size={24} />
                         </div>
                         <div>
@@ -406,7 +406,7 @@ const Documents = () => {
                             return (
                                 <div
                                     key={d.document_id}
-                                    className={`group relative bg-slate-800/50 border rounded-2xl p-5 overflow-hidden
+                                    className={`group relative bg-[#0d1017] border rounded-2xl p-5 overflow-hidden
                                         transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl ${s.border}`}
                                 >
                                     <div className={`absolute top-0 left-0 right-0 h-[2px] ${s.bar} opacity-0 group-hover:opacity-100 transition-opacity duration-200`} />
