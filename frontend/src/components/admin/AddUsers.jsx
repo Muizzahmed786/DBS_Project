@@ -65,7 +65,7 @@ export default function AddUsers() {
 
       {/* ── Header ── */}
       <div className="bg-white border-b border-blue-100 px-6 py-6">
-        <p className="text-xs font-semibold tracking-widest text-blue-600 uppercase mb-1">
+        <p className="text-xs font-semibold tracking-widest text-indigo-500 uppercase mb-1">
           Admin Panel
         </p>
         <h1 className="text-2xl font-bold text-slate-800 tracking-tight">

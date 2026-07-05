@@ -54,7 +54,7 @@ export default function AddRtoOffice() {
 
       {/* ── Header ── */}
       <div className="bg-white border-b border-slate-200 px-8 py-8">
-        <p className="text-xs font-semibold tracking-widest text-indigo-500 uppercase mb-1 font-mono">
+        <p className="text-xs font-semibold tracking-widest text-indigo-500 uppercase mb-1">
           Admin Panel
         </p>
         <h1 className="text-2xl font-bold text-slate-900 tracking-tight">

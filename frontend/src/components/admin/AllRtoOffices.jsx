@@ -57,9 +57,9 @@ export default function RtoOffices() {
       {/* ── Header ── */}
       <div className="bg-white border-b border-blue-100 px-6 py-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold tracking-widest text-blue-600 uppercase mb-1">
-            Admin Panel
-          </p>
+          <p className="text-xs font-semibold tracking-widest text-indigo-500 uppercase mb-1">
+          Admin Panel
+        </p>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
             RTO Offices
           </h1>

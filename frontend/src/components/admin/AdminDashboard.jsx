@@ -201,9 +201,9 @@ export default function AdminDashboard() {
       <div className="bg-white border-b border-blue-100 px-6 py-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xl font-semibold text-slate-800 mb-1">
-              Welcome Back, {user.full_name}
-            </p>
+            <p className="text-xs font-semibold tracking-widest text-indigo-500 uppercase mb-1">
+          Welcome Back, {user.full_name}
+        </p>
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Dashboard</h1>
             <p className="text-sm text-slate-500 mt-1">
               Overview of challan activity and revenue collection.

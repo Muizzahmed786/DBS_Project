@@ -166,7 +166,7 @@ export default function DocumentManagement() {
 
       {/* Body */}
       <div className="px-8 py-6">
-        <div className="text-xs text-slate-400 mb-4 font-mono">
+        <div className="text-sm text-slate-400 mb-4 ">
           {sorted.length} record{sorted.length !== 1 ? "s" : ""}
         </div>
 
