@@ -51,7 +51,7 @@ const Login = () => {
   }, [user, loading, navigate]);
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <div className="w-full max-w-md bg-white border border-blue-100 rounded-2xl shadow-xl p-8">
         <h1 className="text-3xl font-bold text-slate-800 text-center mb-6">
           Welcome Back
