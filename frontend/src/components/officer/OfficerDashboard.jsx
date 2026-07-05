@@ -5,7 +5,7 @@ import {
   getChallanStatusStats,
   getTopViolations,
 } from "../../api/officer.js";
-
+import {useAuth} from "../../context/useAuth.js"
 // ─── Format Helpers ─────────────────────────────────────────
 
 const fmtAmount = (n) =>
@@ -182,7 +182,7 @@ export default function OfficerDashboard() {
 
   const [topViolations, setTopViolations] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const {user}=useAuth();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -230,21 +230,21 @@ export default function OfficerDashboard() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-sky-50/40">
+    <div className="min-h-screen bg-blue-50/40">
 
       {/* ── Header ── */}
-      <div className="bg-white border-b border-blue-100 px-8 py-8">
+      <div className="bg-white border-b border-blue-100 px-6 py-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-sky-500 uppercase mb-1">
-              Officer Panel
-            </p>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-              Dashboard
-            </h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Overview of your challan activity and performance.
-            </p>
+            <p className="text-xs font-semibold tracking-widest text-indigo-500 uppercase mb-1">
+          Welcome Back, {user.full_name}
+        </p>
+        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+          Dashboard
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Overview Of challan activity and performance
+        </p>
           </div>
 
           <div className="text-xs text-sky-600 bg-sky-50 border border-sky-100 px-3 py-1.5 rounded-lg">

@@ -43,71 +43,159 @@ const getMyIssuedChallans = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, challans, "All challans issued by me fetched"));
 })
 const issueChallan = asyncHandler(async (req, res) => {
-  if (req.user[0].role != 'officer') {
-    throw new ApiError(400, "Unauthorized request");
+  if (req.user[0].role !== "officer") {
+    throw new ApiError(403, "Unauthorized request");
   }
-  const { registrationNo, licenceNo, violationDesc, offenceSection, location } = req.body;
-  if (!licenceNo && !registrationNo) {
-    throw new ApiError(400, "Insufficient details to issue an challan");
+
+  const {
+    registrationNo,
+    licenceNo,
+    violationDesc,
+    offenceSection,
+    location,
+  } = req.body;
+
+  if (!registrationNo) {
+    throw new ApiError(
+      400,
+      "Vehicle registration number is required to issue a challan"
+    );
   }
-  if (licenceNo && !registrationNo) {
-    throw new ApiError(400, "Licence not sufficient to issue an challan");
-  }
-  if (!(violationDesc || offenceSection)) {
+
+  if (!violationDesc && !offenceSection) {
     throw new ApiError(400, "Insufficient violation details");
   }
-  let amount, violationId = -1;
+
+  let violationId, amount;
+
   if (offenceSection) {
-    const [rows] = await db.execute('select violation_type_id,penalty_amount as amt from violation_types where offence_section=?', [offenceSection]);
+    const [rows] = await db.execute(
+      `SELECT violation_type_id, penalty_amount AS amt
+       FROM violation_types
+       WHERE offence_section = ?`,
+      [offenceSection]
+    );
+
     if (rows.length === 0) {
       throw new ApiError(400, "Violation details could not be fetched");
     }
+
     violationId = rows[0].violation_type_id;
     amount = rows[0].amt;
-  }
-  else {
-    const [rows] = await db.execute('select violation_type_id,penalty_amount as amt from violation_types where description=?', [violationDesc]);
+  } else {
+    const [rows] = await db.execute(
+      `SELECT violation_type_id, penalty_amount AS amt
+       FROM violation_types
+       WHERE description = ?`,
+      [violationDesc]
+    );
+
     if (rows.length === 0) {
       throw new ApiError(400, "Violation details could not be fetched");
     }
+
     violationId = rows[0].violation_type_id;
     amount = rows[0].amt;
   }
 
-  let offenderDetails, flag = 0;
-  if (licenceNo) { // if this executes i also have reg no
-    const [citizenDetails] = await db.execute(`select user_id,dl_id from driving_licence dl where licence_number=? and user_id in (select user_id from vehicle_ownership vo join vehicles v on vo.vehicle_id=v.vehicle_id and registration_number=?);`, [licenceNo, registrationNo]);
+  let vehicleId;
+  let dlId = null;
+  let ownerMatched = false;
 
-    if (citizenDetails.length === 0) {
-      //driver might be using vehicle not owned by him so  we issue challan to vehicle owner
-      flag = 1;
-    }
-    if (flag !== 1) {
-      const [rows] = await db.execute('select vehicle_id from vehicles where registration_number=?', [registrationNo]);
+  if (licenceNo) {
+    const [driverDetails] = await db.execute(
+      `SELECT dl.dl_id
+       FROM driving_licence dl
+       WHERE dl.licence_number = ?
+         AND dl.user_id IN (
+            SELECT vo.user_id
+            FROM vehicle_ownership vo
+            JOIN vehicles v
+              ON vo.vehicle_id = v.vehicle_id
+            WHERE v.registration_number = ?
+         )`,
+      [licenceNo, registrationNo]
+    );
 
-      if (rows.length == 0) {
-        throw new ApiError(400, "Vehicle could not be fetched");
-      }
-      const vehicleId = rows[0].vehicle_id;
-
-      const [insertedOffender] = await db.execute(`insert into challan (challan_number,vehicle_id,dl_id,violation_type_id,location,issued_by,total_amount,status) values (?,?,?,?,?,?,?,?);`, [generateChallanNo(), vehicleId, citizenDetails[0].dl_id, violationId, location, req.user[0].user_id, amount, 'pending']);
-
-      offenderDetails = await db.execute(`select * from challan where challan_id=?`, [insertedOffender.insertId]);
+    if (driverDetails.length > 0) {
+      ownerMatched = true;
+      dlId = driverDetails[0].dl_id;
     }
   }
-  else if (flag === 1 || (!licenceNo)) { // i dont have lic but can still find using reg no
-    const [citizenDetails] = await db.execute(`select vo.user_id,v.vehicle_id,dl.dl_id from vehicles v 
-      join vehicle_ownership vo on v.vehicle_id=vo.vehicle_id
-      join driving_licence dl on dl.user_id=vo.user_id where registration_number=?;`, [registrationNo]);
 
-    const vehicleId = citizenDetails[0].vehicle_id;
+  if (ownerMatched) {
+    const [vehicleRows] = await db.execute(
+      `SELECT vehicle_id
+       FROM vehicles
+       WHERE registration_number = ?`,
+      [registrationNo]
+    );
 
-    const [insertedOffender] = await db.execute(`insert into challan (challan_number,vehicle_id,dl_id,violation_type_id,location,issued_by,total_amount,status) values (?,?,?,?,?,?,?,?);`, [generateChallanNo(), vehicleId, citizenDetails[0].dl_id, violationId, location, req.user[0].user_id, amount, 'pending']);
+    if (vehicleRows.length === 0) {
+      throw new ApiError(404, "Vehicle not found");
+    }
 
-    offenderDetails = await db.execute(`select * from challan where challan_id=?`, [insertedOffender.insertId]);
+    vehicleId = vehicleRows[0].vehicle_id;
   }
-  return res.status(200).json(new ApiResponse(200, offenderDetails[0], "Challan issued successfully"));
-})
+
+  if (!ownerMatched) {
+    const [ownerDetails] = await db.execute(
+      `SELECT
+          v.vehicle_id,
+          dl.dl_id
+       FROM vehicles v
+       JOIN vehicle_ownership vo
+            ON v.vehicle_id = vo.vehicle_id
+       LEFT JOIN driving_licence dl
+            ON dl.user_id = vo.user_id
+       WHERE v.registration_number = ?`,
+      [registrationNo]
+    );
+
+    if (ownerDetails.length === 0) {
+      throw new ApiError(404, "Vehicle not found");
+    }
+
+    vehicleId = ownerDetails[0].vehicle_id;
+    dlId = ownerDetails[0].dl_id ?? null;
+  }
+
+  const [insertResult] = await db.execute(
+    `INSERT INTO challan
+    (
+      challan_number,
+      vehicle_id,
+      dl_id,
+      violation_type_id,
+      location,
+      issued_by,
+      total_amount,
+      status
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      generateChallanNo(),
+      vehicleId,
+      dlId,
+      violationId,
+      location,
+      req.user[0].user_id,
+      amount,
+      "pending",
+    ]
+  );
+
+  const [challan] = await db.execute(
+    `SELECT *
+     FROM challan
+     WHERE challan_id = ?`,
+    [insertResult.insertId]
+  );
+
+  return res
+    .status(201)
+    .json(new ApiResponse(201, challan[0], "Challan issued successfully"));
+});
 
 const issueDrivingLicence = asyncHandler(async (req, res) => {
   if (req.user[0].role !== "officer") {

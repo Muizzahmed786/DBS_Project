@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { issueChallan } from "../../api/officer.js"; // adjust path as needed
-
+import { Check } from "lucide-react";
+import toast from "react-hot-toast";
 const steps = ["Vehicle", "Violation", "Confirm"];
 
 const InputField = ({
@@ -29,7 +30,7 @@ const InputField = ({
 );
 
 const StepIndicator = ({ current }) => (
-  <div className="flex items-center gap-0 mb-10">
+  <div className="flex items-center justify-center gap-0 mb-10">
     {steps.map((label, i) => (
       <div key={label} className="flex items-center">
         <div className="flex flex-col items-center gap-1.5">
@@ -128,7 +129,8 @@ export default function IssueChallan() {
       };
       const { data } = await issueChallan(payload);
       setResult(data.data?.[0] ?? data.data);
-      setStep(3); // success view
+      setStep(3);
+      toast.success("Challan Issued Successfully");
     } catch (err) {
       setApiError(
         err?.response?.data?.message ||
@@ -168,12 +170,12 @@ export default function IssueChallan() {
       </div>
 
       {/* Card */}
-      <div className="bg-white border border-blue-100 rounded-2xl p-8 shadow-sm">
+      <div className="bg-white rounded-2xl border border-blue-100 shadow-sm px-8 py-8 max-w-xl mx-auto mt-8">
         {/* Success state */}
         {step === 3 && result ? (
           <div className="text-center space-y-6">
             <div className="w-16 h-16 bg-indigo-50 border border-indigo-200 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-3xl text-indigo-600">✓</span>
+              <span className="text-3xl text-indigo-600"><Check/></span>
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900 mb-1">
@@ -237,7 +239,7 @@ export default function IssueChallan() {
                   name="registrationNo"
                   value={form.registrationNo}
                   onChange={handleChange}
-                  placeholder="e.g. MH12AB1234"
+                  placeholder="e.g. MH-12-AB-1234"
                   required
                 />
                 {errors.registrationNo && (
@@ -250,7 +252,7 @@ export default function IssueChallan() {
                   name="licenceNo"
                   value={form.licenceNo}
                   onChange={handleChange}
-                  placeholder="e.g. KA0320180012345"
+                  placeholder="e.g. KA-0320180012345"
                   hint="Optional — if omitted, challan is issued to the vehicle owner"
                 />
               </div>
