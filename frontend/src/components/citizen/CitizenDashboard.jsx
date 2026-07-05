@@ -54,7 +54,7 @@ const CitizenDashboard = () => {
           getMyVehicleCount(),
           getMyPaymentCount(),
         ]);
-        console.log(payments);
+        
 
         setStats({
           totalChallans: total.data.data,

@@ -15,14 +15,13 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response = await loginUser({ email, password });
-      console.log("Login response:", response);
+     
 
       const userRes = await getCurrentUser();
-      console.log("getCurrentUser response:", userRes);
+      
 
       const user = userRes.data.data[0];
-      console.log("User object:", user);
-      console.log("User role:", user?.role);
+      
 
       setUser(user);
       toast.success("Login Successfull");

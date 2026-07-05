@@ -119,8 +119,7 @@ const getMyProfile=asyncHandler(async (req,res)=>{
   if(profile.length==0){
     throw new ApiError(400,"User does not exist")
   }
-  profile[0].readablePassword=
-  console.log(profile);
+
   return res.status(200).json(new ApiResponse(200,profile,"Profile fetched successfully"))
 })
 

@@ -279,7 +279,7 @@ const ChallanPayment = () => {
 
   const pending = challans.filter((c) => !paidIds.has(c.challan_id));
   const totalDue = pending.reduce((s, c) => s + Number(c.total_amount), 0);
-  console.log(challans);
+  
 
   return (
     <div className="min-h-screen bg-blue-50/40">

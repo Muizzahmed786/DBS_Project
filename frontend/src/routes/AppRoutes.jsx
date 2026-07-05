@@ -31,6 +31,7 @@ import AuditLogs from "../components/admin/AuditLogs.jsx"
 import DeleteAuditLogs from "../components/admin/DeleteAuditLogs.jsx";
 import AddUsers from "../components/admin/AddUsers.jsx";
 import NotFound from "../pages/NotFound.jsx";
+import LandingPage from "../pages/LandingPage.jsx";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -38,6 +39,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="*" element={<NotFound/>} />
+      <Route path="/home" element={<LandingPage/>}/>
 
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
         <Route path="/admin" element={<Admin />}>

@@ -36,7 +36,6 @@ const registerUser = asyncHandler(async (req, res) => {
     [full_name, mobile_number, email, aadhaar_number, password_hash, userRole]
   );
 
-  console.log(user);
 
   const [createdUser] = await db.execute(
     `SELECT user_id, full_name, mobile_number, email, aadhaar_number, role, created_at 
@@ -125,8 +124,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     if (user.length == 0) {
       throw new ApiError(401, "Invalid refresh token")
     }
-    console.log(incommingRefreshToken)
-    console.log(user[0].refresh_token)
+ 
     if (incommingRefreshToken !== user[0]?.refresh_token) {
       throw new ApiError(401, "Refresh Token is expired or used")
     }

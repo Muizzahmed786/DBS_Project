@@ -39,7 +39,7 @@ const getMyIssuedChallans = asyncHandler(async (req, res) => {
 
     WHERE c.issued_by = ?
     ORDER BY issue_date desc;`, [req.user[0].user_id]);
-    console.log(challans)
+    
   return res.status(200).json(new ApiResponse(200, challans, "All challans issued by me fetched"));
 })
 const issueChallan = asyncHandler(async (req, res) => {
@@ -209,7 +209,7 @@ const issueDrivingLicence = asyncHandler(async (req, res) => {
   }
   const [rtoTable]=await db.execute('select rto_id from rto where rto_code=?',[rtoCode]);
   const rtoId=rtoTable[0].rto_id;
-  console.log(rtoTable);
+
   let userQuery = "";
   let value = "";
 
