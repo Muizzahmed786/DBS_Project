@@ -394,10 +394,10 @@ export default function VehicleManagement() {
       const res = await getRtoVehicles({
         rtoVehicleCode: rtoVehicleCode.trim()
       });
-      console.log(res);
+      
       setRtoVehicles(res.data?.data || res.data || []);
       setFetchedRtoVehicle(rtoVehicleCode.trim());
-    } catch (err) { setError((p) => ({ ...p, "rto-vehicles": `Failed to load vehicles for RTO ${rtoVehicleCode}.` })); console.log(err) }
+    } catch (err) { setError((p) => ({ ...p, "rto-vehicles": `Failed to load vehicles for RTO ${rtoVehicleCode}.` })); }
     finally { setLoading((p) => ({ ...p, "rto-vehicles": false })); }
   };
 

@@ -53,7 +53,7 @@ export default function PaymentHistory() {
     const fetchPayments = async () => {
       try {
         const res = await getMyPaymentHistory();
-        console.log(res);
+        
         setPayments(res.data.data);
       } catch (err) {
         console.error(err);

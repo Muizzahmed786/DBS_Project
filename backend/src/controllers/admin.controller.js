@@ -366,7 +366,7 @@ const getAllAuditLogs = asyncHandler(async (req, res) => {
   }
 
   const [logs] = await db.execute(`SELECT * FROM audit_logs`);
-  console.log(logs);
+
   if (logs.length === 0) {
     return res
       .status(200)
@@ -520,7 +520,7 @@ const addUsers=asyncHandler(async (req,res)=>{
     [full_name, mobile_number, email, aadhaar_number, password_hash, userRole]
   );
 
-  console.log(user);
+
 
   const [createdUser] = await db.execute(
     `SELECT user_id, full_name, mobile_number, email, aadhaar_number, role, created_at 

@@ -199,7 +199,7 @@ export default function ViolationTypes() {
               const fine = v.penalty_amount || 1000;
               const desc = v.description || null;
               const code = v.offence_section|| null;
-              console.log(code);
+              
               return (
                 <div
                   key={v.violation_type_id || i}
