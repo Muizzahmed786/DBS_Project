@@ -23,28 +23,29 @@ const citizenNavItems = [
 const Citizen = () => {
   const { user, loading } = useAuth();
 
+  // 1. Handle Loading State (Prevents flicker on refresh)
   if (loading)
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-950 text-white">
+      <div className="flex h-screen items-center justify-center bg-blue-50 text-slate-500">
         Loading...
       </div>
     );
 
-  if (!user || user.role !== "citizen")
+  // 2. Security: Redirect if not logged in or not an admin
+  if (!user || user.role !== "citizen") {
     return <Navigate replace to="/login" />;
+  }
 
   return (
-    <div className="flex max-h-screen bg-slate-950">
+    <div className="flex min-h-screen bg-blue-50/40">
       <Sidebar
         navItems={citizenNavItems}
         roleName="Citizen"
-        userName={user.name}
+        userName={user.full_name}
       />
 
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto">
-        <div className="max-w-7xl mx-auto">
-          <Outlet />
-        </div>
+      <main className="flex-1 overflow-y-auto">
+        <Outlet />
       </main>
     </div>
   );

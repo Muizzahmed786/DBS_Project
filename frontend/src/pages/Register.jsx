@@ -39,7 +39,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center px-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white border border-blue-100 rounded-2xl shadow-xl p-8 space-y-5"
